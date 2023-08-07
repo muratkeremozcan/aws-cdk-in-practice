@@ -1,4 +1,5 @@
-import {Stack, StackProps} from 'aws-cdk-lib'
+import {Stack} from 'aws-cdk-lib'
+import type {StackProps} from 'aws-cdk-lib'
 import {ContainerImage} from 'aws-cdk-lib/aws-ecs'
 import {ApplicationLoadBalancedFargateService} from 'aws-cdk-lib/aws-ecs-patterns'
 import {Construct} from 'constructs'
