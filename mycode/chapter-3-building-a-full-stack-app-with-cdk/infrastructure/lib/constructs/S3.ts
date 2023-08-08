@@ -24,7 +24,7 @@ export class S3 extends Construct {
       blockPublicAccess: BlockPublicAccess.BLOCK_ACLS,
       accessControl: BucketAccessControl.BUCKET_OWNER_FULL_CONTROL,
       removalPolicy: RemovalPolicy.DESTROY,
-      autoDeleteObjects: true, // so that the bucket is deleted when the stack is destroyed
+      autoDeleteObjects: true, // so that the bucket is deleted when the stack is destroyed, even tho not empty
     })
     // we specify where to get the build folder from
     this.web_bucket_deployment = new BucketDeployment(
