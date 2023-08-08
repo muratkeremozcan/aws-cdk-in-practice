@@ -4,7 +4,7 @@ WORKDIR /server
 
 COPY . .
 
-RUN npm install && npm run build
+RUN npm install --registry https://registry.npmjs.org  && npm run build
 
 EXPOSE 80
 
