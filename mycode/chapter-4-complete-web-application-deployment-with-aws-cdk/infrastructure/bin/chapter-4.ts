@@ -1,9 +1,11 @@
 #!/usr/bin/env node
-import 'source-map-support/register'
-import * as cdk from 'aws-cdk-lib'
+import 'source-map-support/register';
+import * as cdk from 'aws-cdk-lib';
 
-import {Chapter4Stack} from '../lib/chapter-4-stack'
+import { Chapter3Stack } from '../lib/chapter-4-stack';
 
-const app = new cdk.App()
+const app = new cdk.App();
 
-new Chapter4Stack(app, 'Chapter4Stack', {})
+new Chapter3Stack(app, 'Chapter4Stack', {
+  env: { region: 'us-east-1', account: process.env.CDK_DEFAULT_ACCOUNT },
+});

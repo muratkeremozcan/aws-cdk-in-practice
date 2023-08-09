@@ -514,7 +514,7 @@ Create a `config.json` file at the folder root with the content:
 }
 ```
 
-Create a TLS certificate to secure the communication between the web app and user browsers.
+Create a TLS certificate to secure the communication between the web app and user browsers. (This part is codified later)
 
 * Go to Certificate Manager in the top AWS console search box. 
 
@@ -537,6 +537,45 @@ Create a TLS certificate to secure the communication between the web app and use
 At the end things should look like this:
 
 ![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/7edk114trcpejr0yg7cn.png)
+
+The above can be codified:
+
+```ts
+// ./infrastructure/lib/constructs/ACM/index.ts
+import {
+  Certificate,
+  CertificateValidation,
+} from 'aws-cdk-lib/aws-certificatemanager'
+import {IHostedZone} from 'aws-cdk-lib/aws-route53'
+import {Construct} from 'constructs'
+
+import {domain_name} from '../../../../config.json'
+
+interface Props {
+  hosted_zone: IHostedZone
+}
+
+export class ACM extends Construct {
+  public readonly certificate: Certificate
+
+  constructor(scope: Construct, id: string, props: Props) {
+    super(scope, id)
+
+    // I owe you an apology. At the beginning of this chapter, we made you buy a domain
+    // and then validate the domain to be able to issue the ACM TLS certificate.
+    // The domain buying bit you had to do, but the ACM certificate verification part you didn’t.
+    //  Curse me as you wish, but we wanted to show you how much time and effort you could save
+    // if you switched to AWS CDK. Let me show you what we mean.
+    // This whole drama is automatically achieved by the following single block of code,
+    this.certificate = new Certificate(scope, 'Certificate', {
+      domainName: domain_name,
+      validation: CertificateValidation.fromDns(props.hosted_zone),
+      subjectAlternativeNames: [`*.${domain_name}`],
+    })
+  }
+}
+
+```
 
 Here I copied off web and server folders again from the source code - so many changes overlooked in the book and it's not worth transforming ch3 to ch4 for web and server folders. 
 
@@ -576,7 +615,7 @@ Start docker. Deploy at infrastructure folder. Make sure you `cdk destroy --prof
 cdk deploy --profile cdk
 ```
 
-### MySQl powered by AWS RDS
+### MySQL powered by AWS RDS
 
 The author wants to simulate a scenario where we might have a SQL db and we want to migrate it to AWS RDS. 
 
@@ -584,4 +623,221 @@ The author wants to simulate a scenario where we might have a SQL db and we want
 2. Once created, tie in the CloudFormation step completion of the database to a custom resource. 
 3. This custom resource, in turn, triggers a custom Docker image AWS Lambda function. 
 4. The Lambda function connects to the database and populates it using the script.sql file.
+
+```ts
+// ./infrastructure/lib/constructs/RDS/index.ts
+
+import * as ec2 from 'aws-cdk-lib/aws-ec2'
+import * as rds from 'aws-cdk-lib/aws-rds'
+import {CfnOutput, Duration, Token} from 'aws-cdk-lib'
+import {Construct} from 'constructs'
+import {RetentionDays} from 'aws-cdk-lib/aws-logs'
+import {DockerImageCode} from 'aws-cdk-lib/aws-lambda'
+
+import {CDKResourceInitializer} from './custom'
+
+interface Props {
+  vpc: ec2.Vpc
+}
+
+export class RDS extends Construct {
+  public readonly instance: rds.DatabaseInstance
+
+  public readonly credentials: rds.DatabaseSecret
+
+  constructor(scope: Construct, id: string, props: Props) {
+    super(scope, id)
+
+    const instance_id = 'my-sql-instance'
+    const credentials_secret_name = `chapter-4/rds/${instance_id}`
+
+    // How do we go about generating a password for MySQL, while not having it in the Git history?
+    // And how do we then share these secrets with relevant components securely?
+    // The DatabaseSecret construct of the aws-rds library receives a secret name and a username as parameters
+    //  and creates an, erm, secret in the AWS SecretsManager service.
+    // in the next section, we assign this set of credentials to the RDS MySQL instance:
+    this.credentials = new rds.DatabaseSecret(scope, 'MySQLCredentials', {
+      secretName: credentials_secret_name,
+      username: 'admin',
+    })
+
+    // SPINNING UP THE RDS INSTANCE
+    // We are creating a MySQL RDS database instance with the MySQL engine version 8.0.28.
+    // The name of the database will be todolist.
+    // The database will be hosted by an EC2 machine of the T2 type with a Small instance size.
+    // We are defining ports and their accessibility within the VPC.
+    // We are using a VPC that is passed down higher on the stack and asking RDS to spin up the EC2 instance within a private subnet.
+    this.instance = new rds.DatabaseInstance(scope, 'MySQL-RDS-Instance', {
+      credentials: rds.Credentials.fromSecret(this.credentials),
+      databaseName: 'todolist',
+      engine: rds.DatabaseInstanceEngine.mysql({
+        version: rds.MysqlEngineVersion.VER_8_0_28,
+      }),
+      instanceIdentifier: instance_id,
+      instanceType: ec2.InstanceType.of(
+        ec2.InstanceClass.T2,
+        ec2.InstanceSize.SMALL,
+      ),
+      port: 3306,
+      publiclyAccessible: false,
+      vpc: props.vpc,
+      vpcSubnets: {
+        onePerAz: true,
+        subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
+      },
+    })
+
+    // instantiating the CDKResourceInitilizer construct:
+    // We create a CDKResourceInitilizer custom construct, which, in turn, spins up a Lambda function.
+    // We define the log retention and length of the Lambda function’s execution timeout.
+    // Since we only have one data point to inject, we don’t need anything longer than two minutes.
+    // The Lambda function is backed by a custom Dockerfile we are passing to the custom construct.
+    // We also pass the same VPC and subnet network details for our Lambda function to run.
+    const initializer = new CDKResourceInitializer(scope, 'MyRdsInit', {
+      // Here, we are passing down the secret name to CDKResourceInitilizer
+      // so that we know where to get the secret from
+      config: {
+        credentials_secret_name,
+      },
+      function_log_retention: RetentionDays.FIVE_MONTHS,
+      function_code: DockerImageCode.fromImageAsset(`${__dirname}/init`, {}),
+      function_timeout: Duration.minutes(2),
+      function_security_groups: [],
+      vpc: props.vpc,
+      subnets_selection: props.vpc.selectSubnets({
+        subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
+      }),
+    })
+
+    // we define the RDS instance as a dependency for this CustomResource.
+    // This means RDS needs to be up and running before CustomResource is spun up:
+    initializer.custom_resource.node.addDependency(this.instance)
+
+    // We have to explicitly give these permissions to the initializer function:
+    this.credentials.grantRead(initializer.function)
+
+    this.instance.connections.allowFrom(
+      initializer.function,
+      ec2.Port.tcp(3306),
+    )
+
+    /* ----------
+     * Returns the initializer function response,
+     * to check if the SQL was successful or not
+     * ---------- */
+    new CfnOutput(scope, 'RdsInitFnResponse', {
+      value: Token.asString(initializer.response),
+    })
+  }
+}
+```
+
+
+
+> Changed the docker file at `.infrastructure/lib/constructs/RDS/init/Dockerfile` with node 16 and npm registry.
+>
+> ```dockerfile
+> FROM amazon/aws-lambda-nodejs:16
+> WORKDIR ${LAMBDA_TASK_ROOT}
+> 
+> COPY package.json ./
+> RUN npm install --only=production --registry https://registry.npmjs.org
+> COPY index.js ./
+> COPY script.sql ./
+> 
+> CMD [ "index.handler" ]
+> ```
+
+```ts
+// ./infrastructure/lib/chapter-4-stack.ts
+
+import {Stack, StackProps} from 'aws-cdk-lib'
+import {Port, SubnetType, Vpc} from 'aws-cdk-lib/aws-ec2'
+import {PolicyStatement} from 'aws-cdk-lib/aws-iam'
+import {Construct} from 'constructs'
+
+import {ECS} from './constructs/ECS'
+import {RDS} from './constructs/RDS'
+import {S3} from './constructs/S3'
+import {Route53} from './constructs/Route53'
+import {ACM} from './constructs/ACM'
+
+export class Chapter3Stack extends Stack {
+  public readonly acm: ACM
+
+  public readonly ecs: ECS
+
+  public readonly rds: RDS
+
+  public readonly route53: Route53
+
+  public readonly s3: S3
+
+  public readonly vpc: Vpc
+
+  constructor(scope: Construct, id: string, props?: StackProps) {
+    super(scope, id, props)
+
+    // Here, we are referencing the hosted zone that was created alongside the domain you purchased,
+    this.route53 = new Route53(this, 'Route53')
+    // as well as initializing the ACM level 3 construct and passing the hosted zone as a parameter
+    this.acm = new ACM(this, 'ACM', {
+      hosted_zone: this.route53.hosted_zone,
+    })
+
+    // Next, we are creating an AWS VPC to host the ECS application container and RDS database,
+    // and for the data-seeding Lambda:
+    // We have created an isolated private subnet to house the MySQL instance
+    // since isolated subnets don’t have NAT gateways that route traffic to the internet, adding another layer of security.
+    this.vpc = new Vpc(this, 'MyVPC', {
+      subnetConfiguration: [
+        {
+          cidrMask: 24,
+          name: 'ingress',
+          subnetType: SubnetType.PUBLIC,
+        },
+        {
+          cidrMask: 24,
+          name: 'compute',
+          subnetType: SubnetType.PRIVATE_WITH_NAT,
+        },
+        {
+          cidrMask: 28,
+          name: 'rds',
+          subnetType: SubnetType.PRIVATE_ISOLATED,
+        },
+      ],
+    })
+
+    // initialize S3
+    this.s3 = new S3(this, 'S3', {
+      acm: this.acm,
+      route53: this.route53,
+    })
+    // initialize RDS
+    this.rds = new RDS(this, 'RDS', {
+      vpc: this.vpc,
+    })
+    // initialize ECS
+    this.ecs = new ECS(this, 'ECS', {
+      rds: this.rds,
+      vpc: this.vpc,
+      acm: this.acm,
+      route53: this.route53,
+    })
+    // allow connections from the ECS container to the RDS database:
+    this.rds.instance.connections.allowFrom(this.ecs.cluster, Port.tcp(3306))
+
+    this.ecs.task_definition.taskRole.addToPrincipalPolicy(
+      new PolicyStatement({
+        actions: ['secretsmanager:GetSecretValue'],
+        resources: [this.rds.credentials.secretArn],
+      }),
+    )
+    // Finally, we want to make sure the RDS database is up and running before kicking off the application container.
+    // So, we have to declare the RDS instance as a dependency.
+    this.ecs.node.addDependency(this.rds)
+  }
+}
+```
 
