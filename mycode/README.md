@@ -188,7 +188,7 @@ cdk destroy --profile cdk
 
 https://constructs.dev/  package manager for cdk
 
-## Ch3: Practical Cloud Development with AWS CDK
+## [Ch3: Practical Cloud Development with AWS CDK](https://www.youtube.com/watch?v=9c6lQ-nklrs&list=PLeLcvrwLe187CchI_3zTtZCAh3TSkXx1I&index=3)
 
 Goal:
 
@@ -486,7 +486,102 @@ Chapter3Stack.FrontendURL = http://chapter-3-web-bucket-a9b56e63-4748-4151-ab72-
 
 `yarn build`, go to the infrastructure folder and deploy again.
 
+Check the urls.
+Remove with `cdk destroy --profile cd`
 
+## Ch4: Complete the web app deployment with AWS CDK
 
+* Set up DNS for both frontend and backend URLs using Route 53 
 
+* Secure these endpoints with AWS ACM-provided TLS certificates (transport layer security, successor to SSL; secure socket layer)
+
+* Setting up a CloudFront distribution for our frontend assets
+
+* Create an AWS RDS-backed MySQL database with CDK and seed data 
+
+  
+
+At AWS console > Route 53 > Registered domains > click Register domains. Use a .click domain extension for cheapest.
+
+![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/vnbhukgq83f80n8l9kk9.png)
+
+Create a `config.json` file at the folder root with the content:
+```json
+{
+  "domain_name": "cdkbookmurat.click",
+  "backend_subdomain": "backend-cdk-book",
+  "frontend_subdomain": "frontend-cdk-book"
+}
+```
+
+Create a TLS certificate to secure the communication between the web app and user browsers.
+
+* Go to Certificate Manager in the top AWS console search box. 
+
+* Click on Request, select Request a public certificate, and click Next.
+
+* In Fully qualified domain name, enter your domain `cdkbookmurat.click`
+
+* Add another name to this certificate and enter `*cdkbookmurat.click`. Request the certs
+
+  > This did not work. Had to enter `backend-cdk-book.cdkbookmurat.click` and `frontend-cdk-book.cdkbookmurat.click`
+
+![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/x7uz2utntyex7pm1cymq.png)
+
+* Leave the above tab open. Go to Route53 > Hosted zones > click on your hosted zone name `cdkbookmurat.click` 
+
+* Copy the name and values into Create record. Select CNAME for record type, and for record name it comes with the `.cdkbookmurat.click`  so do not copy that part over (yes, terrible devex Amazon as usual). Have to create 3 records for 3 certs.
+
+  ![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/g79xqat2nrlap4xqm65c.png)
+
+At the end things should look like this:
+
+![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/7edk114trcpejr0yg7cn.png)
+
+Here I copied off web and server folders again from the source code - so many changes overlooked in the book and it's not worth transforming ch3 to ch4 for web and server folders. 
+
+> Had to update the Dockerfile at server with npm registry
+>
+> ```dockerfile
+> FROM node:lts-alpine@sha256:9a2db0008b592cfde1b98aa8972a8051ccb80bb51dde8b06c3a2e3762794e89c
+> 
+> RUN apk add dumb-init
+> 
+> WORKDIR /
+> 
+> COPY --chown=node:node . .
+> 
+> RUN npm install --registry https://registry.npmjs.org
+> 
+> ENV NODE_ENV production
+> 
+> RUN npm run build
+> 
+> EXPOSE 80
+> 
+> USER node
+> 
+> ENTRYPOINT ["dumb-init", "--"]
+> 
+> CMD ["npm", "run", "forever"]
+> ```
+
+Install at web and server folders. `build` at web folder.
+
+I did not copy over the infrastructure folder, because that's where the juice is. But, changed every occurrence of `chapter-3` to `chapter-4`  there. 
+
+Start docker. Deploy at infrastructure folder. Make sure you `cdk destroy --profile cdk` at Chapter 3 Infrastructure folder
+
+```bash
+cdk deploy --profile cdk
+```
+
+### MySQl powered by AWS RDS
+
+The author wants to simulate a scenario where we might have a SQL db and we want to migrate it to AWS RDS. 
+
+1. Create the RDS MySQL instance using AWS CDK.
+2. Once created, tie in the CloudFormation step completion of the database to a custom resource. 
+3. This custom resource, in turn, triggers a custom Docker image AWS Lambda function. 
+4. The Lambda function connects to the database and populates it using the script.sql file.
 
