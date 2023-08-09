@@ -841,3 +841,4 @@ export class Chapter3Stack extends Stack {
 }
 ```
 
+## [Ch5: CI with CDK](https://www.youtube.com/watch?v=zyzZcgsIFmc&list=PLeLcvrwLe187CchI_3zTtZCAh3TSkXx1I&index=4)
