@@ -842,3 +842,45 @@ export class Chapter3Stack extends Stack {
 ```
 
 ## [Ch5: CI with CDK](https://www.youtube.com/watch?v=zyzZcgsIFmc&list=PLeLcvrwLe187CchI_3zTtZCAh3TSkXx1I&index=4)
+
+
+
+We need a way for Codepipeline to access our GitHub repo and know about the changes. CodePipeline has a Source step which needs a Github personal access token.
+
+Profile > Settings > Developer Settings > Personal access tokens > Fine grained tokens
+
+![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/4luljbe4ymih7ae0jkpl.png)'
+
+
+
+![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/lfx5rmkw8qwhhdlgdefh.png)
+
+
+
+![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/no4yatay64ja8ks7weij.png)
+
+At the top right, click the Generate new token button.
+
+Fill in the token name, naming it aws-cdk-book or any other name to your liking. 
+
+Set the expiry as 30 days. 
+
+Under the Repository access section, pick Only select repositories. From the drop-down list, pick the repository. 
+
+Under Permissions, click Repository. Here, we have to give CodeBuild the correct access so that it’s able to be notified of code changes. From the list, pick the following items and give CodeBuild read and write access: Commit statuses, Metadata, Contents, and Webhooks. 
+
+Click Generate token. On the next page, you will receive a token starting with github_pat_ followed by some random alphanumerical values. Copy it and keep it handy and safe.
+
+Create 2 files `.env.production` `.env.development`, paste the token.
+
+```
+GITHUB_TOKEN=***
+NODE_ENV=Production # and another for Development
+```
+
+Make sure to update the values for the owner and repo properties to match your own before deploying the pipeline.
+
+Deploy with:
+
+`yarn cdk:pipeline deploy --profile cdk`
+

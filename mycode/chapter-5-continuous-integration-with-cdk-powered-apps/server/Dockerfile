@@ -6,7 +6,7 @@ WORKDIR /
 
 COPY --chown=node:node . .
 
-RUN npm install
+RUN npm install --registry https://registry.npmjs.org
 
 RUN npm run build
 

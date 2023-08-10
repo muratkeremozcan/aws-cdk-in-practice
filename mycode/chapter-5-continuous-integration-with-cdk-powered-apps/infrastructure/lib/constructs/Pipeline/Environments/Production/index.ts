@@ -182,8 +182,8 @@ export class ProductionPipeline extends Construct {
       actions: [
         new GitHubSourceAction({
           actionName: 'Source',
-          owner: 'westpoint-io',
-          repo: 'AWS-CDK-in-Action-Chapter-5',
+          owner: 'muratkeremozcan',
+          repo: 'aws-cdk-in-practice-solo',
           branch: 'master',
           oauthToken: secretToken,
           output: outputSource,
