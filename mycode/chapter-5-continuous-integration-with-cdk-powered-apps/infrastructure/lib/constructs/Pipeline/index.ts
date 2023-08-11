@@ -183,7 +183,7 @@ export class PipelineStack extends Construct {
         new GitHubSourceAction({
           actionName: 'Source',
           owner: 'muratkeremozcan',
-          repo: 'aws-cdk-in-practice-solo',
+          repo: 'aws-cdk-in-practice',
           branch: `${branch}`,
           oauthToken: secretToken,
           output: outputSource,

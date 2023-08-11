@@ -183,7 +183,7 @@ export class DevelopmentPipeline extends Construct {
         new GitHubSourceAction({
           actionName: 'Source',
           owner: 'muratkeremozcan',
-          repo: 'aws-cdk-in-practice-solo',
+          repo: 'aws-cdk-in-practice',
           branch: 'dev',
           oauthToken: secretToken,
           output: outputSource,

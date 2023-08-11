@@ -843,7 +843,7 @@ export class Chapter3Stack extends Stack {
 
 ## [Ch5: CI with CDK](https://www.youtube.com/watch?v=zyzZcgsIFmc&list=PLeLcvrwLe187CchI_3zTtZCAh3TSkXx1I&index=4)
 
-
+TL, DR; Pretty much forget about this chapter if you don't care about CodePipeline.
 
 We need a way for Codepipeline to access our GitHub repo and know about the changes. CodePipeline has a Source step which needs a Github personal access token.
 
@@ -884,3 +884,179 @@ Deploy with:
 
 `yarn cdk:pipeline deploy --profile cdk`
 
+This file is a real piece of work and makes cdk deploy and destroy work via env vars
+If you don't setup the env var , you will get `This app contains no stacks` error.
+
+If you want to make work cdk deploy or destroy work regularly, comment out the conditional parts.
+
+
+```ts
+// ./infrastructure/bin/chapter-5.ts
+#!/usr/bin/env node
+import 'source-map-support/register';
+import * as cdk from 'aws-cdk-lib';
+import { config } from 'dotenv';
+
+import { Chapter5Stack } from '../lib/chapter-5-stack';
+import { Chapter5PipelineStack } from '../lib/chapter-5-pipeline-stack';
+
+config({ path: '.env.production' });
+
+const app = new cdk.App();
+
+if (['ONLY_DEV'].includes(process.env.CDK_MODE || '')) {
+  new Chapter5Stack(app, `Chapter5Stack-${process.env.NODE_ENV || ''}`, {
+    env: {
+      region: process.env.CDK_DEFAULT_REGION,
+      account: process.env.CDK_DEFAULT_ACCOUNT,
+    },
+  });
+}
+
+if (['ONLY_PROD'].includes(process.env.CDK_MODE || '')) {
+  new Chapter5Stack(app, `Chapter5Stack-${process.env.NODE_ENV || ''}`, {
+    env: {
+      region: process.env.CDK_DEFAULT_REGION,
+      account: process.env.CDK_DEFAULT_ACCOUNT,
+    },
+  });
+}
+
+if (['ONLY_PIPELINE'].includes(process.env.CDK_MODE || '')) {
+  new Chapter5PipelineStack(app, 'Chapter5PipelineStack', {
+    env: {
+      region: process.env.CDK_DEFAULT_REGION,
+      account: process.env.CDK_DEFAULT_ACCOUNT,
+    },
+  });
+}
+
+```
+
+```ts
+// ./infrastructure/lib/chapter-5-pipeline-stack.ts
+/* ---------- External libraries ---------- */
+import { Stack, StackProps, Tags } from 'aws-cdk-lib';
+import { IRepository } from 'aws-cdk-lib/aws-ecr';
+import { IBaseService } from 'aws-cdk-lib/aws-ecs';
+import { IBucket } from 'aws-cdk-lib/aws-s3';
+import { Construct } from 'constructs';
+
+/* ---------- Constructs ---------- */
+import { PipelineStack } from './constructs/Pipeline/index';
+
+interface PipelineProps extends StackProps {
+  bucket?: IBucket;
+  repository?: IRepository;
+  expressAppService?: IBaseService;
+}
+
+export class Chapter5PipelineStack extends Stack {
+  constructor(scope: Construct, id: string, props: PipelineProps) {
+    super(scope, id, props);
+
+    /* ---------- Constructs ---------- */
+    new PipelineStack(this, 'Chapter5-Pipeline-Prod', {
+      environment: 'Production',
+    });
+
+    new PipelineStack(this, 'Chapter5-Pipeline-Dev', {
+      environment: 'Development',
+    });
+
+    /* ---------- Tags ---------- */
+    Tags.of(scope).add('Project', 'Chapter5-Pipeline');
+  }
+}
+
+```
+
+There is a horrid file at `./infrastructure/lib/constructs/Pipeline/index.ts` which explains the CodePipeline. Seriously, use GitHub Actions... Here's the GHA version of the same thing.
+
+```yml
+name: Chapter5 CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - [your-branch-name] # Replace with the name of your branch
+
+jobs:
+  backend-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+
+      - name: Install dependencies
+        run: |
+          cd server/
+          yarn install
+
+      - name: Test Backend
+        run: |
+          cd server/
+          yarn test
+
+  frontend-test:
+    needs: backend-test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+
+      - name: Install dependencies
+        run: |
+          cd web/
+          yarn install
+
+      - name: Test Frontend
+        run: |
+          cd web/
+          yarn test
+
+  build-and-deploy:
+    needs: frontend-test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+
+      - name: Install dependencies
+        run: |
+          cd web/
+          yarn install
+          cd ../server/
+          yarn install
+          cd ../infrastructure/
+          yarn install
+
+      - name: Build Web and Infrastructure
+        run: |
+          cd web/
+          [your-build-command] # Replace with your actual build command for the frontend
+          cd ../infrastructure/
+          [your-deploy-command] # Replace with your actual deploy command for the infrastructure
+```
+
+
+
+## Ch6: Testing & Troubleshooting AWS CDK Apps
