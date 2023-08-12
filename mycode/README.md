@@ -1113,7 +1113,7 @@ new s3.Bucket(this, 'Bucket', {
 
 ## [Ch7: Serverless Development with AWS CDK](https://www.youtube.com/watch?v=WyrXCXdfZqs&list=PLeLcvrwLe187CchI_3zTtZCAh3TSkXx1I&index=8)
 
-
+In every chapter, copy over the 3 .env files, install infrastructure, web and server folders. At infrastructure, `yarn build:frontend`
 
 
 
