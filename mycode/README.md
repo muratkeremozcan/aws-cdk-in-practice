@@ -74,6 +74,10 @@ You can use `synth` to compile/translate the TS code into a CloudFormation stack
 
 `cdk synth`
 
+You can have cdk log more for debugging:
+
+-v: Verbose -vv: Very verbose -vvv: Extremely verbose For instance, when deploying using cdk deploy, you can see a lot more information about the status of the deployment if you pass in one of the aforementioned flags, like so: `cdk deploy --profile cdk -vv`
+
 ## [Ch2: A starter project and core concepts](https://www.youtube.com/watch?v=ChUPD-MAjoA&list=PLeLcvrwLe187CchI_3zTtZCAh3TSkXx1I&index=2)
 
 Goal: Learn about the relationship between stack, construct, and how to instantiate the cdk app.
@@ -489,7 +493,7 @@ Chapter3Stack.FrontendURL = http://chapter-3-web-bucket-a9b56e63-4748-4151-ab72-
 Check the urls.
 Remove with `cdk destroy --profile cd`
 
-## Ch4: Complete the web app deployment with AWS CDK
+## [Ch4: Complete the web app deployment with AWS CDK](https://www.youtube.com/watch?v=zyzZcgsIFmc&list=PLeLcvrwLe187CchI_3zTtZCAh3TSkXx1I&index=4)
 
 * Set up DNS for both frontend and backend URLs using Route 53 
 
@@ -841,7 +845,7 @@ export class Chapter3Stack extends Stack {
 }
 ```
 
-## [Ch5: CI with CDK](https://www.youtube.com/watch?v=zyzZcgsIFmc&list=PLeLcvrwLe187CchI_3zTtZCAh3TSkXx1I&index=4)
+## [Ch5: CI with CDK](https://www.youtube.com/watch?v=KqmjUiIgNX0&list=PLeLcvrwLe187CchI_3zTtZCAh3TSkXx1I&index=5)
 
 TL, DR; Pretty much forget about this chapter if you don't care about CodePipeline.
 
@@ -1059,4 +1063,57 @@ jobs:
 
 
 
-## Ch6: Testing & Troubleshooting AWS CDK Apps
+## [Ch6: Testing & Troubleshooting AWS CDK Apps](https://www.youtube.com/watch?v=mWI8IYmnxZQ&list=PLeLcvrwLe187CchI_3zTtZCAh3TSkXx1I&index=7)
+
+Create a file `.env.testing` under infrastructure.
+
+CDK needs these environment variables to fill up certain values in the CloudFormation output. These same values could be fed into the stack with a --profile flag when deploying the stack, but since we are running tests using the jest and yarn commands here, we need to pass them in using environment variables.
+
+`aws sts get-caller-identity --query Account --output text` will get you the account id.
+
+```
+CDK_DEFAULT_ACCOUNT=****
+CDK_DEFAULT_REGION=us-east-1
+GITHUB_TOKEN=****
+```
+
+Install the web folder, and this time use `yarn build:dev`
+
+Install the server folder.
+
+Run `cdk synth` in infrastructure folder to generate the CF template (`yarn cdk:synth` script for repo specific modifiers).
+
+The author states about cdk testing:
+
+* Fine-grained assertions: These types of tests are similar to unit testing and are performed to detect regressions. They are conducted with the AWS CDK assertions module (found at https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.assertions-readme.html), which integrates with common testing frameworks such as Jest (https://jestjs.io/) and essentially tests that certain modules in our CDK app have certain properties – for example, a certain EC2 instance will have a specific AMI.
+*  Snapshot tests: Closer to integration testing, snapshot tests don’t care how you wire up your CDK application. They compare the output of a synthesized CDK stack to a previous state after changes have been applied. Snapshot tests are a great way to refactor your CDK application while making sure the outputs are the same (another way to deal with regression issues).
+
+There is a long file at `./mycode/chapter-6-testing-and-troubleshooting-cdk-applications/infrastructure/test/chapter-6-stack.test.ts`.  It is important to ask: What are we truly validating? **Are we inspecting our own business logic, or are we, in essence, evaluating the CDK's foundational ability to perform its basic function of generating a CloudFormation template**? It's analogous to buying a calculator and then continually testing if it can add two numbers correctly. Unless you're using the calculator in complex, unconventional ways (akin to introducing business logic in CDK), such tests seem superfluous.
+
+I think the only reason to unit test your CDK code (as opposed to the application) is if you have some complex business logic that requires testing - ie. there are logic involved, as opposed to just declaration which Serverless Framework and SAM doesn't really allow, except for when you use plugins with SLS.
+
+CDK brings with it the full expressive power of a programming language, so you can add all kinds of logic to your infra-as-code, although you shouldn't, but people do, because they can and when they do, and they aren't sure what their CDK code would create, then testing become necessary.
+
+**Troubleshooting cdk problems:**
+
+Use `-v` or `-vv`  (verbose, very verbose)
+`cdk deploy --profile cdk -vv`
+
+AWS CloudFormation has a hard limit of 500 resources per stack. Going over this limit will result in an error when creating the stack. Reduce the number of resources.
+
+Non-deleted resources: some resources that can hold user data are kept.
+
+To avoid this, you can set the removal policy of resources such as S3 buckets and DynamoDB tables to destroy so that they are automatically deleted when the stack is deleted: 
+
+```ts
+new s3.Bucket(this, 'Bucket', {
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
+})
+```
+
+## [Ch7: Serverless Development with AWS CDK](https://www.youtube.com/watch?v=WyrXCXdfZqs&list=PLeLcvrwLe187CchI_3zTtZCAh3TSkXx1I&index=8)
+
+
+
+
+

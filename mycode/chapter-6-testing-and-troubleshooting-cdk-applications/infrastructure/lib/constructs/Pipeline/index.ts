@@ -14,9 +14,6 @@ import {
 } from 'aws-cdk-lib/aws-codebuild';
 
 import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
-import { Topic } from 'aws-cdk-lib/aws-sns';
-import { SlackChannelConfiguration } from 'aws-cdk-lib/aws-chatbot';
-import { NotificationRule } from 'aws-cdk-lib/aws-codestarnotifications';
 import { pipelineConfig } from '../../../utils/pipelineConfig';
 
 interface Props {
@@ -237,32 +234,6 @@ export class PipelineStack extends Construct {
         }),
       ],
     });
-
-    const snsTopic = new Topic(
-      this,
-      `${props.environment}-Pipeline-SlackNotificationsTopic`,
-    );
-
-    const slackConfig = new SlackChannelConfiguration(this, 'SlackChannel', {
-      slackChannelConfigurationName: `${props.environment}-Pipeline-Slack-Channel-Config`,
-      slackWorkspaceId: workspaceId || '',
-      slackChannelId: channelId || '',
-    });
-
-    const rule = new NotificationRule(this, 'NotificationRule', {
-      source: this.pipeline,
-      events: [
-        'codepipeline-pipeline-pipeline-execution-failed',
-        'codepipeline-pipeline-pipeline-execution-canceled',
-        'codepipeline-pipeline-pipeline-execution-started',
-        'codepipeline-pipeline-pipeline-execution-resumed',
-        'codepipeline-pipeline-pipeline-execution-succeeded',
-        'codepipeline-pipeline-manual-approval-needed',
-      ],
-      targets: [snsTopic],
-    });
-
-    rule.addTarget(slackConfig);
 
     /* ---------- Tags ---------- */
     Tags.of(this).add('Context', `${tag}`);
