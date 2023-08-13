@@ -5,6 +5,7 @@ import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Runtime } from 'aws-cdk-lib/aws-lambda';
 import { Duration, aws_logs as logs } from 'aws-cdk-lib';
 
+// creates the lambda function
 export class HealthCheckLambda extends Construct {
   public readonly func: NodejsFunction;
 

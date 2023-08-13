@@ -1115,5 +1115,259 @@ new s3.Bucket(this, 'Bucket', {
 
 In every chapter, copy over the 3 .env files, install infrastructure, web and server folders. At infrastructure, `yarn build:frontend`
 
+Goal:
+
+* Ditch RDS and ECS for API Gateway and AWS Lambda
+* Creating and setting up an API gateway using CDK 
+* Creating and setting up some Lambda functions and how to connect them to the API gateway 
+* Creating a step function state machine linked to AWS SES 
+* Creating and setting up a DynamoDB table and how to automatically populate it during stack deployment
 
 
+Integrating a lambda with API gateways takes a few steps.
+
+1. Create the handler function
+
+2. Configuring the lambda
+   ```ts
+   // ./infrastructure/lib/constructs/Lambda/healthcheck/index.ts
+   /* ---------- External Libraries ---------- */
+   import * as path from 'path';
+   import { Construct } from 'constructs';
+   import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
+   import { Runtime } from 'aws-cdk-lib/aws-lambda';
+   import { Duration, aws_logs as logs } from 'aws-cdk-lib';
+   
+   // creates the lambda function
+   export class HealthCheckLambda extends Construct {
+     public readonly func: NodejsFunction;
+   
+     constructor(scope: Construct, id: string, props: any) {
+       super(scope, id);
+   
+       this.func = new NodejsFunction(scope, 'health-check-lambda', {
+         runtime: Runtime.NODEJS_16_X,
+         entry: path.resolve(__dirname, 'code', 'index.ts'),
+         handler: 'handler',
+         timeout: Duration.seconds(30),
+         environment: {},
+         logRetention: logs.RetentionDays.TWO_WEEKS,
+       });
+     }
+   }
+   ```
+
+   ```ts
+   // ./infrastructure/lib/constructs/Lambda/get/index.ts
+   /* ---------- External Libraries ---------- */
+   import * as path from 'path';
+   import { Construct } from 'constructs';
+   import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
+   import { Runtime } from 'aws-cdk-lib/aws-lambda';
+   import { Duration, aws_logs as logs } from 'aws-cdk-lib';
+   import { Vpc } from 'aws-cdk-lib/aws-ec2';
+   import { Table } from 'aws-cdk-lib/aws-dynamodb';
+   import { StateMachine } from 'aws-cdk-lib/aws-stepfunctions';
+   
+   interface IProps {
+     vpc?: Vpc;
+     dynamoTable: Table;
+     stateMachine: StateMachine;
+   }
+   
+   export class DynamoGet extends Construct {
+     public readonly func: NodejsFunction;
+   
+     constructor(scope: Construct, id: string, props: IProps) {
+       super(scope, id);
+   
+       const { dynamoTable, stateMachine } = props;
+   
+       this.func = new NodejsFunction(scope, 'dynamo-get', {
+         runtime: Runtime.NODEJS_16_X,
+         entry: path.resolve(__dirname, 'code', 'index.ts'),
+         handler: 'handler',
+         timeout: Duration.seconds(30),
+         environment: {
+           NODE_ENV: process.env.NODE_ENV as string,
+           TABLE_NAME: dynamoTable.tableName,
+           REGION: process.env.CDK_DEFAULT_REGION as string,
+           STATE_MACHINE_ARN: stateMachine.stateMachineArn,
+         },
+         logRetention: logs.RetentionDays.TWO_WEEKS,
+       });
+   
+       dynamoTable.grantReadData(this.func);
+       stateMachine.grantStartExecution(this.func);
+     }
+   }
+   ```
+
+   ```ts
+   // ./infrastructure/lib/constructs/Lambda/post/index.ts
+   /* ---------- External Libraries ---------- */
+   import * as path from 'path';
+   import { Construct } from 'constructs';
+   import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
+   import { Runtime } from 'aws-cdk-lib/aws-lambda';
+   import { Duration, aws_logs as logs } from 'aws-cdk-lib';
+   import { Vpc } from 'aws-cdk-lib/aws-ec2';
+   import { Table } from 'aws-cdk-lib/aws-dynamodb';
+   import { StateMachine } from 'aws-cdk-lib/aws-stepfunctions';
+   
+   interface IProps {
+     vpc?: Vpc;
+     dynamoTable: Table;
+     stateMachine: StateMachine;
+   }
+   
+   export class DynamoPost extends Construct {
+     public readonly func: NodejsFunction;
+   
+     constructor(scope: Construct, id: string, props: IProps) {
+       super(scope, id);
+   
+       const { dynamoTable, stateMachine } = props;
+   
+       this.func = new NodejsFunction(scope, 'dynamo-post', {
+         runtime: Runtime.NODEJS_16_X,
+         entry: path.resolve(__dirname, 'code', 'index.ts'),
+         handler: 'handler',
+         timeout: Duration.seconds(30),
+         environment: {
+           NODE_ENV: process.env.NODE_ENV as string,
+           TABLE_NAME: dynamoTable.tableName,
+           REGION: process.env.CDK_DEFAULT_REGION as string,
+           STATE_MACHINE_ARN: stateMachine.stateMachineArn,
+         },
+         logRetention: logs.RetentionDays.TWO_WEEKS,
+       });
+   
+       dynamoTable.grantWriteData(this.func);
+       stateMachine.grantStartExecution(this.func);
+     }
+   }
+   ```
+
+   
+
+3. At the API gateaway, instantiating and integrating the lambda
+   ```ts
+   // ./infrastructure/lib/constructs/API-GW/index.ts
+   import { Construct } from 'constructs';
+   import {
+     EndpointType,
+     LambdaIntegration,
+     RestApi,
+     SecurityPolicy,
+   } from 'aws-cdk-lib/aws-apigateway';
+   import * as targets from 'aws-cdk-lib/aws-route53-targets';
+   import { ARecord, RecordTarget } from 'aws-cdk-lib/aws-route53';
+   import { Table } from 'aws-cdk-lib/aws-dynamodb';
+   import { StateMachine } from 'aws-cdk-lib/aws-stepfunctions';
+   import { ACM } from '../ACM';
+   import { Route53 } from '../Route53';
+   
+   import config from '../../../../config.json';
+   import { HealthCheckLambda } from '../Lambda/healthcheck';
+   import { DynamoPost } from '../Lambda/post';
+   import { DynamoGet } from '../Lambda/get';
+   
+   interface Props {
+     acm: ACM;
+     route53: Route53;
+     dynamoTable: Table;
+     stateMachine: StateMachine;
+   }
+   
+   export class ApiGateway extends Construct {
+     constructor(scope: Construct, id: string, props: Props) {
+       super(scope, id);
+   
+       const { acm, route53, dynamoTable, stateMachine } = props;
+   
+       const backEndSubDomain =
+         process.env.NODE_ENV === 'Production'
+           ? config.backend_subdomain
+           : config.backend_dev_subdomain;
+   
+       // generates a RESTful API using a construct from API Gateway.
+       // we are configuring the API to utilize the certificate and domain name we created earlier
+       // and establishing a stage name in alignment with the deployed environment.
+       const restApi = new RestApi(this, 'chapter-7-rest-api', {
+         restApiName: `chapter-7-rest-api-${process.env.NODE_ENV || ''}`,
+         description: 'serverless api using lambda functions',
+         domainName: {
+           certificate: acm.certificate,
+           domainName: `${backEndSubDomain}.${config.domain_name}`,
+           endpointType: EndpointType.REGIONAL,
+           securityPolicy: SecurityPolicy.TLS_1_2,
+         },
+         deployOptions: {
+           stageName: process.env.NODE_ENV === 'Production' ? 'prod' : 'dev',
+         },
+       });
+   
+       // Lambdas:
+       // we are creating an instance of the Lambda function within the API Gateway’s index.ts file
+       // and using the LambdaIntegration() method to enable our Lambda to be integrated with API Gateway.
+       const healthCheckLambda = new HealthCheckLambda(
+         this,
+         'health-check-lambda-api-endpoint',
+         {},
+       );
+   
+       const dynamoPost = new DynamoPost(this, 'dynamo-post-lambda', {
+         dynamoTable,
+         stateMachine,
+       });
+   
+       const dynamoGet = new DynamoGet(this, 'dynamo-get-lambda', {
+         dynamoTable,
+         stateMachine,
+       });
+   
+       // Integrations:
+       const healthCheckLambdaIntegration = new LambdaIntegration(
+         healthCheckLambda.func,
+       );
+   
+       const dynamoPostIntegration = new LambdaIntegration(dynamoPost.func);
+   
+       const dynamoGetIntegration = new LambdaIntegration(dynamoGet.func);
+   
+       // creating a health check path in the REST API.
+       // The addResource() function creates the path in the API
+       // Resources (Path)
+       const healthcheck = restApi.root.addResource('healthcheck');
+       const rootResource = restApi.root;
+       // Methods
+       healthcheck.addMethod('GET', healthCheckLambdaIntegration);
+       healthcheck.addCorsPreflight({
+         allowOrigins: ['*'],
+         allowHeaders: ['*'],
+         allowMethods: ['*'],
+         statusCode: 204,
+       });
+   
+       rootResource.addMethod('POST', dynamoPostIntegration);
+       rootResource.addMethod('GET', dynamoGetIntegration);
+       rootResource.addCorsPreflight({
+         allowOrigins: ['*'],
+         allowHeaders: ['*'],
+         allowMethods: ['*'],
+         statusCode: 204,
+       });
+   
+       // this allows us to use a customized backend subdomain as a DNS alias for the API Gateway URL,
+       //  as we did with ECS and its load balancer.
+       new ARecord(this, 'BackendAliasRecord', {
+         zone: route53.hosted_zone,
+         target: RecordTarget.fromAlias(new targets.ApiGateway(restApi)),
+         recordName: `${backEndSubDomain}.${config.domain_name}`,
+       });
+     }
+   }
+   ```
+
+   In SLS, you don't need step3, and your config in step2 would be in serverless.yml.

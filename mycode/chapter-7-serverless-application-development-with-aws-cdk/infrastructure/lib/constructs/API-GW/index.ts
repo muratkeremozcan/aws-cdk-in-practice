@@ -35,6 +35,9 @@ export class ApiGateway extends Construct {
         ? config.backend_subdomain
         : config.backend_dev_subdomain;
 
+    // generates a RESTful API using a construct from API Gateway.
+    // we are configuring the API to utilize the certificate and domain name we created earlier
+    // and establishing a stage name in alignment with the deployed environment.
     const restApi = new RestApi(this, 'chapter-7-rest-api', {
       restApiName: `chapter-7-rest-api-${process.env.NODE_ENV || ''}`,
       description: 'serverless api using lambda functions',
@@ -50,6 +53,8 @@ export class ApiGateway extends Construct {
     });
 
     // Lambdas:
+    // we are creating an instance of the Lambda function within the API Gateway’s index.ts file
+    // and using the LambdaIntegration() method to enable our Lambda to be integrated with API Gateway.
     const healthCheckLambda = new HealthCheckLambda(
       this,
       'health-check-lambda-api-endpoint',
@@ -75,10 +80,11 @@ export class ApiGateway extends Construct {
 
     const dynamoGetIntegration = new LambdaIntegration(dynamoGet.func);
 
+    // creating a health check path in the REST API.
+    // The addResource() function creates the path in the API
     // Resources (Path)
     const healthcheck = restApi.root.addResource('healthcheck');
     const rootResource = restApi.root;
-
     // Methods
     healthcheck.addMethod('GET', healthCheckLambdaIntegration);
     healthcheck.addCorsPreflight({
@@ -97,7 +103,8 @@ export class ApiGateway extends Construct {
       statusCode: 204,
     });
 
-    // ARecord:
+    // this allows us to use a customized backend subdomain as a DNS alias for the API Gateway URL,
+    //  as we did with ECS and its load balancer.
     new ARecord(this, 'BackendAliasRecord', {
       zone: route53.hosted_zone,
       target: RecordTarget.fromAlias(new targets.ApiGateway(restApi)),
