@@ -1548,3 +1548,254 @@ export class StepFunction extends Construct {
 
 ```
 
+Instantiating all the resources 
+
+```ts
+// ./infrastructure/lib/chapter-7-stack.ts
+import { Stack, StackProps } from 'aws-cdk-lib';
+import { Vpc } from 'aws-cdk-lib/aws-ec2';
+import { Construct } from 'constructs';
+import { S3 } from './constructs/S3';
+import { Route53 } from './constructs/Route53';
+import { ACM } from './constructs/ACM';
+import { ApiGateway } from './constructs/API-GW';
+import { DynamoDB } from './constructs/DynamoDB';
+import { StepFunction } from './constructs/Step-Function';
+
+export class Chapter7Stack extends Stack {
+  public readonly acm: ACM;
+
+  public readonly route53: Route53;
+
+  public readonly s3: S3;
+
+  public readonly vpc: Vpc;
+
+  public readonly dynamo: DynamoDB;
+
+  public readonly stepFunction: StepFunction;
+
+  constructor(scope: Construct, id: string, props?: StackProps) {
+    super(scope, id, props);
+
+    this.route53 = new Route53(this, `Route53-${process.env.NODE_ENV || ''}`);
+
+    this.acm = new ACM(this, `ACM-${process.env.NODE_ENV || ''}`, {
+      hosted_zone: this.route53.hosted_zone,
+    });
+
+    this.s3 = new S3(this, `S3-${process.env.NODE_ENV || ''}`, {
+      acm: this.acm,
+      route53: this.route53,
+    });
+
+    this.dynamo = new DynamoDB(this, `Dynamo-${process.env.NODE_ENV || ''}`);
+
+    this.stepFunction = new StepFunction(
+      this,
+      `Step-Function-${process.env.NODE_ENV || ''}`,
+      {},
+    );
+
+    new ApiGateway(this, `Api-Gateway-${process.env.NODE_ENV || ''}`, {
+      route53: this.route53,
+      acm: this.acm,
+      dynamoTable: this.dynamo.table,
+      stateMachine: this.stepFunction.stateMachine,
+    });
+  }
+}
+```
+
+## Ch8: Streamlined serverless development (Localstack)
+
+Here, the author repurposing the lambda handlers to run both in the AWS environment and the local Express server. This approach aims to improve the local development experience. This is uncommon for many developers and may not scale well in larger, more complex projects.
+
+```ts
+// ./server/src/index.ts
+import express from 'express';
+import dotenv from 'dotenv';
+import cors from 'cors';
+
+import { handler as PostHandler } from '../../infrastructure/lib/constructs/Lambda/post/lambda';
+import { handler as GetHandler } from '../../infrastructure/lib/constructs/Lambda/get/lambda';
+
+const { parsed } = dotenv.config();
+
+const port = parsed?.PORT || 80;
+
+const createApp = () => {
+  const app = express();
+
+  app.use(cors());
+  app.use(express.json());
+
+  app.post('/', async (req, res) => {
+    const event = {
+      body: JSON.stringify(req.body),
+    };
+
+    const { statusCode, body } = await PostHandler(event);
+
+    return res.status(statusCode).send(body);
+  });
+
+  app.get('/', async (_req, res) => {
+    const { statusCode, body } = await GetHandler();
+
+    return res.status(statusCode).send(body);
+  });
+
+  app.get('/healthcheck', async (_req, res) => {
+    return res.status(200).send(JSON.stringify('OK'));
+  });
+
+  return app;
+};
+
+const app = createApp();
+
+const server = app.listen(port, () => {
+  console.info(`Server is listening on port ${port}`);
+});
+
+server.keepAliveTimeout = 60;
+server.headersTimeout = 60;
+
+createApp();
+
+export default createApp;
+```
+
+
+
+LocalStack allows us to mimic the functionality of AWS services, such as DynamoDB and S3, on our own machine. This way, we can test and develop our cloud and serverless apps offline. 
+
+Need Python and pip installed for localstack. Need to installed `aws-cdk-local`
+
+```bash
+python3 -m pip install localstack
+localstack start
+npm install -g aws-cdk-local 
+```
+
+Within the `Chapter8Stack` class, logic has been added to conditionally deploy resources based on whether it's running locally or in the real AWS environment.
+
+If the environment variable `NODE_ENV` is set to 'CDKLocal', it means the stack is running locally. In this case, only a DynamoDB table is instantiated. Otherwise, other resources such as Route53, ACM, S3, and ApiGateway are deployed.
+
+```ts
+// ./infrastructure/lib/chapter-8-stack.ts
+
+constructor(scope: Construct, id: string, props?: StackProps) {
+    super(scope, id, props);
+
+    const isCDKLocal = process.env.NODE_ENV === 'CDKLocal';
+
+    this.dynamo = new DynamoDB(this, `Dynamo-${process.env.NODE_ENV || ''}`);
+
+    if (isCDKLocal) return;
+```
+
+**Deployment to Local AWS Environment**:
+
+- By running `yarn cdklocal bootstrap`, you set up the necessary environment on your local cloud.
+- Subsequently, `yarn cdklocal deploy` deploys the stack to this local cloud.
+- any resources set up within LocalStack are ephemeral. If you stop LocalStack, you lose those resources.
+
+```bash
+yarn cdklocal bootstrap
+yarn cdklocal deploy
+```
+
+**Configuring DynamoDB to Work with LocalStack**:
+
+- By default, LocalStack's DynamoDB service runs on port 4588. To ensure that your local server communicates with this local instance instead of the actual AWS DynamoDB service, you need to set a custom endpoint.
+- In the lambda functions for both POST and GET methods, the endpoint for the DynamoDB client (`DocumentClient()`) is conditionally set based on the presence of an environment variable `DYNAMODB_ENDPOINT`. If this environment variable exists, it will use that (which in the local context points to LocalStack). Otherwise, it defaults to the real AWS DynamoDB endpoint.
+
+```ts
+// ./infrastructure/lib/constructs/Lambda/post/lambda/index.ts
+import { DynamoDB } from 'aws-sdk';
+import { v4 as uuidv4 } from 'uuid';
+import { PostEvent, Todo } from 'customTypes/index';
+import { httpResponse } from '../../handlers/httpResponse';
+
+export const handler = async (event: PostEvent) => {
+  try {
+    const { todo_name, todo_description, todo_completed } = JSON.parse(
+      event.body,
+    ).todo;
+    const tableName = process.env.TABLE_NAME as string;
+    const awsRegion = process.env.REGION || 'us-east-1';
+
+    // By default, LocalStack's DynamoDB service runs on port 4588.
+    // To ensure that your local server communicates with this local instance instead of the actual AWS DynamoDB service,
+    //  you need to set a custom endpoint.
+    // In the lambda functions for both POST and GET methods,
+    //  the endpoint for the DynamoDB client (`DocumentClient()`) is conditionally
+    // set based on the presence of an environment variable `DYNAMODB_ENDPOINT`.
+    // If this environment variable exists, it will use that (which in the local context points to LocalStack).
+    // Otherwise, it defaults to the real AWS DynamoDB endpoint.
+    const dynamoDB = new DynamoDB.DocumentClient({
+      region: awsRegion,
+      endpoint:
+        process.env.DYNAMODB_ENDPOINT ||
+        `https://dynamodb.${awsRegion}.amazonaws.com`,
+    });
+
+    const todo: Todo = {
+      id: uuidv4(),
+      todo_completed,
+      todo_description,
+      todo_name,
+    };
+
+    await dynamoDB.put({ TableName: tableName, Item: todo }).promise();
+
+    return httpResponse(200, JSON.stringify({ todo }));
+  } catch (error: any) {
+    console.error(error);
+
+    return httpResponse(400, JSON.stringify({ message: error.message }));
+  }
+};
+```
+
+**Setting Up Environment Variables for Local Server**:
+
+- An environment file (`.env`) should be created in the `server/` directory. This file contains key environment variables like `PORT`, `REGION`, `TABLE_NAME`, and importantly, `DYNAMODB_ENDPOINT` which is set to LocalStack's endpoint for DynamoDB (usually `http://localhost:4566`).
+
+  ```
+  PORT=3000
+  REGION=us-east-1
+  TABLE_NAME=todolist-cdklocal
+  DYNAMODB_ENDPOINT=http://localhost:4566
+  AWS_PROFILE=cdk
+  ```
+
+- Even though you don't need real AWS access keys to run LocalStack, it requires some string values for the `access key ID` and `secret access key` properties to simulate AWS calls.
+- You have two options to provide these credentials:
+  1. Include them in your `.env` file.
+  2. Export your AWS profile, like in previous steps.
+- Without one of these options, LocalStack might throw an error: `Missing credentials in config`.
+
+**Running the Local Development Server:**
+
+- In the `server/` directory, you run the command: `$ yarn dev`. (Uses `ts-node-dev` for serving and updating the server upon file changes)
+- This starts the local development server.
+- Once the server is up and running, a message is displayed indicating its operational status
+
+**Testing the Local Server:**
+
+- With the local server operational, you can make test requests to `localhost:3000`.
+  1. Sending a request to `/healthcheck` checks if the server is functioning correctly (reference: `Figure 8.7`).
+  2. Using a `POST` request to the root `/` endpoint will create a table item (reference: `Figure 8.8`).
+  3. Sending a `GET` request to the root `/` endpoint will retrieve all items from the table (reference: `Figure 8.9`).
+
+The cons of localstack:
+
+* AWS resources may not fully be replicated 1:1, and some are not covered
+* Can hide common failure modes such as **misconfigured permissions and  resource policies**.
+* **Maintenance Overhead**: Keeping LocalStack updated and ensuring it remains compatible with the latest AWS service changes or new services can be an ongoing task.
+* Setting up LocalStack can be intricate, especially for complex architectures. The need to modify endpoints in the codebase (e.g., pointing to a local DynamoDB endpoint instead of the real AWS one) can be burdensome.
+
+TL, DR; more work than it is worth.
