@@ -1799,3 +1799,5 @@ The cons of localstack:
 * Setting up LocalStack can be intricate, especially for complex architectures. The need to modify endpoints in the codebase (e.g., pointing to a local DynamoDB endpoint instead of the real AWS one) can be burdensome.
 
 TL, DR; more work than it is worth.
+
+## Ch9:
