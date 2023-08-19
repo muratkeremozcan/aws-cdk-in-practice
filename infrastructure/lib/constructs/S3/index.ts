@@ -1,4 +1,8 @@
-import {Bucket} from 'aws-cdk-lib/aws-s3'
+import {
+  BlockPublicAccess,
+  Bucket,
+  BucketAccessControl,
+} from 'aws-cdk-lib/aws-s3'
 import {BucketDeployment, Source} from 'aws-cdk-lib/aws-s3-deployment'
 import {Construct} from 'constructs'
 import {resolve} from 'path'
@@ -38,21 +42,21 @@ export class S3 extends Construct {
   constructor(scope: Construct, id: string, props: Props) {
     super(scope, id)
 
-    const unique_id = 'akemxdjqkl'
+    const unique_id = 'akemxdjqkl123'
 
     this.web_bucket = new Bucket(
       scope,
       `WebBucket-${process.env.NODE_ENV || ''}`,
       {
-        // bucketName: `web-bucket-${unique_id}-${(
-        //   process.env.NODE_ENV || ''
-        // ).toLocaleLowerCase()}`,
-        bucketName: `web-bucket-${unique_id}`,
+        bucketName: `website-bucket-${unique_id}-${(
+          process.env.NODE_ENV || ''
+        ).toLocaleLowerCase()}`,
         websiteIndexDocument: 'index.html',
         websiteErrorDocument: 'index.html',
         publicReadAccess: true,
+        blockPublicAccess: BlockPublicAccess.BLOCK_ACLS,
+        accessControl: BucketAccessControl.BUCKET_OWNER_FULL_CONTROL,
         removalPolicy: RemovalPolicy.DESTROY,
-        // so that the bucket is deleted when the stack is destroyed, even though not empty
         autoDeleteObjects: true,
       },
     )
@@ -60,7 +64,7 @@ export class S3 extends Construct {
     // we specify where to get the build folder from
     this.web_bucket_deployment = new BucketDeployment(
       scope,
-      'WebBucketDeployment',
+      'WebSiteBucketDeployment',
       {
         sources: [
           Source.asset(

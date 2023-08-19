@@ -1,3 +1,11 @@
+```
+yarn cdk:dev deploy --profile cdk # deploy
+yarn cdk:dev destroy --profile cdk # remove
+```
+
+Todo: add full list of scripts later
+Todo: temporary branch
+
 ## ## [Ch1 Getting started with IaC and AWS CDK](https://www.youtube.com/watch?v=0iemvZUdX-Y&list=PLeLcvrwLe187CchI_3zTtZCAh3TSkXx1I&index=2)
 
 

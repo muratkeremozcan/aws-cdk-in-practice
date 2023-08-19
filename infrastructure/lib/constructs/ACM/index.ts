@@ -23,7 +23,7 @@ export class ACM extends Construct {
 
     this.certificate = new DnsValidatedCertificate(scope, 'Certificate', {
       domainName: config.domain_name,
-      region: 'us-east-1',
+      region: 'us-east-1', // <-- This needs to be 'us-east-1' for CloudFront
       // The Route 53 hosted zone that will be used to perform the DNS validation
       hostedZone: props.hosted_zone,
       // This is an array of alternative domain names that the certificate will also cover.
