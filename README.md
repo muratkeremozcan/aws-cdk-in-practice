@@ -6,11 +6,20 @@
 
 https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
 
+```bash
+curl "https://awscli.amazonaws.com/AWSCLIV2.pkg" -o "AWSCLIV2.pkg"
+sudo installer -pkg AWSCLIV2.pkg -target /
+
+# verify
+which aws
+aws --version
+```
+
 ### Configure CDK profile
 
 `aws configure --profile cdk`
 
-Need access key id, secret access key, region (us-east-1), and output as (json).
+Need access key id, secret access key, region (us-east-1), and output (make it json).
 
 You essentially create a new named profile called `cdk`. This profile will have its own set of credentials (Access Key ID and Secret Access Key) and configuration settings (like the default region and output format).
 
@@ -19,6 +28,10 @@ Appending `--profile cdk` will specify to use this profile in the upcoming comma
 ### Create CDK app
 
 `cdk init app --language typescript`
+
+If it fails to install, that's because of the proprietary registry. So, do the install step manually specifying the registry 
+
+`yarn install --registry https://registry.yarnpkg.com  `
 
 ### Creating a containerized web app
 
@@ -81,8 +94,6 @@ You can have cdk log more for debugging:
 ## [Ch2: A starter project and core concepts](https://www.youtube.com/watch?v=ChUPD-MAjoA&list=PLeLcvrwLe187CchI_3zTtZCAh3TSkXx1I&index=2)
 
 Goal: Learn about the relationship between stack, construct, and how to instantiate the cdk app.
-
-
 
 Create some folders; web, infrastructure. Init cdk on infrastructure directory.
 
@@ -186,6 +197,7 @@ new WebStack(app, "WebStack", {});
 
 Test by deploying and destroying
 ```bash
+cdk synth
 cdk deploy --profile cdk
 cdk destroy --profile cdk
 ```
@@ -258,6 +270,8 @@ export class Chapter3Stack extends Stack {
 
 To spin up a DDB table, we just instantiate the `Table` class from `aws-cdk-lib/aws-dynamodb`.
 
+Useful if you configure and deploy a DDB table.
+
 ```ts
 // ./infrastructure/lib/constructs/Dynamodb.ts
 import {Construct} from 'constructs'
@@ -289,6 +303,7 @@ export class Dynamodb extends Construct {
 ```
 
 S3 has the capability to act as a content server for our files, and our front end app is a single page app.
+Useful if you ever use CDK to deploy a front end single page application to a S3 bucket.
 
 ```ts
 // ./infrastructure/lib/constructs/S3.ts
@@ -340,7 +355,10 @@ export class S3 extends Construct {
 }
 ```
 
-Comments included below for what the code does:
+Comments included below for what the code does.
+
+Useful if you ever work with Elastic Container Service (ECS).
+
 ```ts
 // ./infrastructure/lib/constructs/ECS.ts
 

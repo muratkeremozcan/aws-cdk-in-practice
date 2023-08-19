@@ -1,9 +1,8 @@
 {
-  "name": "chapter-8",
+  "name": "infrastructure",
   "version": "0.1.0",
-  "license": "MIT",
   "bin": {
-    "chapter-8": "bin/chapter-8.js"
+    "infrastructure": "bin/infrastructure.js"
   },
   "scripts": {
     "build:frontend": "cd ../web && yarn install && yarn build:dev",

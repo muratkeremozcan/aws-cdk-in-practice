@@ -9,7 +9,7 @@ export class WebStack extends Stack {
 
     // the constructs that defines your stack goes here
 
-    // does not mattwhether there is an assignment to a variable or not
+    // does not matter whether there is an assignment to a variable or not
     // the instantiation causes the construct to be created
     new S3Bucket(this, 'MyRemovableBucket', {
       environment: 'development',
