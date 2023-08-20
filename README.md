@@ -6,6 +6,10 @@ yarn cdk:dev destroy --profile cdk # remove
 Todo: add full list of scripts later
 Todo: temporary branch
 
+
+
+`aws sts get-caller-identity --query Account --output text` will get you the account id.
+
 ## ## [Ch1 Getting started with IaC and AWS CDK](https://www.youtube.com/watch?v=0iemvZUdX-Y&list=PLeLcvrwLe187CchI_3zTtZCAh3TSkXx1I&index=2)
 
 
@@ -1089,7 +1093,7 @@ jobs:
 
 
 
-## [Ch6: Testing & Troubleshooting AWS CDK Apps](https://www.youtube.com/watch?v=mWI8IYmnxZQ&list=PLeLcvrwLe187CchI_3zTtZCAh3TSkXx1I&index=7)
+## [Ch6: Testing & Troubleshooting AWS CDK Apps - testing cdk](https://www.youtube.com/watch?v=mWI8IYmnxZQ&list=PLeLcvrwLe187CchI_3zTtZCAh3TSkXx1I&index=7)
 
 Create a file `.env.testing` under infrastructure.
 
