@@ -1,29 +1,29 @@
-import { Construct } from 'constructs';
-import { JsonPath, StateMachine } from 'aws-cdk-lib/aws-stepfunctions';
-import { CallAwsService } from 'aws-cdk-lib/aws-stepfunctions-tasks';
-import { Duration, Stack } from 'aws-cdk-lib';
-import { Effect, Policy, PolicyStatement } from 'aws-cdk-lib/aws-iam';
+import {Construct} from 'constructs'
+import {JsonPath, StateMachine} from 'aws-cdk-lib/aws-stepfunctions'
+import {CallAwsService} from 'aws-cdk-lib/aws-stepfunctions-tasks'
+import {Duration, Stack} from 'aws-cdk-lib'
+import {Effect, Policy, PolicyStatement} from 'aws-cdk-lib/aws-iam'
 import {
   AwsCustomResource,
   AwsCustomResourcePolicy,
   PhysicalResourceId,
-} from 'aws-cdk-lib/custom-resources';
+} from 'aws-cdk-lib/custom-resources'
 
 export class StepFunction extends Construct {
-  readonly stateMachine: StateMachine;
+  readonly stateMachine: StateMachine
 
   constructor(scope: Construct, id: string, _props: Record<string, never>) {
-    super(scope, id);
+    super(scope, id)
 
     // In this part of the code, we set up the SES email identity.
     // Keep in mind that you’ll need to add an email address to the .env file you’re using.
     // This step is crucial so that SES can send an email using the designated email address.
     // Once you deploy the stack, you’ll receive a verification email from Amazon.
-    const emailAddress = process.env.EMAIL_ADDRESS;
+    const emailAddress = process.env.EMAIL_ADDRESS
 
     const resourceArn = `arn:aws:ses:${Stack.of(this).region}:${
       Stack.of(this).account
-    }:identity/${emailAddress}`;
+    }:identity/${emailAddress}`
 
     const verifyEmailIdentityPolicy = AwsCustomResourcePolicy.fromStatements([
       new PolicyStatement({
@@ -31,7 +31,7 @@ export class StepFunction extends Construct {
         effect: Effect.ALLOW,
         resources: ['*'],
       }),
-    ]);
+    ])
 
     // Create a new SES Email Identity
     new AwsCustomResource(
@@ -58,7 +58,7 @@ export class StepFunction extends Construct {
         policy: verifyEmailIdentityPolicy,
         logRetention: 7,
       },
-    );
+    )
 
     // This step will directly link to SES using its ARN.
     // The body must be a string in HTML format,
@@ -68,7 +68,7 @@ export class StepFunction extends Construct {
     // containing a property named message with whatever message we want,
     // in this case indicating where the step function was triggered from.
     const emailBody =
-      '<h2>Chapter 7 Step Function.</h2><p>This step function was triggered by: <strong>{}</strong>.';
+      '<h2>Chapter 7 Step Function.</h2><p>This step function was triggered by: <strong>{}</strong>.'
 
     const sendEmail = new CallAwsService(
       this,
@@ -101,13 +101,13 @@ export class StepFunction extends Construct {
         },
         iamResources: [resourceArn],
       },
-    );
+    )
 
     // configure the state machine
     const stateMachine = new StateMachine(this, 'State-Machine', {
       definition: sendEmail,
       timeout: Duration.minutes(5),
-    });
+    })
 
     stateMachine.role.attachInlinePolicy(
       new Policy(this, `SESPermissions-${process.env.NODE_ENV || ''}`, {
@@ -118,8 +118,8 @@ export class StepFunction extends Construct {
           }),
         ],
       }),
-    );
+    )
 
-    this.stateMachine = stateMachine;
+    this.stateMachine = stateMachine
   }
 }

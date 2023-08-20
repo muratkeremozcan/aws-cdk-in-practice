@@ -1,9 +1,11 @@
-import {Stack} from 'aws-cdk-lib'
-import type {StackProps} from 'aws-cdk-lib'
-import type {Construct} from 'constructs'
+import {Stack, StackProps} from 'aws-cdk-lib'
+import {Construct} from 'constructs'
 import {S3} from './constructs/S3'
 import {Route53} from './constructs/Route53'
 import {ACM} from './constructs/ACM'
+import {ApiGateway} from './constructs/API-GW'
+import {DynamoDB} from './constructs/DynamoDB'
+import {StepFunction} from './constructs/Step-Function'
 
 export class FinalStack extends Stack {
   public readonly acm: ACM
@@ -12,8 +14,14 @@ export class FinalStack extends Stack {
 
   public readonly s3: S3
 
+  public readonly dynamo: DynamoDB
+
+  public readonly stepFunction: StepFunction
+
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props)
+
+    this.dynamo = new DynamoDB(this, `Dynamo-${process.env.NODE_ENV || ''}`)
 
     // the constructs that defines your stack goes here
     this.route53 = new Route53(this, 'Route53')
@@ -28,6 +36,12 @@ export class FinalStack extends Stack {
     this.s3 = new S3(this, 'S3', {
       acm: this.acm,
       route53: this.route53,
+    })
+
+    new ApiGateway(this, `Api-Gateway-${process.env.NODE_ENV || ''}`, {
+      route53: this.route53,
+      acm: this.acm,
+      dynamoTable: this.dynamo.table,
     })
   }
 }

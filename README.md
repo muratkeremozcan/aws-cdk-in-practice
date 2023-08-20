@@ -1,12 +1,18 @@
-```
+```bash
 yarn cdk:dev deploy --profile cdk # deploy
 yarn cdk:dev destroy --profile cdk # remove
 ```
 
-Todo: add full list of scripts later
+
 Todo: temporary branch
 
+One time scripts:
 
+```bash
+cdk init app --language typescript # scaffold cdk 
+aws configure --profile cdk # configure the cdk profile
+cdk bootstrap --profile cdk # configure cdk for that region
+```
 
 `aws sts get-caller-identity --query Account --output text` will get you the account id.
 
@@ -1701,7 +1707,7 @@ export default createApp;
 
 LocalStack allows us to mimic the functionality of AWS services, such as DynamoDB and S3, on our own machine. This way, we can test and develop our cloud and serverless apps offline. 
 
-Need Python and pip installed for localstack. Need to installed `aws-cdk-local`
+Need Python and pip installed for localstack. Need to install `aws-cdk-local`
 
 ```bash
 python3 -m pip install localstack
@@ -1830,4 +1836,4 @@ The cons of localstack:
 
 TL, DR; more work than it is worth.
 
-## Ch9:
+## 

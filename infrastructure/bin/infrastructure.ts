@@ -7,13 +7,13 @@ const app = new cdk.App()
 
 if (['ONLY_DEV'].includes(process.env.CDK_MODE || '')) {
   new FinalStack(app, `FinalStack-${process.env.NODE_ENV || ''}`, {
-    env: {region: 'us-west-1', account: process.env.CDK_DEFAULT_ACCOUNT},
+    env: {region: 'us-east-1', account: process.env.CDK_DEFAULT_ACCOUNT},
   })
 }
 
 if (['ONLY_PROD'].includes(process.env.CDK_MODE || '')) {
   new FinalStack(app, `FinalStack-${process.env.NODE_ENV || ''}`, {
-    env: {region: 'us-west-1', account: process.env.CDK_DEFAULT_ACCOUNT},
+    env: {region: 'us-east-1', account: process.env.CDK_DEFAULT_ACCOUNT},
   })
 }
 
@@ -21,7 +21,7 @@ if (['ONLY_PROD'].includes(process.env.CDK_MODE || '')) {
 
 // new FinalStack(app, `FinalStack-${envName}`, {
 //   env: {
-//     region: 'us-west-1',
+//     region: 'us-east-1',
 //     account: process.env.CDK_DEFAULT_ACCOUNT,
 //   },
 // })

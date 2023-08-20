@@ -42,13 +42,13 @@ export class S3 extends Construct {
   constructor(scope: Construct, id: string, props: Props) {
     super(scope, id)
 
-    const unique_id = 'akemxdjqkl123'
+    const unique_id = 'akemxdjqkl666'
 
     this.web_bucket = new Bucket(
       scope,
-      `WebBucket-${process.env.NODE_ENV || ''}`,
+      `murat-web-bucket-${process.env.NODE_ENV || ''}`,
       {
-        bucketName: `website-bucket-${unique_id}-${(
+        bucketName: `murat-web-bucket-${unique_id}-${(
           process.env.NODE_ENV || ''
         ).toLocaleLowerCase()}`,
         websiteIndexDocument: 'index.html',
