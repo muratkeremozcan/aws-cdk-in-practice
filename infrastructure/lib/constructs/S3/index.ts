@@ -44,13 +44,33 @@ export class S3 extends Construct {
 
     const unique_id = 'akemxdjqkl666'
 
+    const deployment = process.env.NODE_ENV || ''
+    let bucketSuffix = deployment // default
+
+    switch (deployment) {
+      case 'dev':
+        bucketSuffix = 'dev'
+        break
+      case 'stage':
+        bucketSuffix = 'stage'
+        break
+      case 'prod':
+        bucketSuffix = 'prod'
+        break
+      default:
+        bucketSuffix = `${deployment}`
+        break
+    }
+
     this.web_bucket = new Bucket(
       scope,
-      `murat-web-bucket-${process.env.NODE_ENV || ''}`,
+      // `murat-web-bucket-${process.env.NODE_ENV || ''}`,
+      `murat-web-bucket-${bucketSuffix}`,
       {
-        bucketName: `murat-web-bucket-${unique_id}-${(
-          process.env.NODE_ENV || ''
-        ).toLocaleLowerCase()}`,
+        // bucketName: `murat-web-bucket-${unique_id}-${(
+        //   process.env.NODE_ENV || ''
+        // ).toLocaleLowerCase()}`,
+        bucketName: `murat-web-bucket-${unique_id}-${bucketSuffix}`,
         websiteIndexDocument: 'index.html',
         websiteErrorDocument: 'index.html',
         publicReadAccess: true,
