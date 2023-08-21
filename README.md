@@ -1,10 +1,8 @@
 ```bash
-yarn cdk:dev deploy --profile cdk # deploy
-yarn cdk:dev destroy --profile cdk # remove
+yarn cdk:dev deploy 
+yarn cdk:dev destroy
+yarn cdk:synth
 ```
-
-
-Todo: temporary branch
 
 One time scripts:
 

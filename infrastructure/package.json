@@ -9,12 +9,9 @@
     "build": "tsc",
     "watch": "tsc -w",
     "test": "yarn build && jest",
-    "cdk:dev": "cross-env NODE_ENV=Development DOTENV_CONFIG_PATH=./.env.development CDK_MODE=ONLY_DEV cdk",
-    "cdk:testing": "cross-env NODE_ENV=Development DOTENV_CONFIG_PATH=./.env.testing CDK_MODE=ONLY_DEV cdk",
-    "cdk": "cross-env NODE_ENV=Production DOTENV_CONFIG_PATH=./.env.production CDK_MODE=ONLY_PROD cdk",
-    "cdk:pipeline": "cross-env CDK_MODE=ONLY_PIPELINE cdk",
-    "cdk:local": "cross-env NODE_ENV=CDKLocal DOTENV_CONFIG_PATH=./.env.development CDK_MODE=ONLY_DEV cdklocal",
-    "cdk:synth": "cross-env NODE_ENV=Development CDK_MODE=ONLY_DEV cdk synth"
+    "cdk:dev": "cross-env NODE_ENV=Development DOTENV_CONFIG_PATH=./.env.development CDK_MODE=ONLY_DEV cdk --profile cdk",
+    "cdk:prod": "cross-env NODE_ENV=Production DOTENV_CONFIG_PATH=./.env.production CDK_MODE=ONLY_PROD cdk",
+    "cdk:synth": "yarn cdk:dev synth"
   },
   "devDependencies": {
     "@types/aws-sdk": "2.7.0",
@@ -30,6 +27,7 @@
     "@typescript-eslint/parser": "5.31.0",
     "aws-cdk": "2.34.0",
     "cross-env": "7.0.3",
+    "dotenv-cli": "^7.3.0",
     "eslint": "8.20.0",
     "eslint-config-airbnb-base": "15.0.0",
     "eslint-config-prettier": "8.5.0",
