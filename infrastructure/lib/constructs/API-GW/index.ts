@@ -70,8 +70,8 @@ const getConfigForEnv = (bName: string, env = 'dev'): EnvConfig => {
       stageName: 'prod',
     },
     temp: {
-      subdomain: `temp-${bName}`,
-      stageName: 'temp',
+      subdomain: `${bName}-${config.backend_subdomain}`,
+      stageName: `${bName}`,
     },
   }
 
