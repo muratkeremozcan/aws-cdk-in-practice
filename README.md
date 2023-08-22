@@ -1,18 +1,59 @@
+## One time setup scripts:
+
+These scripts are generally run once to set up or scaffold the necessary environment:
+
+```bash
+cdk init app --language typescript # scaffold cdk 
+aws configure --profile cdk # configure the cdk profile
+cdk bootstrap --profile cdk # configure cdk for that region
+yarn build:frontend # installs and builds the front-end so it can be deployed
+```
+
+## Deployment
+
+### Dev Environment
+
 ```bash
 yarn cdk:dev deploy 
 yarn cdk:dev destroy
 yarn cdk:synth
 ```
 
-One time scripts:
+### Stage Environment
 
 ```bash
-cdk init app --language typescript # scaffold cdk 
-aws configure --profile cdk # configure the cdk profile
-cdk bootstrap --profile cdk # configure cdk for that region
+yarn cdk:stage deploy 
+yarn cdk:stage destroy
+yarn cdk:synth-stage
 ```
 
-`aws sts get-caller-identity --query Account --output text` will get you the account id.
+### Production Environment
+
+```bash
+yarn cdk:prod deploy 
+yarn cdk:prod destroy
+yarn cdk:synth-prod
+```
+
+### Temporary Branch Deployment
+
+If you're working on a feature branch or any other temporary branch and you want to deploy resources specific to that branch:
+
+```bash
+yarn cdk:branch deploy 
+yarn cdk:branch destroy
+yarn cdk:synth-branch
+```
+
+## Other scripts:
+
+```bash
+aws sts get-caller-identity --query Account --output text # retrieve your AWS account ID
+yarn test # cdk tests with Jest
+yarn cdk:reset # deletes cdk generated files, useful if synth fails
+```
+
+
 
 ## ## [Ch1 Getting started with IaC and AWS CDK](https://www.youtube.com/watch?v=0iemvZUdX-Y&list=PLeLcvrwLe187CchI_3zTtZCAh3TSkXx1I&index=2)
 

@@ -11,11 +11,14 @@ import {Distribution, ViewerProtocolPolicy} from 'aws-cdk-lib/aws-cloudfront'
 import {S3Origin} from 'aws-cdk-lib/aws-cloudfront-origins'
 import {ARecord, RecordTarget} from 'aws-cdk-lib/aws-route53'
 import {CloudFrontTarget} from 'aws-cdk-lib/aws-route53-targets'
-
+import crypto from 'crypto'
 import {Route53} from '../Route53'
 import {ACM} from '../ACM'
-
+import {getEnvironmentConfig} from '../../get-env-config'
 import config from '../../../../config.json'
+
+const hashFn = (input: string) =>
+  crypto.createHash('sha256').update(input).digest('hex').slice(0, 8)
 
 interface Props {
   acm: ACM
@@ -43,43 +46,23 @@ export class S3 extends Construct {
     super(scope, id)
 
     const unique_id = 'akemxdjqkl666'
+    const deployment = process.env.NODE_ENV || 'dev' // dev is our default
+    const predefinedDeployments = Object.keys(config.environments)
 
-    const deployment = process.env.NODE_ENV || ''
-    let bucketSuffix = deployment // default
+    const bucketSuffix = predefinedDeployments.includes(deployment)
+      ? deployment
+      : `${deployment}-${hashFn(deployment)}`
 
-    switch (deployment) {
-      case 'dev':
-        bucketSuffix = 'dev'
-        break
-      case 'stage':
-        bucketSuffix = 'stage'
-        break
-      case 'prod':
-        bucketSuffix = 'prod'
-        break
-      default:
-        bucketSuffix = `${deployment}`
-        break
-    }
-
-    this.web_bucket = new Bucket(
-      scope,
-      // `murat-web-bucket-${process.env.NODE_ENV || ''}`,
-      `murat-web-bucket-${bucketSuffix}`,
-      {
-        // bucketName: `murat-web-bucket-${unique_id}-${(
-        //   process.env.NODE_ENV || ''
-        // ).toLocaleLowerCase()}`,
-        bucketName: `murat-web-bucket-${unique_id}-${bucketSuffix}`,
-        websiteIndexDocument: 'index.html',
-        websiteErrorDocument: 'index.html',
-        publicReadAccess: true,
-        blockPublicAccess: BlockPublicAccess.BLOCK_ACLS,
-        accessControl: BucketAccessControl.BUCKET_OWNER_FULL_CONTROL,
-        removalPolicy: RemovalPolicy.DESTROY,
-        autoDeleteObjects: true,
-      },
-    )
+    this.web_bucket = new Bucket(scope, `web-bucket-${bucketSuffix}`, {
+      bucketName: `web-bucket-${unique_id}-${bucketSuffix}`,
+      websiteIndexDocument: 'index.html',
+      websiteErrorDocument: 'index.html',
+      publicReadAccess: true,
+      blockPublicAccess: BlockPublicAccess.BLOCK_ACLS,
+      accessControl: BucketAccessControl.BUCKET_OWNER_FULL_CONTROL,
+      removalPolicy: RemovalPolicy.DESTROY,
+      autoDeleteObjects: true,
+    })
 
     // we specify where to get the build folder from
     this.web_bucket_deployment = new BucketDeployment(
@@ -95,10 +78,8 @@ export class S3 extends Construct {
       },
     )
 
-    const frontEndSubDomain =
-      process.env.NODE_ENV === 'Production'
-        ? config.frontend_subdomain
-        : config.frontend_dev_subdomain
+    const {frontend_subdomain: frontEndSubDomain} =
+      getEnvironmentConfig(deployment)
 
     // CloudFront Distribution:
     // A CloudFront distribution (distribution property) is created

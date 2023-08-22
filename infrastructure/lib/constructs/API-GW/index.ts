@@ -8,7 +8,6 @@ import {
 import * as targets from 'aws-cdk-lib/aws-route53-targets'
 import {ARecord, RecordTarget} from 'aws-cdk-lib/aws-route53'
 import {Table} from 'aws-cdk-lib/aws-dynamodb'
-import {execSync} from 'child_process'
 import {ACM} from '../ACM'
 import {Route53} from '../Route53'
 
@@ -16,67 +15,7 @@ import config from '../../../../config.json'
 import {HealthCheckLambda} from '../Lambda/healthcheck'
 import {DynamoPost} from '../Lambda/post'
 import {DynamoGet} from '../Lambda/get'
-
-/**
- * Retrieve the current branch name from the local git configuration, of github actions in CI.
- * @returns {string} The current git branch name, sanitized to be DNS safe, or 'local' if the command fails.
- */
-const getCurrentBranchName = (): string => {
-  try {
-    // Check for GitHub Actions environment variable
-    if (process.env.GITHUB_REF) {
-      const refArray = process.env.GITHUB_REF.split('/')
-      // Assuming it's a branch, take the last part of the split string
-      return refArray[refArray.length - 1].replace(/[^a-zA-Z0-9-]/g, '') // Ensure DNS safe
-    }
-
-    const branchName = execSync('git rev-parse --abbrev-ref HEAD')
-      .toString()
-      .trim()
-
-    if (branchName === 'HEAD') {
-      // Handle the detached HEAD state by returning 'local'
-      return 'local'
-    }
-
-    return branchName.replace(/[^a-zA-Z0-9-]/g, '') // Ensure DNS safe
-  } catch (error) {
-    console.error('Error getting branch name:', error)
-    return 'local' // Default to 'local' or any fallback you'd prefer if git command fails
-  }
-}
-const branchName = getCurrentBranchName()
-
-type EnvConfig = {
-  subdomain: string
-  stageName: string
-}
-
-/**
- * Fetches the environment configuration based on the provided branch name and environment.
- * @param {string} bName - The branch name.
- * @param {string} [env='dev'] - The environment name. Defaults to 'dev'.
- * @returns {EnvConfig} - The corresponding environment configuration.
- */
-const getConfigForEnv = (bName: string, env = 'dev'): EnvConfig => {
-  const defaultConfig = {
-    subdomain: config.backend_dev_subdomain,
-    stageName: 'dev',
-  }
-
-  const envConfigs: Record<string, EnvConfig> = {
-    Production: {
-      subdomain: config.backend_subdomain,
-      stageName: 'prod',
-    },
-    temp: {
-      subdomain: `${bName}-${config.backend_subdomain}`,
-      stageName: `${bName}`,
-    },
-  }
-
-  return envConfigs[env] || defaultConfig
-}
+import {getEnvironmentConfig} from '../../get-env-config'
 
 // Integrating a lambda with API gateways takes a few steps.
 // 1. Create the handler function
@@ -92,7 +31,7 @@ interface Props {
 
 /**
  * Represents an API Gateway construct.
- * This construct integrates Lambdas with API Gateway for deployment.
+ * This construct integrates Lambdas with API tGateway for deployment.
  */
 export class ApiGateway extends Construct {
   constructor(scope: Construct, id: string, props: Props) {
@@ -100,16 +39,9 @@ export class ApiGateway extends Construct {
 
     const {acm, route53, dynamoTable} = props
 
-    // const backEndSubDomain =
-    //   process.env.NODE_ENV === 'Production'
-    //     ? config.backend_subdomain
-    //     : config.backend_dev_subdomain
-
     // support for temp branches
-    const {subdomain: backEndSubDomain, stageName} = getConfigForEnv(
-      branchName,
-      process.env.NODE_ENV,
-    )
+    const {backend_subdomain: backEndSubDomain, deployment} =
+      getEnvironmentConfig(process.env.NODE_ENV || 'dev')
 
     const restApi = new RestApi(this, 'finalstack-rest-api', {
       restApiName: `finalstack-rest-api-${process.env.NODE_ENV || ''}`,
@@ -121,7 +53,7 @@ export class ApiGateway extends Construct {
         securityPolicy: SecurityPolicy.TLS_1_2,
       },
       deployOptions: {
-        stageName,
+        stageName: deployment,
       },
     })
 
