@@ -1,3 +1,20 @@
+# [AWS CDK in Practice](https://www.amazon.com/AWS-CDK-Practice-Streamline-applications/dp/180181239X/ref=sr_1_3?crid=EOP9UXZSSGRK&keywords=cdk+aws&qid=1692715247&sprefix=cdk+aws%2Caps%2C100&sr=8-3).
+
+The original example is from the book AWS CDK in Practice. I trimmed the parts I do not like, and added things I think are necessary. You can find the original code in the chapters folder.
+
+The repo showcases several AWS services working in tandem:
+
+* The frontend gets deployed to an S3 bucket.
+* Domain management is handled with Route 53, paired with ACM for SSL certificates.
+* Data persistence is achieved with DynamoDB.
+* The backend logic involves several Lambda functions.
+* Step Functions orchestrate workflows.
+
+The CDK code initializes various constructs like Route 53, ACM, and S3. The S3 construct, for instance, takes in ACM and Route 53 as dependencies to facilitate web hosting with a custom domain and SSL. Similarly, the API Gateway construct ties together Route 53, ACM, and DynamoDB. 
+
+The book considered only prod and dev environments. 
+Instead, in the temp stack approach, any hardcoded values in the CDK constructs are replaced with dynamic values fetched from the environment configuration. The core of this setup lies in a couple of utility functions that enable temporary stacks: one that fetches the current branch name (either locally via Git or through GitHub Actions when running in a CI environment) and another that retrieves environment-specific configuration. Serverless Framework thinks of these and a lot of it is easier to setup and use. With cdk, it needs some work but it’s not impossible.
+
 ## One time setup scripts:
 
 These scripts are generally run once to set up or scaffold the necessary environment:
