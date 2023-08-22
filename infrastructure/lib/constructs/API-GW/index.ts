@@ -15,12 +15,7 @@ import config from '../../../../config.json'
 import {HealthCheckLambda} from '../Lambda/healthcheck'
 import {DynamoPost} from '../Lambda/post'
 import {DynamoGet} from '../Lambda/get'
-
-interface Props {
-  acm: ACM
-  route53: Route53
-  dynamoTable: Table
-}
+import {getEnvironmentConfig} from '../../get-env-config'
 
 // Integrating a lambda with API gateways takes a few steps.
 // 1. Create the handler function
@@ -28,16 +23,25 @@ interface Props {
 // 3. At the API gateway, instantiating and integrating the lambda
 // In SLS, you don't need step3, and your config in step2 would be in serverless.yml, instead of a separate file
 
+interface Props {
+  acm: ACM
+  route53: Route53
+  dynamoTable: Table
+}
+
+/**
+ * Represents an API Gateway construct.
+ * This construct integrates Lambdas with API tGateway for deployment.
+ */
 export class ApiGateway extends Construct {
   constructor(scope: Construct, id: string, props: Props) {
     super(scope, id)
 
     const {acm, route53, dynamoTable} = props
 
-    const backEndSubDomain =
-      process.env.NODE_ENV === 'Production'
-        ? config.backend_subdomain
-        : config.backend_dev_subdomain
+    // support for temp branches
+    const {backend_subdomain: backEndSubDomain, deployment} =
+      getEnvironmentConfig(process.env.NODE_ENV || 'dev')
 
     const restApi = new RestApi(this, 'finalstack-rest-api', {
       restApiName: `finalstack-rest-api-${process.env.NODE_ENV || ''}`,
@@ -49,7 +53,7 @@ export class ApiGateway extends Construct {
         securityPolicy: SecurityPolicy.TLS_1_2,
       },
       deployOptions: {
-        stageName: process.env.NODE_ENV === 'Production' ? 'prod' : 'dev',
+        stageName: deployment,
       },
     })
 
