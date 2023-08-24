@@ -12,7 +12,7 @@ interface IProps {
   dynamoTable: Table
 }
 
-export class DynamoPost extends Construct {
+export class DynamoDelete extends Construct {
   public readonly func: NodejsFunction
 
   constructor(scope: Construct, id: string, props: IProps) {
@@ -20,7 +20,7 @@ export class DynamoPost extends Construct {
 
     const {dynamoTable} = props
 
-    this.func = new NodejsFunction(scope, 'dynamo-post', {
+    this.func = new NodejsFunction(scope, 'dynamo-delete', {
       runtime: Runtime.NODEJS_16_X,
       entry: path.resolve(__dirname, 'lambda', 'index.ts'),
       handler: 'handler',

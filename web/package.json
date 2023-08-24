@@ -22,8 +22,8 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build:prod": "cross-env REACT_APP_ENV=Production react-scripts build",
-    "build:dev": "cross-env REACT_APP_ENV=Development react-scripts build",
+    "prebuild": "node get-backend-url.js",
+    "build": "cross-env react-scripts build",
     "test": "react-scripts test --watchAll=false",
     "eject": "react-scripts eject"
   },
