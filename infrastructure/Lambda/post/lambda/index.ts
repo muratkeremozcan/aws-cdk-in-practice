@@ -1,6 +1,6 @@
 import {DynamoDB} from 'aws-sdk'
 import {v4 as uuidv4} from 'uuid'
-import {PostEvent, Todo} from 'customTypes/index'
+import type {PostEvent, Todo} from 'customTypes/index'
 import {httpResponse} from '../../handlers/httpResponse'
 
 export const handler = async (event: PostEvent) => {
