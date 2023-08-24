@@ -65,7 +65,6 @@
     "@cloudcomponents/cdk-dynamodb-seeder": "2.1.0",
     "aws-cdk-lib": "2.34.0",
     "aws-sdk": "2.1289.0",
-    "child_process": "^1.0.2",
     "constructs": "10.1.116",
     "cors": "2.8.5",
     "dotenv": "16.0.2",

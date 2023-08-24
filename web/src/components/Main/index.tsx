@@ -34,9 +34,11 @@ export const Main: React.FC = () => {
 
   const handleTodoEdit = async (updatedTodo: Interfaces.Todo) => {
     try {
-      const response = await axios.put(`${backend_url}/${updatedTodo.id}`, {
-        todo: updatedTodo,
-      })
+      const response = await axios.put(
+        `${backend_url}/${updatedTodo.id}`,
+        updatedTodo,
+      )
+
       // Assuming the backend returns the updated todo
       const editedTodo: Interfaces.Todo = response.data.todo
       // Update the local state with the edited todo

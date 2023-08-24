@@ -98,14 +98,29 @@ export class ApiGateway extends Construct {
     // Resources (Path)
     const healthcheck = restApi.root.addResource('healthcheck')
     const rootResource = restApi.root
+    const itemResource = rootResource.addResource('{id}')
 
     // Methods
     healthcheck.addMethod('GET', healthCheckLambdaIntegration)
+    healthcheck.addCorsPreflight({
+      allowOrigins: ['*'],
+      allowHeaders: ['*'],
+      allowMethods: ['*'],
+      statusCode: 204,
+    })
+
     rootResource.addMethod('POST', dynamoPostIntegration)
     rootResource.addMethod('GET', dynamoGetIntegration)
-    rootResource.addMethod('DELETE', dynamoDeleteIntegration)
-    rootResource.addMethod('PUT', dynamoPutIntegration)
-    healthcheck.addCorsPreflight({
+    rootResource.addCorsPreflight({
+      allowOrigins: ['*'],
+      allowHeaders: ['*'],
+      allowMethods: ['*'],
+      statusCode: 204,
+    })
+
+    itemResource.addMethod('DELETE', dynamoDeleteIntegration)
+    itemResource.addMethod('PUT', dynamoPutIntegration)
+    itemResource.addCorsPreflight({
       allowOrigins: ['*'],
       allowHeaders: ['*'],
       allowMethods: ['*'],

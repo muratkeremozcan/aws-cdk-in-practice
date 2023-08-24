@@ -22,7 +22,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "prebuild": "node prebuild.js",
+    "prebuild": "node get-backend-url.js",
     "build": "cross-env react-scripts build",
     "test": "react-scripts test --watchAll=false",
     "eject": "react-scripts eject"
