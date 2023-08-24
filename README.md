@@ -25,10 +25,22 @@ aws configure --profile cdk # configure the cdk profile
 cdk bootstrap --profile cdk # configure cdk for that region
 
 cd infrastructure
+yarn build
 yarn build:frontend # installs and builds the front-end so it can be deployed
 ```
 
 ## Deployment
+
+### Temporary Branch Deployment
+
+If you're working on a feature branch or any other temporary branch and you want to deploy resources specific to that branch:
+
+```bash
+cd infrastructure
+yarn cdk:branch deploy 
+yarn cdk:branch destroy
+yarn cdk:synth-branch
+```
 
 ### Dev Environment
 
@@ -55,17 +67,6 @@ cd infrastructure
 yarn cdk:prod deploy 
 yarn cdk:prod destroy
 yarn cdk:synth-prod
-```
-
-### Temporary Branch Deployment
-
-If you're working on a feature branch or any other temporary branch and you want to deploy resources specific to that branch:
-
-```bash
-cd infrastructure
-yarn cdk:branch deploy 
-yarn cdk:branch destroy
-yarn cdk:synth-branch
 ```
 
 ## Other scripts:

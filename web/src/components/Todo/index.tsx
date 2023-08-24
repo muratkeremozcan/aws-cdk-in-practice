@@ -1,6 +1,6 @@
 import React, {useState} from 'react'
 
-import {Interfaces} from '../../../@types/interfaces'
+import type {Interfaces} from '../../../@types/interfaces'
 
 import {TodoActions, TodoBox, TodoContainer, TodoContent} from './styles'
 

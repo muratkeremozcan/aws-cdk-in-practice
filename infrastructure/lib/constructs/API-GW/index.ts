@@ -8,13 +8,15 @@ import {
 import * as targets from 'aws-cdk-lib/aws-route53-targets'
 import {ARecord, RecordTarget} from 'aws-cdk-lib/aws-route53'
 import {Table} from 'aws-cdk-lib/aws-dynamodb'
+import {DynamoDelete} from '../../../Lambda/delete'
+import {DynamoPut} from '../../../Lambda/put'
 import {ACM} from '../ACM'
 import {Route53} from '../Route53'
 
 import config from '../../../../config.json'
-import {HealthCheckLambda} from '../Lambda/healthcheck'
-import {DynamoPost} from '../Lambda/post'
-import {DynamoGet} from '../Lambda/get'
+import {HealthCheckLambda} from '../../../Lambda/healthcheck'
+import {DynamoPost} from '../../../Lambda/post'
+import {DynamoGet} from '../../../Lambda/get'
 import {getEnvironmentConfig} from '../../get-env-config'
 
 // Integrating a lambda with API gateways takes a few steps.
@@ -72,6 +74,14 @@ export class ApiGateway extends Construct {
       dynamoTable,
     })
 
+    const dynamoDelete = new DynamoDelete(this, 'dynamo-delete-lambda', {
+      dynamoTable,
+    })
+
+    const dynamoPut = new DynamoPut(this, 'dynamo-put-lambda', {
+      dynamoTable,
+    })
+
     // Integrations:
     const healthCheckLambdaIntegration = new LambdaIntegration(
       healthCheckLambda.func,
@@ -81,22 +91,21 @@ export class ApiGateway extends Construct {
 
     const dynamoGetIntegration = new LambdaIntegration(dynamoGet.func)
 
+    const dynamoDeleteIntegration = new LambdaIntegration(dynamoDelete.func)
+
+    const dynamoPutIntegration = new LambdaIntegration(dynamoPut.func)
+
     // Resources (Path)
     const healthcheck = restApi.root.addResource('healthcheck')
     const rootResource = restApi.root
 
     // Methods
     healthcheck.addMethod('GET', healthCheckLambdaIntegration)
-    healthcheck.addCorsPreflight({
-      allowOrigins: ['*'],
-      allowHeaders: ['*'],
-      allowMethods: ['*'],
-      statusCode: 204,
-    })
-
     rootResource.addMethod('POST', dynamoPostIntegration)
     rootResource.addMethod('GET', dynamoGetIntegration)
-    rootResource.addCorsPreflight({
+    rootResource.addMethod('DELETE', dynamoDeleteIntegration)
+    rootResource.addMethod('PUT', dynamoPutIntegration)
+    healthcheck.addCorsPreflight({
       allowOrigins: ['*'],
       allowHeaders: ['*'],
       allowMethods: ['*'],

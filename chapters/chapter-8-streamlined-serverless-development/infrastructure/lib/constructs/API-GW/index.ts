@@ -15,6 +15,7 @@ import config from '../../../../config.json';
 import { HealthCheckLambda } from '../Lambda/healthcheck';
 import { DynamoPost } from '../Lambda/post';
 import { DynamoGet } from '../Lambda/get';
+import { getEnvironmentConfig } from '../../get-env-config';
 
 interface Props {
   acm: ACM;
@@ -28,10 +29,13 @@ export class ApiGateway extends Construct {
 
     const { acm, route53, dynamoTable } = props;
 
-    const backEndSubDomain =
-      process.env.NODE_ENV === 'Production'
-        ? config.backend_subdomain
-        : config.backend_dev_subdomain;
+    // const backEndSubDomain =
+    //   process.env.NODE_ENV === 'Production'
+    //     ? config.backend_subdomain
+    //     : config.backend_dev_subdomain;
+    // support for temp branches
+    const { backend_subdomain: backEndSubDomain, deployment } =
+      getEnvironmentConfig(process.env.NODE_ENV || 'dev');
 
     const restApi = new RestApi(this, 'chapter-8-rest-api', {
       restApiName: `chapter-8-rest-api-${process.env.NODE_ENV || ''}`,
