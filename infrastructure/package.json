@@ -5,7 +5,7 @@
     "infrastructure": "bin/infrastructure.js"
   },
   "scripts": {
-    "build:frontend": "cd ../web && yarn install && yarn build",
+    "build:frontend": "cd ../web && yarn build",
     "build": "tsc",
     "watch": "tsc -w",
     "test": "yarn build && jest",

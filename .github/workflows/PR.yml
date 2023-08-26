@@ -44,17 +44,14 @@ jobs:
       - name: Lint infrastructure
         run: cd infrastructure && yarn lint
 
-      - name: Lint web
-        run: cd web && yarn lint
-
       - name: Type check infrastructure
         run: cd infrastructure && yarn typecheck
 
       - name: Type check web
         run: cd web && yarn typecheck
 
-      - name: Build web
-        run: cd web && yarn build
+      - name: Build front end
+        run: cd infrastructure && yarn build:frontend
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v3
