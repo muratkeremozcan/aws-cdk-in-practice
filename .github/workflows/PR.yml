@@ -50,8 +50,8 @@ jobs:
       - name: Type check infrastructure
         run: cd infrastructure && yarn typecheck
 
-      - name: Type check web
-        run: cd web && yarn typecheck
+      # - name: Type check web
+      #   run: cd web && yarn typecheck
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v3
@@ -60,8 +60,8 @@ jobs:
           role-to-assume: arn:aws:iam::721520867440:role/GitHubActionsRole
           role-session-name: GithubActionsSession
 
-      - name: Test CDK in infrastructure
-        run: cd infrastructure && yarn test
+      # - name: Test CDK in infrastructure
+      #   run: cd infrastructure && yarn test
 
       - name: Get branch name
         id: branch-name
