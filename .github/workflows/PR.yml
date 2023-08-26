@@ -60,7 +60,7 @@ jobs:
 
       - name: cdk synth
         run: |
-        cd infrastructure && yarn cross-env BRANCH=${{ steps.branch-name.outputs.current_branch }} NODE_ENV=$BRANCH DOTENV_CONFIG_PATH=./.env.development cdk --profile cdk synth
+          cd infrastructure && NODE_ENV=${{ steps.branch-name.outputs.current_branch }} DOTENV_CONFIG_PATH=./.env.development cdk --profile cdk synth
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
@@ -72,4 +72,4 @@ jobs:
       - name: deploy to ${{ steps.branch-name.outputs.current_branch }}
         # configuring creds is not needed after using an IAM role provided through an OIDC Provider
         run: |
-          cd infrastructure && yarn cross-env BRANCH=${{ steps.branch-name.outputs.current_branch }} NODE_ENV=$BRANCH DOTENV_CONFIG_PATH=./.env.development cdk --profile cdk deploy
+          cd infrastructure && NODE_ENV=${{ steps.branch-name.outputs.current_branch }} DOTENV_CONFIG_PATH=./.env.development cdk --profile cdk deploy
