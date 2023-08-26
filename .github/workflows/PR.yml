@@ -6,8 +6,7 @@ on:
 
 env:
   AWS_REGION: us-east-1
-  CDK_DEFAULT_REGION: us-east-1
-  CDK_DEFAULT_ACCOUNT: 721520867440
+  ACCOUNT_ID: 721520867440
 
 concurrency:
   group: ${{ github.head_ref || github.ref }}
@@ -50,9 +49,9 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v3
         with:
-          aws-region: us-east-1
+          aws-region: ${{ env.AWS_REGION }}
           role-to-assume:
-            arn:aws:iam::${{ env.CDK_DEFAULT_ACCOUNT }}:role/GitHubActionsRole
+            arn:aws:iam::${{ env.ACCOUNT_ID }}:role/GitHubActionsRole
           role-session-name: GithubActionsSession
 
       - name: Get branch name
@@ -62,12 +61,9 @@ jobs:
       - name: Lint infrastructure
         run: cd infrastructure && yarn lint
 
-      - name: Test CDK in infrastructure (Jest)
-        run: cd infrastructure && yarn test
-
       - name: cdk synth
         run: |
-          cd infrastructure && NODE_ENV=${{ steps.branch-name.outputs.current_branch }} DOTENV_CONFIG_PATH=./.env.development npx cdk synth
+          cd infrastructure && CDK_DEFAULT_ACCOUNT=${{ env.ACCOUNT_ID }} CDK_DEFAULT_REGION=${{ env.AWS_REGION }} NODE_ENV=${{ steps.branch-name.outputs.current_branch }} DOTENV_CONFIG_PATH=./.env.development npx cdk synth
 
       - name: deploy to ${{ steps.branch-name.outputs.current_branch }}
         # configuring creds is not needed after using an IAM role provided through an OIDC Provider

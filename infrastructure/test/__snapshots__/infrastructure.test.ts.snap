@@ -28,7 +28,7 @@ exports[`Testing Chapter 8 code. Matches the snapshot. 1`] = `
             },
             "/",
             {
-              "Ref": "ApiGatewaytestfinalstackrestapiDeploymentStagechoresetupci095FB632",
+              "Ref": "ApiGatewaytestfinalstackrestapiDeploymentStagesetupci4051A32F",
             },
             "/",
           ],
@@ -69,7 +69,7 @@ exports[`Testing Chapter 8 code. Matches the snapshot. 1`] = `
           },
         },
         "HostedZoneId": "DUMMY",
-        "Name": "choresetup-ci-backend-cdk-book.cdkbookmurat.click.",
+        "Name": "setup-ci-backend-cdk-book.cdkbookmurat.click.",
         "Type": "A",
       },
       "Type": "AWS::Route53::RecordSet",
@@ -616,7 +616,7 @@ exports[`Testing Chapter 8 code. Matches the snapshot. 1`] = `
     },
     "ApiGatewaytestfinalstackrestapiCustomDomain84895D3B": {
       "Properties": {
-        "DomainName": "choresetup-ci-backend-cdk-book.cdkbookmurat.click",
+        "DomainName": "setup-ci-backend-cdk-book.cdkbookmurat.click",
         "EndpointConfiguration": {
           "Types": [
             "REGIONAL",
@@ -641,7 +641,7 @@ exports[`Testing Chapter 8 code. Matches the snapshot. 1`] = `
           "Ref": "ApiGatewaytestfinalstackrestapiFE5C68A6",
         },
         "Stage": {
-          "Ref": "ApiGatewaytestfinalstackrestapiDeploymentStagechoresetupci095FB632",
+          "Ref": "ApiGatewaytestfinalstackrestapiDeploymentStagesetupci4051A32F",
         },
       },
       "Type": "AWS::ApiGateway::BasePathMapping",
@@ -667,7 +667,7 @@ exports[`Testing Chapter 8 code. Matches the snapshot. 1`] = `
       },
       "Type": "AWS::ApiGateway::Deployment",
     },
-    "ApiGatewaytestfinalstackrestapiDeploymentStagechoresetupci095FB632": {
+    "ApiGatewaytestfinalstackrestapiDeploymentStagesetupci4051A32F": {
       "DependsOn": [
         "ApiGatewaytestfinalstackrestapiAccountB5C92AF9",
       ],
@@ -678,7 +678,7 @@ exports[`Testing Chapter 8 code. Matches the snapshot. 1`] = `
         "RestApiId": {
           "Ref": "ApiGatewaytestfinalstackrestapiFE5C68A6",
         },
-        "StageName": "choresetup-ci",
+        "StageName": "setup-ci",
       },
       "Type": "AWS::ApiGateway::Stage",
     },
@@ -752,7 +752,7 @@ exports[`Testing Chapter 8 code. Matches the snapshot. 1`] = `
               },
               "/",
               {
-                "Ref": "ApiGatewaytestfinalstackrestapiDeploymentStagechoresetupci095FB632",
+                "Ref": "ApiGatewaytestfinalstackrestapiDeploymentStagesetupci4051A32F",
               },
               "/GET/",
             ],
@@ -856,7 +856,7 @@ exports[`Testing Chapter 8 code. Matches the snapshot. 1`] = `
               },
               "/",
               {
-                "Ref": "ApiGatewaytestfinalstackrestapiDeploymentStagechoresetupci095FB632",
+                "Ref": "ApiGatewaytestfinalstackrestapiDeploymentStagesetupci4051A32F",
               },
               "/POST/",
             ],
@@ -972,7 +972,7 @@ exports[`Testing Chapter 8 code. Matches the snapshot. 1`] = `
               },
               "/",
               {
-                "Ref": "ApiGatewaytestfinalstackrestapiDeploymentStagechoresetupci095FB632",
+                "Ref": "ApiGatewaytestfinalstackrestapiDeploymentStagesetupci4051A32F",
               },
               "/GET/healthcheck",
             ],
@@ -1160,7 +1160,7 @@ exports[`Testing Chapter 8 code. Matches the snapshot. 1`] = `
               },
               "/",
               {
-                "Ref": "ApiGatewaytestfinalstackrestapiDeploymentStagechoresetupci095FB632",
+                "Ref": "ApiGatewaytestfinalstackrestapiDeploymentStagesetupci4051A32F",
               },
               "/DELETE/*",
             ],
@@ -1297,7 +1297,7 @@ exports[`Testing Chapter 8 code. Matches the snapshot. 1`] = `
               },
               "/",
               {
-                "Ref": "ApiGatewaytestfinalstackrestapiDeploymentStagechoresetupci095FB632",
+                "Ref": "ApiGatewaytestfinalstackrestapiDeploymentStagesetupci4051A32F",
               },
               "/PUT/*",
             ],
@@ -1818,7 +1818,7 @@ exports[`Testing Chapter 8 code. Matches the snapshot. 1`] = `
       "DeletionPolicy": "Delete",
       "Properties": {
         "Seeds": {
-          "InlineSeeds": "[{"id":"1f734dd9-ef60-4d79-9c93-39bfc7af81eb","todo_name":"First todo","todo_description":"That's a todo for demonstration purposes","todo_completed":true}]",
+          "InlineSeeds": "[{"id":"69b4c0bf-17ac-4560-b606-07320957058b","todo_name":"First todo","todo_description":"That's a todo for demonstration purposes","todo_completed":true}]",
         },
         "ServiceToken": {
           "Fn::GetAtt": [
@@ -1874,7 +1874,7 @@ exports[`Testing Chapter 8 code. Matches the snapshot. 1`] = `
           },
         },
         "HostedZoneId": "DUMMY",
-        "Name": "choresetup-ci-frontend-cdk-book.cdkbookmurat.click.",
+        "Name": "setup-ci-frontend-cdk-book.cdkbookmurat.click.",
         "Type": "A",
       },
       "Type": "AWS::Route53::RecordSet",
@@ -1883,7 +1883,7 @@ exports[`Testing Chapter 8 code. Matches the snapshot. 1`] = `
       "Properties": {
         "DistributionConfig": {
           "Aliases": [
-            "choresetup-ci-frontend-cdk-book.cdkbookmurat.click",
+            "setup-ci-frontend-cdk-book.cdkbookmurat.click",
           ],
           "DefaultCacheBehavior": {
             "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
@@ -2039,7 +2039,7 @@ exports[`Testing Chapter 8 code. Matches the snapshot. 1`] = `
           "cdk-hnb659fds-assets-721520867440-us-east-1",
         ],
         "SourceObjectKeys": [
-          "0f891f27e6c9edd1344af56a5620f7c558eecab024c146f4dd67febe7879f8c3.zip",
+          "d31ba4d8db5e2d29c24ac7fcf9bf58ac3b1604edd300c7af401645d3689eb7c7.zip",
         ],
       },
       "Type": "Custom::CDKBucketDeployment",
