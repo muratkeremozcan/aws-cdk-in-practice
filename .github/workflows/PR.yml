@@ -27,13 +27,6 @@ jobs:
         with:
           node-version: '18'
 
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          aws-region: us-east-1
-          role-to-assume: arn:aws:iam::721520867440:role/GitHubActionsRole
-          role-session-name: GithubActionsSession
-
       - name: Install dependencies
         uses: cypress-io/github-action@v5.6.1
         with:
@@ -57,6 +50,13 @@ jobs:
       - name: Get branch name
         id: branch-name
         uses: tj-actions/branch-names@v6
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-region: us-east-1
+          role-to-assume: arn:aws:iam::721520867440:role/GitHubActionsRole
+          role-session-name: GithubActionsSession
 
       - name: deploy to ${{ steps.branch-name.outputs.current_branch }}
         # configuring creds is not needed after using an IAM role provided through an OIDC Provider
