@@ -51,6 +51,16 @@ jobs:
       - name: Type check web
         run: cd web && yarn typecheck
 
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          aws-region: us-east-1
+          role-to-assume: arn:aws:iam::721520867440:role/GitHubActionsRole
+          role-session-name: GithubActionsSession
+
+      - name: Test CDK in infrastructure
+        run: cd infrastructure && yarn test
+
       - name: Get branch name
         id: branch-name
         uses: tj-actions/branch-names@v6
@@ -58,13 +68,6 @@ jobs:
       - name: cdk synth
         run: |
           cd infrastructure && NODE_ENV=${{ steps.branch-name.outputs.current_branch }} DOTENV_CONFIG_PATH=./.env.development npx cdk --profile cdk synth
-
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          aws-region: us-east-1
-          role-to-assume: arn:aws:iam::721520867440:role/GitHubActionsRole
-          role-session-name: GithubActionsSession
 
       - name: deploy to ${{ steps.branch-name.outputs.current_branch }}
         # configuring creds is not needed after using an IAM role provided through an OIDC Provider
