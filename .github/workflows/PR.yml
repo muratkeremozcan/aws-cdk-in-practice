@@ -58,6 +58,10 @@ jobs:
         id: branch-name
         uses: tj-actions/branch-names@v6
 
+      - name: cdk synth
+        run: |
+        cd infrastructure && yarn cross-env BRANCH=${{ steps.branch-name.outputs.current_branch }} NODE_ENV=$BRANCH DOTENV_CONFIG_PATH=./.env.development cdk --profile cdk synth
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
