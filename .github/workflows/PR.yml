@@ -50,8 +50,11 @@ jobs:
       - name: Type check web
         run: cd web && yarn typecheck
 
-      - name: Build front end
-        run: cd infrastructure && yarn build:frontend
+      - name: Build infrastructure and front end
+        run: |
+          cd infrastructure
+          yarn build
+          yarn build:frontend
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v3
