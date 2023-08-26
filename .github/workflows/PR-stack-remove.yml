@@ -1,0 +1,47 @@
+name: Remove temp stack after merge
+
+# we are triggering the workflow when a pull request is closed
+# and checking if it's merged with if: github.event.pull_request.merged == true
+# If it is merged, then we execute the job to remove the stack.
+
+on:
+  pull_request:
+    types: [closed]
+
+env:
+  AWS_REGION: us-east-1
+
+jobs:
+  remove-stack:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-region: us-east-1
+          role-to-assume: arn:aws:iam::721520867440:role/GitHubActionsRole
+          role-session-name: GithubActionsSession
+
+      - name: Get branch name
+        id: branch-name
+        uses: tj-actions/branch-names@v6
+
+      - name: Install dependencies
+        uses: cypress-io/github-action@v5.6.1
+        with:
+          runTests: false
+
+      - name: Remove stack ${{ steps.branch-name.outputs.current_branch }}
+        run: |
+          npm run sls -- remove -s ${{ steps.branch-name.outputs.current_branch }} --param="ssmStage=dev"

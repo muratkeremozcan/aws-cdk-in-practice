@@ -9,6 +9,8 @@
     "build": "tsc",
     "watch": "tsc -w",
     "test": "yarn build && jest",
+    "lint": "eslint . --cache-location node_modules/.cache/eslint",
+    "typecheck": "tsc --noEmit",
     "cdk:dev": "cross-env NODE_ENV=dev DOTENV_CONFIG_PATH=./.env.development cdk --profile cdk",
     "cdk:prod": "cross-env NODE_ENV=prod DOTENV_CONFIG_PATH=./.env.production cdk --profile cdk",
     "cdk:stage": "cross-env NODE_ENV=stage DOTENV_CONFIG_PATH=./.env.stage cdk --profile cdk",

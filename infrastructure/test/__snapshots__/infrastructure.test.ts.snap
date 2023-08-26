@@ -28,7 +28,7 @@ exports[`Testing Chapter 8 code. Matches the snapshot. 1`] = `
             },
             "/",
             {
-              "Ref": "ApiGatewaytestfinalstackrestapiDeploymentStagedev89F891CA",
+              "Ref": "ApiGatewaytestfinalstackrestapiDeploymentStagechoresetupci095FB632",
             },
             "/",
           ],
@@ -38,7 +38,7 @@ exports[`Testing Chapter 8 code. Matches the snapshot. 1`] = `
     "FrontendUrl": {
       "Value": {
         "Fn::GetAtt": [
-          "muratwebbuckettest5ED8D09A",
+          "webbuckettest9f86d081AAD42002",
           "WebsiteURL",
         ],
       },
@@ -69,10 +69,133 @@ exports[`Testing Chapter 8 code. Matches the snapshot. 1`] = `
           },
         },
         "HostedZoneId": "DUMMY",
-        "Name": "dev-backend-cdk-book.cdkbookmurat.click.",
+        "Name": "choresetup-ci-backend-cdk-book.cdkbookmurat.click.",
         "Type": "A",
       },
       "Type": "AWS::Route53::RecordSet",
+    },
+    "ApiGatewaytestdynamodelete01FCE1A5": {
+      "DependsOn": [
+        "ApiGatewaytestdynamodeleteServiceRoleDefaultPolicy23798C10",
+        "ApiGatewaytestdynamodeleteServiceRoleC93BEDF5",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": "cdk-hnb659fds-assets-721520867440-us-east-1",
+          "S3Key": "f0540c8dbc30e706531400ac759a0f7ad99bd039e767a0712ba36e5ca929a021.zip",
+        },
+        "Environment": {
+          "Variables": {
+            "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "NODE_ENV": "test",
+            "REGION": "us-east-1",
+            "TABLE_NAME": {
+              "Ref": "DynamotestDynamoTabletestFDC1D2D6",
+            },
+          },
+        },
+        "Handler": "index.handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "ApiGatewaytestdynamodeleteServiceRoleC93BEDF5",
+            "Arn",
+          ],
+        },
+        "Runtime": "nodejs16.x",
+        "Timeout": 30,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "ApiGatewaytestdynamodeleteLogRetentionC5E655D1": {
+      "Properties": {
+        "LogGroupName": {
+          "Fn::Join": [
+            "",
+            [
+              "/aws/lambda/",
+              {
+                "Ref": "ApiGatewaytestdynamodelete01FCE1A5",
+              },
+            ],
+          ],
+        },
+        "RetentionInDays": 14,
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "Custom::LogRetention",
+    },
+    "ApiGatewaytestdynamodeleteServiceRoleC93BEDF5": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "ApiGatewaytestdynamodeleteServiceRoleDefaultPolicy23798C10": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "dynamodb:BatchWriteItem",
+                "dynamodb:PutItem",
+                "dynamodb:UpdateItem",
+                "dynamodb:DeleteItem",
+                "dynamodb:DescribeTable",
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "DynamotestDynamoTabletestFDC1D2D6",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Ref": "AWS::NoValue",
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "ApiGatewaytestdynamodeleteServiceRoleDefaultPolicy23798C10",
+        "Roles": [
+          {
+            "Ref": "ApiGatewaytestdynamodeleteServiceRoleC93BEDF5",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
     },
     "ApiGatewaytestdynamoget27D16C29": {
       "DependsOn": [
@@ -82,7 +205,7 @@ exports[`Testing Chapter 8 code. Matches the snapshot. 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-721520867440-us-east-1",
-          "S3Key": "978dc9e8525eec7cfbbc6ab920fd7304b3dc352d7919641663538e09b4c3cd6f.zip",
+          "S3Key": "f8cd97a293e88e3f48e027a2effa922255206155473fa950686a67780fbdb773.zip",
         },
         "Environment": {
           "Variables": {
@@ -208,7 +331,7 @@ exports[`Testing Chapter 8 code. Matches the snapshot. 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-721520867440-us-east-1",
-          "S3Key": "8c992e47062b1dc8ecf35b47f7f6a0b47a6ec9dcde678f15f68cac1fd0850b3e.zip",
+          "S3Key": "9740d28e6034efae02bb46381b710b04ae6d65c57ea37e108096007ab2b315c2.zip",
         },
         "Environment": {
           "Variables": {
@@ -323,6 +446,129 @@ exports[`Testing Chapter 8 code. Matches the snapshot. 1`] = `
       },
       "Type": "AWS::IAM::Policy",
     },
+    "ApiGatewaytestdynamoputF5D32B22": {
+      "DependsOn": [
+        "ApiGatewaytestdynamoputServiceRoleDefaultPolicy084780F0",
+        "ApiGatewaytestdynamoputServiceRole8B457286",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": "cdk-hnb659fds-assets-721520867440-us-east-1",
+          "S3Key": "b19a8266c1e0004fffc8970390b3b30e943a419c695e8c3ba1722013ec14870f.zip",
+        },
+        "Environment": {
+          "Variables": {
+            "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "NODE_ENV": "test",
+            "REGION": "us-east-1",
+            "TABLE_NAME": {
+              "Ref": "DynamotestDynamoTabletestFDC1D2D6",
+            },
+          },
+        },
+        "Handler": "index.handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "ApiGatewaytestdynamoputServiceRole8B457286",
+            "Arn",
+          ],
+        },
+        "Runtime": "nodejs16.x",
+        "Timeout": 30,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "ApiGatewaytestdynamoputLogRetentionA0BFC61B": {
+      "Properties": {
+        "LogGroupName": {
+          "Fn::Join": [
+            "",
+            [
+              "/aws/lambda/",
+              {
+                "Ref": "ApiGatewaytestdynamoputF5D32B22",
+              },
+            ],
+          ],
+        },
+        "RetentionInDays": 14,
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "Custom::LogRetention",
+    },
+    "ApiGatewaytestdynamoputServiceRole8B457286": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "ApiGatewaytestdynamoputServiceRoleDefaultPolicy084780F0": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "dynamodb:BatchWriteItem",
+                "dynamodb:PutItem",
+                "dynamodb:UpdateItem",
+                "dynamodb:DeleteItem",
+                "dynamodb:DescribeTable",
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "DynamotestDynamoTabletestFDC1D2D6",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Ref": "AWS::NoValue",
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "ApiGatewaytestdynamoputServiceRoleDefaultPolicy084780F0",
+        "Roles": [
+          {
+            "Ref": "ApiGatewaytestdynamoputServiceRole8B457286",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
     "ApiGatewaytestfinalstackrestapiAccountB5C92AF9": {
       "DependsOn": [
         "ApiGatewaytestfinalstackrestapiFE5C68A6",
@@ -370,7 +616,7 @@ exports[`Testing Chapter 8 code. Matches the snapshot. 1`] = `
     },
     "ApiGatewaytestfinalstackrestapiCustomDomain84895D3B": {
       "Properties": {
-        "DomainName": "dev-backend-cdk-book.cdkbookmurat.click",
+        "DomainName": "choresetup-ci-backend-cdk-book.cdkbookmurat.click",
         "EndpointConfiguration": {
           "Types": [
             "REGIONAL",
@@ -395,13 +641,17 @@ exports[`Testing Chapter 8 code. Matches the snapshot. 1`] = `
           "Ref": "ApiGatewaytestfinalstackrestapiFE5C68A6",
         },
         "Stage": {
-          "Ref": "ApiGatewaytestfinalstackrestapiDeploymentStagedev89F891CA",
+          "Ref": "ApiGatewaytestfinalstackrestapiDeploymentStagechoresetupci095FB632",
         },
       },
       "Type": "AWS::ApiGateway::BasePathMapping",
     },
-    "ApiGatewaytestfinalstackrestapiDeployment64F07073e138ecc6b7b397b356fd32814e1cbf37": {
+    "ApiGatewaytestfinalstackrestapiDeployment64F070737b9ff7b58f90001c10de809fbe52436d": {
       "DependsOn": [
+        "ApiGatewaytestfinalstackrestapiidDELETE06C48B60",
+        "ApiGatewaytestfinalstackrestapiidOPTIONSC71ADFA6",
+        "ApiGatewaytestfinalstackrestapiidPUT0E5F7CE5",
+        "ApiGatewaytestfinalstackrestapiid97EFAD39",
         "ApiGatewaytestfinalstackrestapiGET23FA1C21",
         "ApiGatewaytestfinalstackrestapihealthcheckGETC48A8DF9",
         "ApiGatewaytestfinalstackrestapihealthcheckOPTIONS4548A17F",
@@ -417,18 +667,18 @@ exports[`Testing Chapter 8 code. Matches the snapshot. 1`] = `
       },
       "Type": "AWS::ApiGateway::Deployment",
     },
-    "ApiGatewaytestfinalstackrestapiDeploymentStagedev89F891CA": {
+    "ApiGatewaytestfinalstackrestapiDeploymentStagechoresetupci095FB632": {
       "DependsOn": [
         "ApiGatewaytestfinalstackrestapiAccountB5C92AF9",
       ],
       "Properties": {
         "DeploymentId": {
-          "Ref": "ApiGatewaytestfinalstackrestapiDeployment64F07073e138ecc6b7b397b356fd32814e1cbf37",
+          "Ref": "ApiGatewaytestfinalstackrestapiDeployment64F070737b9ff7b58f90001c10de809fbe52436d",
         },
         "RestApiId": {
           "Ref": "ApiGatewaytestfinalstackrestapiFE5C68A6",
         },
-        "StageName": "dev",
+        "StageName": "choresetup-ci",
       },
       "Type": "AWS::ApiGateway::Stage",
     },
@@ -502,7 +752,7 @@ exports[`Testing Chapter 8 code. Matches the snapshot. 1`] = `
               },
               "/",
               {
-                "Ref": "ApiGatewaytestfinalstackrestapiDeploymentStagedev89F891CA",
+                "Ref": "ApiGatewaytestfinalstackrestapiDeploymentStagechoresetupci095FB632",
               },
               "/GET/",
             ],
@@ -606,7 +856,7 @@ exports[`Testing Chapter 8 code. Matches the snapshot. 1`] = `
               },
               "/",
               {
-                "Ref": "ApiGatewaytestfinalstackrestapiDeploymentStagedev89F891CA",
+                "Ref": "ApiGatewaytestfinalstackrestapiDeploymentStagechoresetupci095FB632",
               },
               "/POST/",
             ],
@@ -722,7 +972,7 @@ exports[`Testing Chapter 8 code. Matches the snapshot. 1`] = `
               },
               "/",
               {
-                "Ref": "ApiGatewaytestfinalstackrestapiDeploymentStagedev89F891CA",
+                "Ref": "ApiGatewaytestfinalstackrestapiDeploymentStagechoresetupci095FB632",
               },
               "/GET/healthcheck",
             ],
@@ -835,6 +1085,256 @@ exports[`Testing Chapter 8 code. Matches the snapshot. 1`] = `
       },
       "Type": "AWS::ApiGateway::Method",
     },
+    "ApiGatewaytestfinalstackrestapiid97EFAD39": {
+      "Properties": {
+        "ParentId": {
+          "Fn::GetAtt": [
+            "ApiGatewaytestfinalstackrestapiFE5C68A6",
+            "RootResourceId",
+          ],
+        },
+        "PathPart": "{id}",
+        "RestApiId": {
+          "Ref": "ApiGatewaytestfinalstackrestapiFE5C68A6",
+        },
+      },
+      "Type": "AWS::ApiGateway::Resource",
+    },
+    "ApiGatewaytestfinalstackrestapiidDELETE06C48B60": {
+      "Properties": {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "DELETE",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":apigateway:us-east-1:lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "ApiGatewaytestdynamodelete01FCE1A5",
+                    "Arn",
+                  ],
+                },
+                "/invocations",
+              ],
+            ],
+          },
+        },
+        "ResourceId": {
+          "Ref": "ApiGatewaytestfinalstackrestapiid97EFAD39",
+        },
+        "RestApiId": {
+          "Ref": "ApiGatewaytestfinalstackrestapiFE5C68A6",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "ApiGatewaytestfinalstackrestapiidDELETEApiPermissionChapter8StackApiGatewaytestfinalstackrestapi4EB62DC1DELETEid6B013DA5": {
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "ApiGatewaytestdynamodelete01FCE1A5",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition",
+              },
+              ":execute-api:us-east-1:721520867440:",
+              {
+                "Ref": "ApiGatewaytestfinalstackrestapiFE5C68A6",
+              },
+              "/",
+              {
+                "Ref": "ApiGatewaytestfinalstackrestapiDeploymentStagechoresetupci095FB632",
+              },
+              "/DELETE/*",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "ApiGatewaytestfinalstackrestapiidDELETEApiPermissionTestChapter8StackApiGatewaytestfinalstackrestapi4EB62DC1DELETEidAD79A1BD": {
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "ApiGatewaytestdynamodelete01FCE1A5",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition",
+              },
+              ":execute-api:us-east-1:721520867440:",
+              {
+                "Ref": "ApiGatewaytestfinalstackrestapiFE5C68A6",
+              },
+              "/test-invoke-stage/DELETE/*",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "ApiGatewaytestfinalstackrestapiidOPTIONSC71ADFA6": {
+      "Properties": {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "OPTIONS",
+        "Integration": {
+          "IntegrationResponses": [
+            {
+              "ResponseParameters": {
+                "method.response.header.Access-Control-Allow-Headers": "'*'",
+                "method.response.header.Access-Control-Allow-Methods": "'*'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'",
+              },
+              "StatusCode": "204",
+            },
+          ],
+          "RequestTemplates": {
+            "application/json": "{ statusCode: 200 }",
+          },
+          "Type": "MOCK",
+        },
+        "MethodResponses": [
+          {
+            "ResponseParameters": {
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Methods": true,
+              "method.response.header.Access-Control-Allow-Origin": true,
+            },
+            "StatusCode": "204",
+          },
+        ],
+        "ResourceId": {
+          "Ref": "ApiGatewaytestfinalstackrestapiid97EFAD39",
+        },
+        "RestApiId": {
+          "Ref": "ApiGatewaytestfinalstackrestapiFE5C68A6",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "ApiGatewaytestfinalstackrestapiidPUT0E5F7CE5": {
+      "Properties": {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "PUT",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":apigateway:us-east-1:lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "ApiGatewaytestdynamoputF5D32B22",
+                    "Arn",
+                  ],
+                },
+                "/invocations",
+              ],
+            ],
+          },
+        },
+        "ResourceId": {
+          "Ref": "ApiGatewaytestfinalstackrestapiid97EFAD39",
+        },
+        "RestApiId": {
+          "Ref": "ApiGatewaytestfinalstackrestapiFE5C68A6",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "ApiGatewaytestfinalstackrestapiidPUTApiPermissionChapter8StackApiGatewaytestfinalstackrestapi4EB62DC1PUTid52637BC2": {
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "ApiGatewaytestdynamoputF5D32B22",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition",
+              },
+              ":execute-api:us-east-1:721520867440:",
+              {
+                "Ref": "ApiGatewaytestfinalstackrestapiFE5C68A6",
+              },
+              "/",
+              {
+                "Ref": "ApiGatewaytestfinalstackrestapiDeploymentStagechoresetupci095FB632",
+              },
+              "/PUT/*",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "ApiGatewaytestfinalstackrestapiidPUTApiPermissionTestChapter8StackApiGatewaytestfinalstackrestapi4EB62DC1PUTidC5E7F514": {
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "ApiGatewaytestdynamoputF5D32B22",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition",
+              },
+              ":execute-api:us-east-1:721520867440:",
+              {
+                "Ref": "ApiGatewaytestfinalstackrestapiFE5C68A6",
+              },
+              "/test-invoke-stage/PUT/*",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
     "ApiGatewaytesthealthchecklambdaC9F6C9EC": {
       "DependsOn": [
         "ApiGatewaytesthealthchecklambdaServiceRoleD38769B1",
@@ -842,7 +1342,7 @@ exports[`Testing Chapter 8 code. Matches the snapshot. 1`] = `
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-721520867440-us-east-1",
-          "S3Key": "24b905c128cd19db8a89764c2305c8bad2e0bcd8bbd29094d959790f517561f7.zip",
+          "S3Key": "a46a5d441c6bd57d2d8963bc3aa1bad223acdcd5385ced3b3c5477ab2888e4bf.zip",
         },
         "Environment": {
           "Variables": {
@@ -1147,7 +1647,7 @@ exports[`Testing Chapter 8 code. Matches the snapshot. 1`] = `
               "Resource": [
                 {
                   "Fn::GetAtt": [
-                    "muratwebbuckettest5ED8D09A",
+                    "webbuckettest9f86d081AAD42002",
                     "Arn",
                   ],
                 },
@@ -1157,7 +1657,7 @@ exports[`Testing Chapter 8 code. Matches the snapshot. 1`] = `
                     [
                       {
                         "Fn::GetAtt": [
-                          "muratwebbuckettest5ED8D09A",
+                          "webbuckettest9f86d081AAD42002",
                           "Arn",
                         ],
                       },
@@ -1273,7 +1773,7 @@ exports[`Testing Chapter 8 code. Matches the snapshot. 1`] = `
             [
               "Lambda function for auto-deleting objects in ",
               {
-                "Ref": "muratwebbuckettest5ED8D09A",
+                "Ref": "webbuckettest9f86d081AAD42002",
               },
               " S3 bucket.",
             ],
@@ -1318,7 +1818,7 @@ exports[`Testing Chapter 8 code. Matches the snapshot. 1`] = `
       "DeletionPolicy": "Delete",
       "Properties": {
         "Seeds": {
-          "InlineSeeds": "[{"id":"70cd50e4-bd3b-4ebe-b88a-57fd1d32c881","todo_name":"First todo","todo_description":"That's a todo for demonstration purposes","todo_completed":true}]",
+          "InlineSeeds": "[{"id":"1f734dd9-ef60-4d79-9c93-39bfc7af81eb","todo_name":"First todo","todo_description":"That's a todo for demonstration purposes","todo_completed":true}]",
         },
         "ServiceToken": {
           "Fn::GetAtt": [
@@ -1374,7 +1874,7 @@ exports[`Testing Chapter 8 code. Matches the snapshot. 1`] = `
           },
         },
         "HostedZoneId": "DUMMY",
-        "Name": "dev-frontend-cdk-book.cdkbookmurat.click.",
+        "Name": "choresetup-ci-frontend-cdk-book.cdkbookmurat.click.",
         "Type": "A",
       },
       "Type": "AWS::Route53::RecordSet",
@@ -1383,7 +1883,7 @@ exports[`Testing Chapter 8 code. Matches the snapshot. 1`] = `
       "Properties": {
         "DistributionConfig": {
           "Aliases": [
-            "dev-frontend-cdk-book.cdkbookmurat.click",
+            "choresetup-ci-frontend-cdk-book.cdkbookmurat.click",
           ],
           "DefaultCacheBehavior": {
             "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
@@ -1411,7 +1911,7 @@ exports[`Testing Chapter 8 code. Matches the snapshot. 1`] = `
                       "/",
                       {
                         "Fn::GetAtt": [
-                          "muratwebbuckettest5ED8D09A",
+                          "webbuckettest9f86d081AAD42002",
                           "WebsiteURL",
                         ],
                       },
@@ -1526,7 +2026,7 @@ exports[`Testing Chapter 8 code. Matches the snapshot. 1`] = `
       "DeletionPolicy": "Delete",
       "Properties": {
         "DestinationBucketName": {
-          "Ref": "muratwebbuckettest5ED8D09A",
+          "Ref": "webbuckettest9f86d081AAD42002",
         },
         "Prune": true,
         "ServiceToken": {
@@ -1539,17 +2039,17 @@ exports[`Testing Chapter 8 code. Matches the snapshot. 1`] = `
           "cdk-hnb659fds-assets-721520867440-us-east-1",
         ],
         "SourceObjectKeys": [
-          "b819ef79cb720c5587f437a6b48c215951488a0280cd694458b354a055614d07.zip",
+          "0f891f27e6c9edd1344af56a5620f7c558eecab024c146f4dd67febe7879f8c3.zip",
         ],
       },
       "Type": "Custom::CDKBucketDeployment",
       "UpdateReplacePolicy": "Delete",
     },
-    "muratwebbuckettest5ED8D09A": {
+    "webbuckettest9f86d081AAD42002": {
       "DeletionPolicy": "Delete",
       "Properties": {
         "AccessControl": "BucketOwnerFullControl",
-        "BucketName": "murat-web-bucket-akemxdjqkl666-test",
+        "BucketName": "web-bucket-akemxdjqkl666-test-9f86d081",
         "PublicAccessBlockConfiguration": {
           "BlockPublicAcls": true,
           "IgnorePublicAcls": true,
@@ -1572,14 +2072,14 @@ exports[`Testing Chapter 8 code. Matches the snapshot. 1`] = `
       "Type": "AWS::S3::Bucket",
       "UpdateReplacePolicy": "Delete",
     },
-    "muratwebbuckettestAutoDeleteObjectsCustomResourceF0E80EA5": {
+    "webbuckettest9f86d081AutoDeleteObjectsCustomResource0C12BF05": {
       "DeletionPolicy": "Delete",
       "DependsOn": [
-        "muratwebbuckettestPolicy2A2DF1FD",
+        "webbuckettest9f86d081PolicyBF93536C",
       ],
       "Properties": {
         "BucketName": {
-          "Ref": "muratwebbuckettest5ED8D09A",
+          "Ref": "webbuckettest9f86d081AAD42002",
         },
         "ServiceToken": {
           "Fn::GetAtt": [
@@ -1591,10 +2091,10 @@ exports[`Testing Chapter 8 code. Matches the snapshot. 1`] = `
       "Type": "Custom::S3AutoDeleteObjects",
       "UpdateReplacePolicy": "Delete",
     },
-    "muratwebbuckettestPolicy2A2DF1FD": {
+    "webbuckettest9f86d081PolicyBF93536C": {
       "Properties": {
         "Bucket": {
-          "Ref": "muratwebbuckettest5ED8D09A",
+          "Ref": "webbuckettest9f86d081AAD42002",
         },
         "PolicyDocument": {
           "Statement": [
@@ -1610,7 +2110,7 @@ exports[`Testing Chapter 8 code. Matches the snapshot. 1`] = `
                   [
                     {
                       "Fn::GetAtt": [
-                        "muratwebbuckettest5ED8D09A",
+                        "webbuckettest9f86d081AAD42002",
                         "Arn",
                       ],
                     },
@@ -1637,7 +2137,7 @@ exports[`Testing Chapter 8 code. Matches the snapshot. 1`] = `
               "Resource": [
                 {
                   "Fn::GetAtt": [
-                    "muratwebbuckettest5ED8D09A",
+                    "webbuckettest9f86d081AAD42002",
                     "Arn",
                   ],
                 },
@@ -1647,7 +2147,7 @@ exports[`Testing Chapter 8 code. Matches the snapshot. 1`] = `
                     [
                       {
                         "Fn::GetAtt": [
-                          "muratwebbuckettest5ED8D09A",
+                          "webbuckettest9f86d081AAD42002",
                           "Arn",
                         ],
                       },

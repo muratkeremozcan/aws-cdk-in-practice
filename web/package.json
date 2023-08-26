@@ -25,7 +25,9 @@
     "prebuild": "node get-backend-url.js",
     "build": "cross-env react-scripts build",
     "test": "react-scripts test --watchAll=false",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "lint": "eslint . --cache-location node_modules/.cache/eslint",
+    "typecheck": "tsc --noEmit"
   },
   "eslintConfig": {
     "extends": [
