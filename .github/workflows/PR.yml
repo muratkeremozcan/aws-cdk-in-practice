@@ -6,6 +6,8 @@ on:
 
 env:
   AWS_REGION: us-east-1
+  CDK_DEFAULT_REGION: us-east-1
+  CDK_DEFAULT_ACCOUNT: 721520867440
 
 concurrency:
   group: ${{ github.head_ref || github.ref }}
