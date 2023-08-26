@@ -53,6 +53,9 @@ jobs:
       - name: Type check web
         run: cd web && yarn typecheck
 
+      - name: Build web
+        run: cd web && yarn build
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v3
         with:
