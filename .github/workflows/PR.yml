@@ -61,4 +61,4 @@ jobs:
       - name: deploy to ${{ steps.branch-name.outputs.current_branch }}
         # configuring creds is not needed after using an IAM role provided through an OIDC Provider
         run: |
-          yarn cross-env BRANCH=${{ steps.branch-name.outputs.current_branch }} NODE_ENV=$BRANCH DOTENV_CONFIG_PATH=./.env.development cdk --profile cdk deploy
+          cd infrastructure && yarn cross-env BRANCH=${{ steps.branch-name.outputs.current_branch }} NODE_ENV=$BRANCH DOTENV_CONFIG_PATH=./.env.development cdk --profile cdk deploy
