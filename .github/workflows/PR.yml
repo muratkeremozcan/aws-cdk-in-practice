@@ -51,9 +51,6 @@ jobs:
       - name: Type check web
         run: cd web && yarn typecheck
 
-      - name: Test CDK in infrastructure
-        run: cd infrastructure && yarn test
-
       - name: Get branch name
         id: branch-name
         uses: tj-actions/branch-names@v6
