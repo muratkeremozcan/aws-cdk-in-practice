@@ -11,7 +11,7 @@ on:
 env:
   AWS_REGION: us-east-1
   ACCOUNT_ID: 721520867440
-  DOTENV_CONFIG_PATH: ./.env.development
+  DOTENV_CONFIG_PATH: ./.env.dev
 
 jobs:
   remove-stack:

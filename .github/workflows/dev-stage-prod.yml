@@ -1,15 +1,14 @@
-name: deploy to stage
+name: deploy to environment
 
 on:
   push:
+    branches: [main]
     tags: ['*']
   workflow_dispatch:
 
 env:
   AWS_REGION: us-east-1
   ACCOUNT_ID: 721520867440
-  NODE_ENV: stage
-  DOTENV_CONFIG_PATH: ./.env.stage
 
 concurrency:
   group: ${{ github.head_ref || github.ref }}
@@ -57,9 +56,24 @@ jobs:
             arn:aws:iam::${{ env.ACCOUNT_ID }}:role/GitHubActionsRole
           role-session-name: GithubActionsSession
 
+      - name: Dynamically Set environment variables (dev, stage, prod)
+        run: |
+          if [ "${{ github.event_name }}" == "push" ] && [ ! -z "${{ github.event.ref }}" ]; then
+            if [ "${{ github.event.ref }}" == "refs/heads/main" ]; then
+              echo "NODE_ENV=dev" >> $GITHUB_ENV
+              echo "DOTENV_CONFIG_PATH=./.env.dev" >> $GITHUB_ENV
+            elif [ "${{ startsWith(github.event.ref, 'refs/tags/') }}" == "true" ]; then
+              echo "NODE_ENV=stage" >> $GITHUB_ENV
+              echo "DOTENV_CONFIG_PATH=./.env.stage" >> $GITHUB_ENV
+            elif [ "${{ startsWith(github.event.ref, 'refs/tags/prod-') }}" == "true" ]; then
+              echo "NODE_ENV=prod" >> $GITHUB_ENV
+              echo "DOTENV_CONFIG_PATH=./.env.prod" >> $GITHUB_ENV
+            fi
+          fi
+
       - name: cdk synth
         run: |
-          cd infrastructure && CDK_DEFAULT_ACCOUNT=${{ env.ACCOUNT_ID }} CDK_DEFAULT_REGION=${{ env.AWS_REGION }} NODE_ENV=dev DOTENV_CONFIG_PATH=./.env.development npx cdk synth
+          cd infrastructure && CDK_DEFAULT_ACCOUNT=${{ env.ACCOUNT_ID }} CDK_DEFAULT_REGION=${{ env.AWS_REGION }} NODE_ENV=${{ env.NODE_ENV }} DOTENV_CONFIG_PATH=${{ env.DOTENV_CONFIG_PATH }} npx cdk synth
 
       - name: deploy to ${{ env.NODE_ENV }}
         # configuring creds is not needed after using an IAM role provided through an OIDC Provider
