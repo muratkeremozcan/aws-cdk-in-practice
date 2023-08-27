@@ -5,10 +5,12 @@
     "infrastructure": "bin/infrastructure.js"
   },
   "scripts": {
-    "build:frontend": "cd ../web && yarn install && yarn build",
+    "build:frontend": "cd ../web && yarn build",
     "build": "tsc",
     "watch": "tsc -w",
     "test": "yarn build && jest",
+    "lint": "eslint . --cache-location node_modules/.cache/eslint --fix",
+    "typecheck": "tsc --noEmit",
     "cdk:dev": "cross-env NODE_ENV=dev DOTENV_CONFIG_PATH=./.env.development cdk --profile cdk",
     "cdk:prod": "cross-env NODE_ENV=prod DOTENV_CONFIG_PATH=./.env.production cdk --profile cdk",
     "cdk:stage": "cross-env NODE_ENV=stage DOTENV_CONFIG_PATH=./.env.stage cdk --profile cdk",
@@ -40,8 +42,8 @@
     "@types/uuid": "9.0.0",
     "@typescript-eslint/eslint-plugin": "5.31.0",
     "@typescript-eslint/parser": "5.31.0",
-    "aws-cdk": "2.34.0",
     "cross-env": "7.0.3",
+    "cypress": "^12.17.4",
     "dotenv-cli": "^7.3.0",
     "eslint": "8.20.0",
     "eslint-config-airbnb-base": "15.0.0",
@@ -55,6 +57,7 @@
     "ts-jest": "29.1.1",
     "ts-node": "10.7.0",
     "ts-node-dev": "2.0.0",
+    "aws-cdk": "2.34.0",
     "typescript": "4.9.3"
   },
   "dependencies": {

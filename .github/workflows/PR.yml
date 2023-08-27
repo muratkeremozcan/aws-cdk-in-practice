@@ -1,0 +1,72 @@
+name: deploy to temp stack
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+env:
+  AWS_REGION: us-east-1
+  ACCOUNT_ID: 721520867440
+  DOTENV_CONFIG_PATH: ./.env.development
+
+concurrency:
+  group: ${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-deploy-test:
+    runs-on: ubuntu-latest
+
+    # this is required for authenticating to AWS via the OIDC Provider we set up
+    permissions:
+      id-token: write
+      contents: write
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install infrastructure
+        uses: cypress-io/github-action@v5.6.1
+        with:
+          runTests: false
+          working-directory: infrastructure
+
+      - name: Install web
+        uses: cypress-io/github-action@v5.6.1
+        with:
+          runTests: false
+          working-directory: web
+
+      - name: Build infrastructure and web
+        run: |
+          cd infrastructure
+          yarn build
+          yarn build:frontend
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume:
+            arn:aws:iam::${{ env.ACCOUNT_ID }}:role/GitHubActionsRole
+          role-session-name: GithubActionsSession
+
+      - name: Get branch name
+        id: branch-name
+        uses: tj-actions/branch-names@v6
+
+      - name: Lint infrastructure
+        run: cd infrastructure && yarn lint
+
+      - name: cdk synth
+        run: |
+          cd infrastructure && CDK_DEFAULT_ACCOUNT=${{ env.ACCOUNT_ID }} CDK_DEFAULT_REGION=${{ env.AWS_REGION }} NODE_ENV=${{ steps.branch-name.outputs.current_branch }} DOTENV_CONFIG_PATH=./.env.development npx cdk synth
+
+      - name: deploy to ${{ steps.branch-name.outputs.current_branch }}
+        # configuring creds is not needed after using an IAM role provided through an OIDC Provider
+        run: |
+          cd infrastructure && NODE_ENV=${{ steps.branch-name.outputs.current_branch }} DOTENV_CONFIG_PATH=${{ env.DOTENV_CONFIG_PATH }} npx cdk deploy --require-approval never

@@ -19,11 +19,12 @@
     "strictPropertyInitialization": false,
     "esModuleInterop": true,
     "resolveJsonModule": true,
+    "allowJs": true,
     "typeRoots": ["./node_modules/@types"],
     "baseUrl": "./",
     "paths": {
       "customTypes/*": ["@types/*"]
     }
   },
-  "exclude": ["node_modules", "cdk.out"]
+  "exclude": ["node_modules", "cdk.out", "jest.config.js"]
 }

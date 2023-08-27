@@ -1,4 +1,4 @@
-/* ---------- External Libraries ---------- */
+/* eslint-disable import/extensions */
 import * as path from 'path'
 import {Construct} from 'constructs'
 import {NodejsFunction} from 'aws-cdk-lib/aws-lambda-nodejs'

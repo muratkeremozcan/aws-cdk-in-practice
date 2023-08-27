@@ -18,14 +18,8 @@
     "ecmaVersion": 2018,
     "sourceType": "module"
   },
-  "plugins": [
-    "@typescript-eslint",
-    "promise",
-    "prettier"
-  ],
-  "ignorePatterns": [
-    "/*.js"
-  ],
+  "plugins": ["@typescript-eslint", "promise", "prettier"],
+  "ignorePatterns": ["**/*.js", "node_modules/", "dist/"],
   "rules": {
     "camelcase": "off",
     "import/no-unresolved": "off",
