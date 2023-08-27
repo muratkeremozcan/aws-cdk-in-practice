@@ -55,14 +55,6 @@ jobs:
             arn:aws:iam::${{ env.ACCOUNT_ID }}:role/GitHubActionsRole
           role-session-name: GithubActionsSession
 
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v3
-        with:
-          aws-region: ${{ env.AWS_REGION }}
-          role-to-assume:
-            arn:aws:iam::${{ env.ACCOUNT_ID }}:role/GitHubActionsRole
-          role-session-name: GithubActionsSession
-
       - name: Get branch name
         id: branch-name
         uses: tj-actions/branch-names@v6
