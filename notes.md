@@ -1181,6 +1181,53 @@ can add all kinds of logic to your infra-as-code, although you shouldn't, but
 people do, because they can and when they do, and they aren't sure what their
 CDK code would create, then testing become necessary.
 
+---
+
+In the context of the AWS Cloud Development Kit (CDK), L1, L2, and L3 constructs
+represent different levels of abstraction for cloud resources. Here's a
+breakdown:
+
+1. **L1 (Level 1) Constructs - "CFN Resources"**:
+
+   - **Definition**: These are the lowest-level constructs, directly
+     representing AWS CloudFormation resources. They are one-to-one mappings
+     with CloudFormation resources in the AWS services.
+   - **Why they need testing**: Despite being the least abstracted, L1
+     constructs often require the most comprehensive testing because they are
+     raw and involve granular control. When creating custom L1 constructs,
+     developers are responsible for all aspects, from state management and API
+     calls to interactions with external sources. Mistakes or misconfigurations
+     at this level can lead to infrastructure failures, data breaches, or
+     unwanted costs. Thus, thorough testing is crucial.
+
+2. **L2 (Level 2) Constructs - "Curated"**:
+
+   - **Definition**: These constructs provide a higher-level abstraction than L1
+     constructs. L2 constructs offer sensible defaults and reduce the amount of
+     boilerplate code required to set up resources. They still allow for
+     customization, but with a more user-friendly interface.
+   - **Examples**: Instead of defining every property of an Amazon S3 bucket as
+     in L1, you might have an L2 construct that easily allows creating a secured
+     bucket with just a few lines of code.
+
+3. **L3 (Level 3) Constructs - "Patterns"** (Serverless Framework abstractions
+   would be like L3 constructs):
+   - **Definition**: These are the highest level of abstraction, representing
+     cloud design patterns. L3 constructs typically combine multiple L2 (and
+     potentially L1) constructs to set up a commonly used infrastructure
+     pattern.
+   - **Examples**: Setting up a serverless web application with an API Gateway,
+     AWS Lambda functions, and an Amazon DynamoDB table could be done with a
+     single L3 construct, abstracting away most of the underlying details.
+
+The reason L1 constructs might seem more complex in terms of testing is not that
+they're inherently more intricate but because they're closer to the "metal" of
+the cloud infrastructure. With L2 and L3 constructs, many of the details are
+abstracted away, providing a smoother experience with built-in best practices.
+But with L1 constructs, developers have to manage those intricate details
+themselves, necessitating more thorough testing to ensure everything is correct
+and secure.
+
 **Troubleshooting cdk problems:**
 
 Use `-v` or `-vv` (verbose, very verbose) `cdk deploy --profile cdk -vv`
