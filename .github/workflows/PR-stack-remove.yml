@@ -11,7 +11,7 @@ on:
 env:
   AWS_REGION: us-east-1
   ACCOUNT_ID: 721520867440
-  DOTENV_CONFIG_PATH: ./.env.development
+  DOTENV_CONFIG_PATH: ./.env.dev
 
 jobs:
   remove-stack:
@@ -29,6 +29,32 @@ jobs:
         with:
           node-version: '18'
 
+      - name: Install infrastructure
+        uses: cypress-io/github-action@v5.6.1
+        with:
+          runTests: false
+          working-directory: infrastructure
+
+      - name: Install web
+        uses: cypress-io/github-action@v5.6.1
+        with:
+          runTests: false
+          working-directory: web
+
+      - name: Build infrastructure and web
+        run: |
+          cd infrastructure
+          yarn build
+          yarn build:frontend
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume:
+            arn:aws:iam::${{ env.ACCOUNT_ID }}:role/GitHubActionsRole
+          role-session-name: GithubActionsSession
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v3
         with:
@@ -40,12 +66,6 @@ jobs:
       - name: Get branch name
         id: branch-name
         uses: tj-actions/branch-names@v6
-
-      - name: Install infrastructure
-        uses: cypress-io/github-action@v5.6.1
-        with:
-          runTests: false
-          working-directory: infrastructure
 
       - name: Remove stack ${{ steps.branch-name.outputs.current_branch }}
         run: |

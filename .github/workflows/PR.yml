@@ -7,7 +7,7 @@ on:
 env:
   AWS_REGION: us-east-1
   ACCOUNT_ID: 721520867440
-  DOTENV_CONFIG_PATH: ./.env.development
+  DOTENV_CONFIG_PATH: ./.env.dev
 
 concurrency:
   group: ${{ github.head_ref || github.ref }}
@@ -64,7 +64,7 @@ jobs:
 
       - name: cdk synth
         run: |
-          cd infrastructure && CDK_DEFAULT_ACCOUNT=${{ env.ACCOUNT_ID }} CDK_DEFAULT_REGION=${{ env.AWS_REGION }} NODE_ENV=${{ steps.branch-name.outputs.current_branch }} DOTENV_CONFIG_PATH=./.env.development npx cdk synth
+          cd infrastructure && CDK_DEFAULT_ACCOUNT=${{ env.ACCOUNT_ID }} CDK_DEFAULT_REGION=${{ env.AWS_REGION }} NODE_ENV=${{ steps.branch-name.outputs.current_branch }} DOTENV_CONFIG_PATH=${{ env.DOTENV_CONFIG_PATH }} npx cdk synth
 
       - name: deploy to ${{ steps.branch-name.outputs.current_branch }}
         # configuring creds is not needed after using an IAM role provided through an OIDC Provider

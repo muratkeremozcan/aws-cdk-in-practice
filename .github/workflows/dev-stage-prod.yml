@@ -1,15 +1,14 @@
-name: deploy to dev
+name: deploy to environment
 
 on:
   push:
     branches: [main]
+    tags: ['*']
   workflow_dispatch:
 
 env:
   AWS_REGION: us-east-1
   ACCOUNT_ID: 721520867440
-  NODE_ENV: dev
-  DOTENV_CONFIG_PATH: ./.env.development
 
 concurrency:
   group: ${{ github.head_ref || github.ref }}
@@ -52,9 +51,25 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v3
         with:
-          aws-region: us-east-1
-          role-to-assume: arn:aws:iam::721520867440:role/GitHubActionsRole
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume:
+            arn:aws:iam::${{ env.ACCOUNT_ID }}:role/GitHubActionsRole
           role-session-name: GithubActionsSession
+
+      - name: Dynamically Set environment variables (dev, stage, prod)
+        run: |
+          if [ "${{ github.event_name }}" == "push" ] && [ ! -z "${{ github.event.ref }}" ]; then
+            if [ "${{ github.event.ref }}" == "refs/heads/main" ]; then
+              echo "NODE_ENV=dev" >> $GITHUB_ENV
+              echo "DOTENV_CONFIG_PATH=./.env.dev" >> $GITHUB_ENV
+            elif [ "${{ startsWith(github.event.ref, 'refs/tags/') }}" == "true" ]; then
+              echo "NODE_ENV=stage" >> $GITHUB_ENV
+              echo "DOTENV_CONFIG_PATH=./.env.stage" >> $GITHUB_ENV
+            elif [ "${{ startsWith(github.event.ref, 'refs/tags/prod-') }}" == "true" ]; then
+              echo "NODE_ENV=prod" >> $GITHUB_ENV
+              echo "DOTENV_CONFIG_PATH=./.env.prod" >> $GITHUB_ENV
+            fi
+          fi
 
       - name: cdk synth
         run: |
