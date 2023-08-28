@@ -93,15 +93,16 @@ jobs:
           # CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # - name: Cypress e2e tests for front end 🧪
-      #   uses: cypress-io/github-action@v6
-      #   with:
-      #     browser: chrome
-      #     install: false
-      #     # record: true
-      #     # group: e2e-tests
-      #     # tag: branch-front-end
-      #     working-directory: web
-      #   env:
-      #     # CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Cypress e2e tests for front end 🧪
+        uses: cypress-io/github-action@v6
+        with:
+          browser: chrome
+          install: false
+          # record: true
+          # group: e2e-tests
+          # tag: branch-front-end
+          working-directory: web
+        env:
+          # CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_ENV: ${{ env.NODE_ENV }}
