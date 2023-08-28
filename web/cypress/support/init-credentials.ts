@@ -1,5 +1,7 @@
+import AWS from 'aws-sdk'
 const {promisify} = require('util')
 const awscred = require('awscred')
+
 require('dotenv').config()
 
 let initialized = false
@@ -14,6 +16,30 @@ export const initCredentials = async (): Promise<
 > => {
   if (initialized) {
     return
+  }
+
+  const {
+    AWS_ACCESS_KEY_ID,
+    AWS_SECRET_ACCESS_KEY,
+    AWS_SESSION_TOKEN,
+    AWS_REGION,
+  } = process.env
+
+  if (
+    AWS_ACCESS_KEY_ID &&
+    AWS_SECRET_ACCESS_KEY &&
+    AWS_SESSION_TOKEN &&
+    AWS_REGION
+  ) {
+    console.log('Using AWS credentials from environment variables')
+    initialized = true
+    const credentials = new AWS.Credentials(
+      AWS_ACCESS_KEY_ID,
+      AWS_SECRET_ACCESS_KEY,
+      AWS_SESSION_TOKEN,
+    )
+    AWS.config.update({region: AWS_REGION, credentials})
+    return {credentials, region: AWS_REGION}
   }
 
   const {credentials, region} = await promisify(awscred.load)()

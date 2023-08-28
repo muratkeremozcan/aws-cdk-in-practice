@@ -8,7 +8,7 @@ type Todo = {
   todo_completed: boolean
 }
 
-describe('CRUD', () => {
+describe('CRUD', {defaultCommandTimeout: 10000}, () => {
   const todo: Todo = {
     todo_completed: false,
     todo_description: String(Cypress._.random(1000)),

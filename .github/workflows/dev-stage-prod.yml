@@ -93,11 +93,19 @@ jobs:
           # CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Get S3 bucket website URL
+        id: ui-base-url
+        run: |
+          echo "::set-output name=url::$(aws cloudformation describe-stacks --profile cdk --stack-name FinalStack-${{ steps.branch-name.outputs.current_branch }} --query "Stacks[0].Outputs[?OutputKey=='FrontendUrl'].OutputValue" --output text)"
+        env:
+          AWS_REGION: ${{ env.AWS_REGION }}
+
       - name: Cypress e2e tests for front end 🧪
         uses: cypress-io/github-action@v6
         with:
           browser: chrome
           install: false
+          config: baseUrl=${{ steps.ui-base-url.outputs.url }}
           # record: true
           # group: e2e-tests
           # tag: branch-front-end
@@ -105,4 +113,3 @@ jobs:
         env:
           # CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NODE_ENV: ${{ env.NODE_ENV }}
