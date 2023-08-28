@@ -6,6 +6,7 @@
   },
   "scripts": {
     "build:frontend": "cd ../web && yarn build",
+    "prebuild": "rimraf dist",
     "build": "tsc",
     "watch": "tsc -w",
     "test": "yarn build && jest",
@@ -28,9 +29,14 @@
     "cdk:synth-branch": "yarn cdk:branch synth",
     "cdk:deploy-branch": "yarn cdk:branch deploy",
     "cdk:destroy-branch": "yarn cdk:branch destroy",
-    "cdk:reset": "rm -rf ./cdk.out && rm -rf cdk.context.json"
+    "cdk:reset": "rm -rf ./cdk.out && rm -rf cdk.context.json",
+    "cy:open": "cypress open --e2e --browser chrome",
+    "cy:run": "cypress run --e2e --browser chrome",
+    "cy:run-fast": "CYPRESS_NO_COMMAND_LOG=1 cypress run --e2e --browser chrome --config video=false screenshot=false"
   },
   "devDependencies": {
+    "@bahmutov/cy-api": "^2.2.5",
+    "@faker-js/faker": "^8.0.2",
     "@types/aws-sdk": "2.7.0",
     "@types/cors": "2.8.12",
     "@types/express": "4.17.13",
@@ -42,8 +48,11 @@
     "@types/uuid": "9.0.0",
     "@typescript-eslint/eslint-plugin": "5.31.0",
     "@typescript-eslint/parser": "5.31.0",
+    "aws-cdk": "2.34.0",
     "cross-env": "7.0.3",
+    "cy-spok": "^1.6.2",
     "cypress": "^12.17.4",
+    "cypress-map": "^1.21.1",
     "dotenv-cli": "^7.3.0",
     "eslint": "8.20.0",
     "eslint-config-airbnb-base": "15.0.0",
@@ -57,7 +66,6 @@
     "ts-jest": "29.1.1",
     "ts-node": "10.7.0",
     "ts-node-dev": "2.0.0",
-    "aws-cdk": "2.34.0",
     "typescript": "4.9.3"
   },
   "dependencies": {

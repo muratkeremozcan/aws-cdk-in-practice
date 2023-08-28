@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "outDir": "./dist",
     "target": "ES2018",
     "module": "commonjs",
     "lib": ["es2018", "dom"],
@@ -24,7 +25,8 @@
     "baseUrl": "./",
     "paths": {
       "customTypes/*": ["@types/*"]
-    }
+    },
+    "skipLibCheck": true
   },
   "exclude": ["node_modules", "cdk.out", "jest.config.js"]
 }
