@@ -27,8 +27,8 @@ Cypress.Commands.add(
   },
 )
 
-describe('template spec', () => {
-  it('passes', () => {
+describe('CRUD', () => {
+  it('should crud the backend using api gateway', () => {
     const todo: Todo = {
       todo_completed: false,
       todo_description: faker.lorem.sentence(),

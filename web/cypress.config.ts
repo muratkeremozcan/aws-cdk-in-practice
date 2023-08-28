@@ -1,13 +1,14 @@
 import {defineConfig} from 'cypress'
 import tasks from './cypress/support/tasks'
-import {getEnvironmentConfig} from './lib/get-env-config'
+import {getEnvironmentConfig} from '../infrastructure/lib/get-env-config'
 import {domain_name} from '../config.json'
-
 require('dotenv').config()
 
-// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-const {backend_subdomain} = getEnvironmentConfig(process.env.NODE_ENV!)
-const baseUrl = `https://${backend_subdomain}.${domain_name}`
+const {backend_subdomain, frontend_subdomain} = getEnvironmentConfig(
+  process.env.NODE_ENV!,
+)
+const apiUrl = `https://${backend_subdomain}.${domain_name}`
+const baseUrl = `https://${frontend_subdomain}.${domain_name}`
 
 export default defineConfig({
   viewportWidth: 1380,
@@ -26,6 +27,7 @@ export default defineConfig({
     },
   },
   env: {
+    apiUrl,
     ...process.env,
   },
 })
