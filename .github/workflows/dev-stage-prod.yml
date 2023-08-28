@@ -94,9 +94,10 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Get S3 bucket website URL
-        id: ui-base-url
         run: |
-          echo "::set-output name=url::$(aws cloudformation describe-stacks --profile cdk --stack-name FinalStack-${{ steps.branch-name.outputs.current_branch }} --query "Stacks[0].Outputs[?OutputKey=='FrontendUrl'].OutputValue" --output text)"
+          UI_BASE_URL=$(aws cloudformation describe-stacks --stack-name FinalStack-ui-yml --query "Stacks[0].Outputs[?OutputKey=='FrontendUrl'].OutputValue" --output text)
+          echo "UI_BASE_URL=$UI_BASE_URL" >> $GITHUB_ENV
+          echo "base url is ${{ env.UI_BASE_URL }}"
         env:
           AWS_REGION: ${{ env.AWS_REGION }}
 
@@ -105,7 +106,7 @@ jobs:
         with:
           browser: chrome
           install: false
-          config: baseUrl=${{ steps.ui-base-url.outputs.url }}
+          config: baseUrl=${{ env.UI_BASE_URL }}
           # record: true
           # group: e2e-tests
           # tag: branch-front-end
