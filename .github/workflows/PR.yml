@@ -87,7 +87,7 @@ jobs:
 
       - name: Get S3 bucket website URL
         run: |
-          UI_BASE_URL=$(aws cloudformation describe-stacks --profile cdk --stack-name ${{ env.STACK_NAME}}-${{ steps.branch-name.outputs.current_branch }} --query "Stacks[0].Outputs[?OutputKey=='FrontendUrl'].OutputValue" --output text)
+          UI_BASE_URL=$(aws cloudformation describe-stacks --stack-name ${{ env.STACK_NAME}}-${{ steps.branch-name.outputs.current_branch }} --query "Stacks[0].Outputs[?OutputKey=='FrontendUrl'].OutputValue" --output text)
           echo "UI_BASE_URL=$UI_BASE_URL" >> $GITHUB_ENV
           echo "base url is ${{ env.UI_BASE_URL }}"
         env:
