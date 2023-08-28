@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "esnext",
     "lib": ["esnext", "dom"],
-    "types": ["node"],
+    "types": ["node", "cypress-map"],
     "allowJs": true,
     "resolveJsonModule": true
   },

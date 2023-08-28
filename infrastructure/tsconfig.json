@@ -28,5 +28,11 @@
     },
     "skipLibCheck": true
   },
-  "exclude": ["node_modules", "cdk.out", "jest.config.js", "cypress.d.ts"]
+  "exclude": [
+    "node_modules",
+    "cdk.out",
+    "jest.config.js",
+    "cypress.d.ts",
+    "dist"
+  ]
 }
