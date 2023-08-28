@@ -86,8 +86,8 @@ jobs:
           browser: chrome
           install: false
           # record: true
-          group: e2e-tests
-          tag: branch-backend
+          # group: e2e-tests
+          # tag: branch-backend
           working-directory: infrastructure
         env:
           # CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
@@ -99,8 +99,8 @@ jobs:
           browser: chrome
           install: false
           # record: true
-          group: e2e-tests
-          tag: branch-front-end
+          # group: e2e-tests
+          # tag: branch-front-end
           working-directory: web
         env:
           # CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
