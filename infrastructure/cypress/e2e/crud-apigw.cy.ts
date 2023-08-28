@@ -16,7 +16,7 @@ Cypress.Commands.add(
     body?: Todo
     allowedToFail?: boolean
   }) => {
-    cy.log(`**${method}`)
+    cy.log(`**${method}**`)
     return cy.api<Todo[] & Todo>({
       method,
       url,
