@@ -1,5 +1,6 @@
 import 'cypress-map'
 import spok from 'cy-spok'
+// @ts-expect-error grief
 import {faker} from '@faker-js/faker'
 import type {Todo} from 'customTypes/index'
 
