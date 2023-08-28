@@ -235,6 +235,7 @@ describe('Testing Chapter 8 code.', () => {
 
     const template = Template.fromStack(chapter8Stack)
 
+    // @ts-expect-error grief
     expect(template.toJSON()).toMatchSnapshot()
   })
 })

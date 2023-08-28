@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "target": "esnext",
+    "lib": ["esnext", "dom"],
+    "types": ["node", "cypress-map"],
+    "allowJs": true,
+    "resolveJsonModule": true
+  },
+  "extends": "../tsconfig.json"
+}

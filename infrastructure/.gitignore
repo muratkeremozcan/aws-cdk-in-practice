@@ -16,3 +16,5 @@ cdk.context.json
 .env
 .env.*
 config.json
+dist/
+!cypress.d.ts

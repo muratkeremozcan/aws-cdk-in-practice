@@ -30,13 +30,13 @@ jobs:
           node-version: '18'
 
       - name: Install infrastructure
-        uses: cypress-io/github-action@v5.6.1
+        uses: cypress-io/github-action@v6
         with:
           runTests: false
           working-directory: infrastructure
 
       - name: Install web
-        uses: cypress-io/github-action@v5.6.1
+        uses: cypress-io/github-action@v6
         with:
           runTests: false
           working-directory: web
@@ -70,3 +70,29 @@ jobs:
         # configuring creds is not needed after using an IAM role provided through an OIDC Provider
         run: |
           cd infrastructure && NODE_ENV=${{ steps.branch-name.outputs.current_branch }} DOTENV_CONFIG_PATH=${{ env.DOTENV_CONFIG_PATH }} npx cdk deploy --require-approval never
+
+      - name: Cypress e2e tests for backend api 🧪
+        uses: cypress-io/github-action@v6
+        with:
+          browser: chrome
+          install: false
+          # record: true
+          # group: e2e-tests
+          # tag: branch-backend
+          working-directory: infrastructure
+        env:
+          # CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # - name: Cypress e2e tests for front end 🧪
+      #   uses: cypress-io/github-action@v6
+      #   with:
+      #     browser: chrome
+      #     install: false
+      #     # record: true
+      #     # group: e2e-tests
+      #     # tag: branch-front-end
+      #     working-directory: web
+      #   env:
+      #     # CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,5 +1,7 @@
 const fs = require('fs')
-const {getEnvironmentConfig} = require('../infrastructure/lib/get-env-config')
+const {
+  getEnvironmentConfig,
+} = require('../infrastructure/dist/infrastructure/lib/get-env-config.js')
 const config = require('../config.json')
 
 const {backend_subdomain} = getEnvironmentConfig(process.env.NODE_ENV)

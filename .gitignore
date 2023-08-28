@@ -25,3 +25,4 @@ web/get-backend-url.js
 .env.development.local
 .env.test.local
 .env.production.local
+dist/

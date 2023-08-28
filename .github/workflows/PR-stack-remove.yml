@@ -30,13 +30,13 @@ jobs:
           node-version: '18'
 
       - name: Install infrastructure
-        uses: cypress-io/github-action@v5.6.1
+        uses: cypress-io/github-action@v6
         with:
           runTests: false
           working-directory: infrastructure
 
       - name: Install web
-        uses: cypress-io/github-action@v5.6.1
+        uses: cypress-io/github-action@v6
         with:
           runTests: false
           working-directory: web
