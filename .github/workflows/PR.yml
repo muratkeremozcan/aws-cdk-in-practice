@@ -85,6 +85,12 @@ jobs:
           # CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Configure AWS CLI
+        run: |
+          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws configure set region ${{ secrets.AWS_REGION }}
+
       - name: Get S3 bucket website URL
         run: |
           UI_BASE_URL=$(aws cloudformation describe-stacks --stack-name ${{ env.STACK_NAME}}-${{ steps.branch-name.outputs.current_branch }} --query "Stacks[0].Outputs[?OutputKey=='FrontendUrl'].OutputValue" --output text)
