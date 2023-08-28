@@ -8,6 +8,7 @@ require('dotenv').config()
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 const {backend_subdomain} = getEnvironmentConfig(process.env.NODE_ENV!)
 const baseUrl = `https://${backend_subdomain}.${domain_name}`
+console.log({baseUrl})
 
 export default defineConfig({
   viewportWidth: 1380,
