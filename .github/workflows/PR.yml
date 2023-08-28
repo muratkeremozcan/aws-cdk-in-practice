@@ -110,7 +110,7 @@ jobs:
           config: baseUrl=${{ env.UI_BASE_URL }}
           # record: true
           # group: e2e-tests
-          # tag: branch-front-end
+          # tag: branch-front-end #
           working-directory: web
         env:
           # CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
