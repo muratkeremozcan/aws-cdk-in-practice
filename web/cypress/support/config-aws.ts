@@ -7,9 +7,12 @@ require('dotenv').config()
 let initialized = false
 
 /**
- * Loads the environment variables from the .env file,
- * resolves the AWS credentials using the `awscred` module
- * and puts the access key and secret into the environment variables.
+ * Initializes AWS credentials by either retrieving them from the environment variables or by using the `awscred` module.
+ * If the environment variables `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_SESSION_TOKEN`, and `AWS_REGION` are all
+ * set, it will use these. Otherwise, it will use `awscred` to load the credentials from the AWS configuration files.
+ *
+ * @returns {Promise<{credentials: AWS.Credentials; region: string} | undefined>} A promise that resolves to an object
+ * containing the AWS `credentials` and `region`, or `undefined` if the credentials were already initialized.
  */
 const initCredentials = async (): Promise<
   {credentials: AWS.Credentials; region: string} | undefined
@@ -57,10 +60,11 @@ const initCredentials = async (): Promise<
 }
 
 /**
- * Gets the Base URL from the CloudFormation stack outputs.
+ * Retrieves the Base URL from the CloudFormation stack outputs.
  *
  * @param {string} deployment - The deployment environment (e.g. 'dev', 'prod').
- * @returns {Promise<string | null>} A promise that will resolve to the Base URL if found, or `null` otherwise.
+ * @returns {Promise<string | null>} A promise that resolves to the Base URL if found in the CloudFormation stack outputs,
+ * or `null` if the stack or the output with the key 'FrontendUrl' could not be found.
  */
 const getBaseUrl = async (deployment: string): Promise<string | null> => {
   AWS.config.credentials = new AWS.SharedIniFileCredentials({profile: 'cdk'})
@@ -105,6 +109,13 @@ const getBaseUrl = async (deployment: string): Promise<string | null> => {
   })
 }
 
+/**
+ * Configures AWS for local development by initializing the AWS credentials and retrieving the Base URL from the
+ * CloudFormation stack outputs.
+ *
+ * @param {object} config - The configuration object to update with the Base URL.
+ * @param {string} deployment - The deployment environment (e.g. 'dev', 'prod').
+ */
 export const configAWSForLocal = async (config, deployment) => {
   const awsConfig = await initCredentials()
 

@@ -94,9 +94,9 @@ jobs:
           # CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Get S3 bucket website URL
+      - name: Get website URL
         run: |
-          UI_BASE_URL=$(aws cloudformation describe-stacks --stack-name ${{ env.STACK_NAME }}-${{ env.NODE_ENV }} --query "Stacks[0].Outputs[?OutputKey=='FrontendUrl'].OutputValue" --output text)
+          UI_BASE_URL=$(${{ env.NODE_ENV }}-backend-cdk-book.cdkbookmurat.click)
           echo "UI_BASE_URL=$UI_BASE_URL" >> $GITHUB_ENV
           echo "base url is $UI_BASE_URL"
         env:
