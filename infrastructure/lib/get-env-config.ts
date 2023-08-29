@@ -5,10 +5,11 @@ const sanitizeBranchName = (branch: string): string =>
   branch.replace(/[^a-zA-Z0-9-]/g, '') // Ensure DNS safe
 
 const getBranchFromGithubRef = (): string | null => {
-  if (process.env.GITHUB_REF) {
-    const refArray = process.env.GITHUB_REF.split('/')
+  if (process.env.GITHUB_REF_NAME) {
+    // const refArray = process.env.GITHUB_REF_NAME.split('/')
     // Assuming it's a branch, take the last part of the split string
-    return sanitizeBranchName(refArray[refArray.length - 1])
+    // return sanitizeBranchName(refArray[refArray.length - 1])
+    return process.env.GITHUB_REF_NAME
   }
   return null
 }
