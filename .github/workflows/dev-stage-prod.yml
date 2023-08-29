@@ -96,14 +96,9 @@ jobs:
 
       - name: Get website URL
         run: |
-          UI_BASE_URL=$(https://${{ env.NODE_ENV }}-frontend-cdk-book.cdkbookmurat.click/)
+          UI_BASE_URL="https://${{ env.NODE_ENV }}-frontend-cdk-book.cdkbookmurat.click"
           echo "UI_BASE_URL=$UI_BASE_URL" >> $GITHUB_ENV
-          echo "base url is $UI_BASE_URL"
-        env:
-          AWS_REGION: ${{ env.AWS_REGION }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
+          echo "base url is $UI_BASE_URL
 
       - name: Cypress e2e tests for front end 🧪 ${{ env.UI_BASE_URL }}
         uses: cypress-io/github-action@v6
