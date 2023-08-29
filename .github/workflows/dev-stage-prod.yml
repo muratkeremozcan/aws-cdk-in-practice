@@ -9,6 +9,7 @@ on:
 env:
   AWS_REGION: us-east-1
   ACCOUNT_ID: 721520867440
+  STACK_NAME: FinalStack
 
 concurrency:
   group: ${{ github.head_ref || github.ref }}
@@ -104,7 +105,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
 
-      - name: Cypress e2e tests for front end 🧪
+      - name: Cypress e2e tests for front end 🧪 ${{ env.UI_BASE_URL }}
         uses: cypress-io/github-action@v6
         with:
           browser: chrome
