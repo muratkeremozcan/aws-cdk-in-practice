@@ -2,9 +2,7 @@ import {defineConfig} from 'cypress'
 import tasks from './cypress/support/tasks'
 import {getEnvironmentConfig} from '../infrastructure/lib/get-env-config'
 import {domain_name} from '../config.json'
-import {initCredentials} from './cypress/support/init-credentials'
-import {getBaseUrl} from './cypress/support/get-base-url'
-import AWS from 'aws-sdk'
+import {configAWSForLocal} from './cypress/support/config-aws'
 
 require('dotenv').config()
 
@@ -24,24 +22,8 @@ export default defineConfig({
 
   e2e: {
     async setupNodeEvents(on, config) {
-      const awsConfig = await initCredentials()
-
-      if (awsConfig) {
-        AWS.config.update({
-          accessKeyId: awsConfig.credentials.accessKeyId,
-          secretAccessKey: awsConfig.credentials.secretAccessKey,
-          sessionToken: awsConfig.credentials.sessionToken,
-          region: awsConfig.region,
-        })
-      } else {
-        console.error('Could not initialize AWS credentials')
-      }
-
-      const baseUrl = await getBaseUrl(deployment)
-      if (baseUrl) {
-        config.baseUrl = baseUrl
-      } else {
-        console.error('Could not get base URL')
+      if (!process.env.CI) {
+        await configAWSForLocal(config, deployment)
       }
 
       tasks(on)
