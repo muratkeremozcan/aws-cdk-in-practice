@@ -7,7 +7,7 @@ import {configAWSForLocal} from './cypress/support/config-aws'
 require('dotenv').config()
 
 const {backend_subdomain, deployment} = getEnvironmentConfig(
-  process.env.NODE_ENV,
+  process.env.NODE_ENV || 'dev',
 )
 const apiUrl = `https://${backend_subdomain}.${domain_name}`
 console.log({deployment, apiUrl})

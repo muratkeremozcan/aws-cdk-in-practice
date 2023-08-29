@@ -20,7 +20,10 @@
     "typecheck": "tsc --noEmit",
     "cy:open": "cypress open --e2e --browser chrome",
     "cy:run": "cypress run --e2e --browser chrome",
-    "cy:run-fast": "CYPRESS_NO_COMMAND_LOG=1 cypress run --e2e --browser chrome --config video=false screenshot=false"
+    "cy:run-fast": "CYPRESS_NO_COMMAND_LOG=1 cypress run --e2e --browser chrome --config video=false screenshot=false",
+    "cy:open-stage": "NODE_ENV=stage cy:open",
+    "cy:run-stage": "NODE_ENV=stage cy:run",
+    "cy:run-fast-stage": "NODE_ENV=stage cy:run-fast"
   },
   "eslintConfig": {
     "extends": [
