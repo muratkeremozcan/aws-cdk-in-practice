@@ -96,7 +96,7 @@ jobs:
 
       - name: Get website URL
         run: |
-          UI_BASE_URL="https://${{ env.NODE_ENV }}-frontend-cdk-book.cdkbookmurat.click"
+          UI_BASE_URL="http://web-bucket-akemxdjqkl666-${{ env.NODE_ENV }}.s3-website-us-east-1.amazonaws.com/"
           echo "UI_BASE_URL=$UI_BASE_URL" >> $GITHUB_ENV
           echo "base url is $UI_BASE_URL"
 
