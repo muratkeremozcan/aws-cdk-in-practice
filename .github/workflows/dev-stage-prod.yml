@@ -96,7 +96,7 @@ jobs:
 
       - name: Get website URL
         run: |
-          UI_BASE_URL=$(${{ env.NODE_ENV }}-backend-cdk-book.cdkbookmurat.click)
+          UI_BASE_URL=$(https://${{ env.NODE_ENV }}-frontend-cdk-book.cdkbookmurat.click/)
           echo "UI_BASE_URL=$UI_BASE_URL" >> $GITHUB_ENV
           echo "base url is $UI_BASE_URL"
         env:
