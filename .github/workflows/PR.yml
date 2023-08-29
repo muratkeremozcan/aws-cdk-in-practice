@@ -9,7 +9,7 @@ env:
   ACCOUNT_ID: 721520867440
   DOTENV_CONFIG_PATH: ./.env.dev
   STACK_NAME: FinalStack
-  ROLE_NAME: ci
+  ROLE_NAME: GitHubActionsRole
 
 concurrency:
   group: ${{ github.head_ref || github.ref }}
