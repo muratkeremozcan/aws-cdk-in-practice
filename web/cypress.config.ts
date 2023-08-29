@@ -24,24 +24,26 @@ export default defineConfig({
 
   e2e: {
     async setupNodeEvents(on, config) {
-      const awsConfig = await initCredentials()
+      if (!process.env.CI) {
+        const awsConfig = await initCredentials()
 
-      if (awsConfig) {
-        AWS.config.update({
-          accessKeyId: awsConfig.credentials.accessKeyId,
-          secretAccessKey: awsConfig.credentials.secretAccessKey,
-          sessionToken: awsConfig.credentials.sessionToken,
-          region: awsConfig.region,
-        })
-      } else {
-        console.error('Could not initialize AWS credentials')
-      }
+        if (awsConfig) {
+          AWS.config.update({
+            accessKeyId: awsConfig.credentials.accessKeyId,
+            secretAccessKey: awsConfig.credentials.secretAccessKey,
+            sessionToken: awsConfig.credentials.sessionToken,
+            region: awsConfig.region,
+          })
+        } else {
+          console.error('Could not initialize AWS credentials')
+        }
 
-      const baseUrl = await getBaseUrl(deployment)
-      if (baseUrl) {
-        config.baseUrl = baseUrl
-      } else {
-        console.error('Could not get base URL')
+        const baseUrl = await getBaseUrl(deployment)
+        if (baseUrl) {
+          config.baseUrl = baseUrl
+        } else {
+          console.error('Could not get base URL')
+        }
       }
 
       tasks(on)
