@@ -9,6 +9,7 @@ env:
   ACCOUNT_ID: 721520867440
   DOTENV_CONFIG_PATH: ./.env.dev
   STACK_NAME: FinalStack
+  ROLE_NAME: ci
 
 concurrency:
   group: ${{ github.head_ref || github.ref }}
@@ -85,22 +86,24 @@ jobs:
           # CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Configure AWS CLI
+      - name: Assume AWS IAM Role
         run: |
-          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws configure set aws_session_token ${{ secrets.AWS_SESSION_TOKEN }}
-          aws configure set region ${{ env.AWS_REGION }}
+          TEMP_ROLE=$(aws sts assume-role --role-arn arn:aws:iam::${{ env.ACCOUNT_ID }}:role/${{ env.ROLE_NAME }} --role-session-name github-actions)
+          echo "AWS_ACCESS_KEY_ID=$(echo $TEMP_ROLE | jq -r .Credentials.AccessKeyId)" >> $GITHUB_ENV
+          echo "AWS_SECRET_ACCESS_KEY=$(echo $TEMP_ROLE | jq -r .Credentials.SecretAccessKey)" >> $GITHUB_ENV
+          echo "AWS_SESSION_TOKEN=$(echo $TEMP_ROLE | jq -r .Credentials.SessionToken)" >> $GITHUB_ENV
+        env:
+          AWS_REGION: ${{ env.AWS_REGION }}
+          ACCOUNT_ID: ${{ env.ACCOUNT_ID }}
+          ROLE_NAME: ${{ env.ROLE_NAME }}
 
       - name: Get S3 bucket website URL
         run: |
-          UI_BASE_URL=$(aws cloudformation describe-stacks --stack-name ${{ env.STACK_NAME}}-${{ steps.branch-name.outputs.current_branch }} --query "Stacks[0].Outputs[?OutputKey=='FrontendUrl'].OutputValue" --output text)
+          UI_BASE_URL=$(aws cloudformation describe-stacks --stack-name ${{ env.STACK_NAME }}-${{ steps.branch-name.outputs.current_branch }} --query "Stacks[0].Outputs[?OutputKey=='FrontendUrl'].OutputValue" --output text)
           echo "UI_BASE_URL=$UI_BASE_URL" >> $GITHUB_ENV
-          echo "base url is ${{ env.UI_BASE_URL }}"
+          echo "base url is $UI_BASE_URL"
         env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: ${{ env.AWS_REGION }}
+          AWS_REGION: ${{ env.AWS_REGION }}
 
       - name: Cypress e2e tests for front end 🧪
         uses: cypress-io/github-action@v6
@@ -110,7 +113,7 @@ jobs:
           config: baseUrl=${{ env.UI_BASE_URL }}
           # record: true
           # group: e2e-tests
-          # tag: branch-front-end #
+          # tag: branch-front-end
           working-directory: web
         env:
           # CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
