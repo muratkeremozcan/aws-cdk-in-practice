@@ -98,7 +98,7 @@ jobs:
         run: |
           UI_BASE_URL="https://${{ env.NODE_ENV }}-frontend-cdk-book.cdkbookmurat.click"
           echo "UI_BASE_URL=$UI_BASE_URL" >> $GITHUB_ENV
-          echo "base url is $UI_BASE_URL
+          echo "base url is $UI_BASE_URL"
 
       - name: Cypress e2e tests for front end 🧪 ${{ env.UI_BASE_URL }}
         uses: cypress-io/github-action@v6
