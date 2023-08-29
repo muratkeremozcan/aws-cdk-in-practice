@@ -6,10 +6,9 @@ const sanitizeBranchName = (branch: string): string =>
 
 const getBranchFromGithubRef = (): string | null => {
   if (process.env.GITHUB_REF_NAME) {
-    // const refArray = process.env.GITHUB_REF_NAME.split('/')
+    // const refArray = process.env.GITHUB_REF.split('/')
     // Assuming it's a branch, take the last part of the split string
-    // return sanitizeBranchName(refArray[refArray.length - 1])
-    return process.env.GITHUB_REF_NAME
+    return sanitizeBranchName(process.env.GITHUB_REF_NAME)
   }
   return null
 }
