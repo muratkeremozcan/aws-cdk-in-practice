@@ -75,8 +75,10 @@ jobs:
       - name: Export environment variables
         run: |
           cd infrastructure
-          AWS_SDK_LOAD_CONFIG=1
           yarn export:env
+
+      - name: Echo environment variables
+        run: |
           echo "FrontendUrl=$FrontendUrl"
           echo "ApiGatewayUrl=$ApiGatewayUrl"
           echo "DynamoDBTableName=$DynamoDBTableName"

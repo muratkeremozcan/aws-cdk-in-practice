@@ -7,7 +7,18 @@ const path = require('path')
 
 // Set the AWS region
 AWS.config.update({region: 'us-east-1'})
-AWS.config.credentials = new AWS.SharedIniFileCredentials({profile: 'cdk'})
+
+// if process.env is provied (the case in CI), set the AWS credentials from the environment
+if (process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY) {
+  AWS.config.credentials = new AWS.Credentials(
+    process.env.AWS_ACCESS_KEY_ID,
+    process.env.AWS_SECRET_ACCESS_KEY,
+    process.env.AWS_SESSION_TOKEN,
+  )
+} else {
+  // Otherwise, assume the credentials are stored in the (local) credentials file
+  AWS.config.credentials = new AWS.SharedIniFileCredentials({profile: 'cdk'})
+}
 
 // Create the CloudFormation service object
 const cfn = new AWS.CloudFormation()
