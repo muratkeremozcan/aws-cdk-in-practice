@@ -206,3 +206,123 @@ The same function is also used for the front-end cypress.config. In addition to 
 Also interesting, in PRs where we use temporary stacks, we identify the environment via the branch name acquisition. 
 On the other hand, in fixed deployments like dev, stage, and prod, we calculate the deployment dynamically, check out [`dev-stage-prod.yml`](.github/workflows/dev-stage-prod.yml). 
 
+> At the time we did not have the ability to `export:env` (which you will see below). If we had that available, we would not need to implement `getBaseUrl` at `web/cypress/support/config-aws.ts`. Albeit, these varied implementations showcase solutions where one or the other is not possible. In my opinion, `export:env` is preferred if available. 
+
+## Addendum: `export:env` in CDK
+
+There is this neat plugin in Serverless Framework called [export-env](https://www.serverless.com/plugins/serverless-export-env) that can export your stack's env vars to the .env file.
+CDK does not have this utility built in, but we can make it work. It will be slightly different in every cdk setup, but the idea is about using CfnOutputs (in any construct) then using a script to extract them from `manifest.json`.
+
+There are a few constructs we are utilizing `CfnOutput` already, and these can be added anywhere.
+```ts
+new CfnOutput(this, 'ApiGatewayUrl', {
+  value: apiGateway.url,
+})
+```
+
+At the end of a deployment, these values are already being printed out. The idea is a to have a script to extract these values from `manifest.json`.
+
+First, as a convenience so that we do not have to think about stack name (temp stacks will be different each time, right?) we can add a write to a gitignored text file in our app. This way, we will not have to pass in an argument as the stack name (but we still could  if we wanted)
+
+```ts
+#!/usr/bin/env node
+import 'source-map-support/register'
+import * as cdk from 'aws-cdk-lib'
+import fs from 'fs'
+import path from 'path'
+import {FinalStack} from '../lib/final-stack'
+
+const app = new cdk.App()
+
+const branchName = process.env.NODE_ENV || 'dev'
+const stackName = `FinalStack-${branchName}`
+
+new FinalStack(app, stackName, {
+  env: {region: 'us-east-1', account: process.env.CDK_DEFAULT_ACCOUNT},
+})
+
+// Write the stack name to a file
+const stackNameFilePath = path.resolve(__dirname, 'stack-name.txt')
+fs.writeFileSync(stackNameFilePath, stackName)
+```
+
+Write the stack name to `stack-name.txt`. For temp branch named `output-env` it would look like:
+```txt
+FinalStack-output-env
+```
+
+In the main script `create-env-file.js`, we can use that value and AWS SDK to extract the output from the `manifest.json` file, and write it out to .env
+
+```js
+// ./infrastructure/create-env-file.js
+
+// reads the manifest.json and the stack template file from the cdk.out directory,
+// gets the outputs from the template, and writes them to the .env file.
+// Run this script after you deploy your CDK app.
+const AWS = require('aws-sdk')
+const fs = require('fs')
+const path = require('path')
+
+// Set the AWS region
+AWS.config.update({region: 'us-east-1'})
+
+// if process.env is provided (the case in CI), set the AWS credentials from the environment
+if (process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY) {
+  AWS.config.credentials = new AWS.Credentials(
+    process.env.AWS_ACCESS_KEY_ID,
+    process.env.AWS_SECRET_ACCESS_KEY,
+    process.env.AWS_SESSION_TOKEN,
+  )
+} else {
+  // Otherwise, assume the credentials are stored in the (local) credentials file
+  AWS.config.credentials = new AWS.SharedIniFileCredentials({profile: 'cdk'})
+}
+
+// Create the CloudFormation service object
+const cfn = new AWS.CloudFormation()
+
+// pass the stack name in or read it from stack-name.txt
+const stackNameFilePath = path.resolve(__dirname, './bin/stack-name.txt')
+const stackName = process.argv[2] || fs.readFileSync(stackNameFilePath, 'utf-8')
+
+if (!stackName) {
+  console.error('Error: Please provide the stack name as an argument.')
+  process.exit(1)
+}
+
+// Get the stack details
+cfn.describeStacks({StackName: stackName}, (err, data) => {
+  if (err) {
+    console.error(`Error: ${err.message}`)
+    return
+  }
+
+  // Extract the outputs from the stack details
+  const outputs = data.Stacks[0].Outputs
+
+  // Path to the .env file
+  const envFilePath = path.resolve(__dirname, '.env')
+
+  // Convert the outputs to a .env file format
+  const envFileContent = outputs
+    .map(output => `${output.OutputKey}=${output.OutputValue}`)
+    .join('\n')
+
+  fs.writeFileSync(envFilePath, envFileContent)
+
+  console.log(`Wrote environment variables to ${envFilePath}`)
+  console.log(envFileContent)
+})
+
+```
+
+Mind that in CI we need write the values out to the CI envrionment:
+
+```yml
+- name: Export environment variables
+  run: |
+    cd infrastructure
+    yarn export:env
+    echo "FrontendUrl=$(cat ./.env | grep FrontendUrl | cut -d '=' -f 2)" >> $GITHUB_ENV
+```
+

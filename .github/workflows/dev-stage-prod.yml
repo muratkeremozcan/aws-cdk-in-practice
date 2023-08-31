@@ -7,9 +7,13 @@ on:
   workflow_dispatch:
 
 env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   AWS_REGION: us-east-1
   ACCOUNT_ID: 721520867440
   STACK_NAME: FinalStack
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
 
 concurrency:
   group: ${{ github.head_ref || github.ref }}
@@ -81,6 +85,12 @@ jobs:
         run: |
           cd infrastructure && NODE_ENV=${{ env.NODE_ENV }} DOTENV_CONFIG_PATH=${{ env.DOTENV_CONFIG_PATH }} npx cdk deploy --require-approval never
 
+      - name: Export environment variables
+        run: |
+          cd infrastructure
+          yarn export:env
+          echo "FrontendUrl=$(cat infrastructure/.env | grep FrontendUrl | cut -d '=' -f 2)" >> $GITHUB_ENV
+
       - name: Cypress e2e tests for backend api 🧪
         uses: cypress-io/github-action@v6
         with:
@@ -90,26 +100,21 @@ jobs:
           # group: e2e-tests
           # tag: branch-backend
           working-directory: infrastructure
-        env:
-          # CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      # in case you cannot export env vars, use this
       - name: Get website URL
         run: |
           UI_BASE_URL="http://web-bucket-akemxdjqkl666-${{ env.NODE_ENV }}.s3-website-us-east-1.amazonaws.com/"
           echo "UI_BASE_URL=$UI_BASE_URL" >> $GITHUB_ENV
           echo "base url is $UI_BASE_URL"
 
-      - name: Cypress e2e tests for front end 🧪 ${{ env.UI_BASE_URL }}
+      - name: Front end e2e 🧪 ${{ env.FrontendUrl }} / ${{ env.UI_BASE_URL }}
         uses: cypress-io/github-action@v6
         with:
           browser: chrome
           install: false
-          config: baseUrl=${{ env.UI_BASE_URL }}
+          config: baseUrl=${{ env.FrontendUrl }}
           # record: true
           # group: e2e-tests
           # tag: branch-front-end
           working-directory: web
-        env:
-          # CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

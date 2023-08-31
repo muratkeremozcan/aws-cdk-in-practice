@@ -1,4 +1,5 @@
-import {Stack, StackProps} from 'aws-cdk-lib'
+import {Stack, CfnOutput} from 'aws-cdk-lib'
+import type {StackProps} from 'aws-cdk-lib'
 import {Construct} from 'constructs'
 import {S3} from './constructs/S3'
 import {Route53} from './constructs/Route53'
@@ -38,10 +39,22 @@ export class FinalStack extends Stack {
       route53: this.route53,
     })
 
-    new ApiGateway(this, `Api-Gateway-${process.env.NODE_ENV || ''}`, {
-      route53: this.route53,
-      acm: this.acm,
-      dynamoTable: this.dynamo.table,
+    const apiGateway = new ApiGateway(
+      this,
+      `Api-Gateway-${process.env.NODE_ENV || ''}`,
+      {
+        route53: this.route53,
+        acm: this.acm,
+        dynamoTable: this.dynamo.table,
+      },
+    )
+
+    new CfnOutput(this, 'ApiGatewayUrl', {
+      value: apiGateway.url,
+    })
+
+    new CfnOutput(this, 'DynamoDBTableName', {
+      value: this.dynamo.table.tableName,
     })
   }
 }
