@@ -80,7 +80,7 @@ jobs:
         run: |
           cd infrastructure
           yarn export:env
-          echo "FrontendUrl=$(cat infrastructure/.env | grep FrontendUrl | cut -d '=' -f 2)" >> $GITHUB_ENV
+          echo "FrontendUrl=$(cat ./.env | grep FrontendUrl | cut -d '=' -f 2)" >> $GITHUB_ENV
 
       - name: Cypress e2e tests for backend api 🧪
         uses: cypress-io/github-action@v6
@@ -99,9 +99,7 @@ jobs:
           echo "UI_BASE_URL=$UI_BASE_URL" >> $GITHUB_ENV
           echo "base url is $UI_BASE_URL"
 
-      - name:
-          Cypress e2e tests for front end 🧪 ${{ env.FrontendUrl }} / ${{
-          env.UI_BASE_URL }}
+      - name: Front end e2e 🧪 ${{ env.FrontendUrl }} / ${{ env.UI_BASE_URL }}
         uses: cypress-io/github-action@v6
         with:
           browser: chrome
