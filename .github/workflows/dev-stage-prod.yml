@@ -89,12 +89,7 @@ jobs:
         run: |
           cd infrastructure
           yarn export:env
-
-      - name: Echo environment variables
-        run: |
-          echo "FrontendUrl=$FrontendUrl"
-          echo "ApiGatewayUrl=$ApiGatewayUrl"
-          echo "DynamoDBTableName=$DynamoDBTableName"
+          echo "FrontendUrl=$(cat infrastructure/.env | grep FrontendUrl | cut -d '=' -f 2)" >> $GITHUB_ENV
 
       - name: Cypress e2e tests for backend api 🧪
         uses: cypress-io/github-action@v6
@@ -106,18 +101,21 @@ jobs:
           # tag: branch-backend
           working-directory: infrastructure
 
+      # in case you cannot export env vars, use this
       - name: Get website URL
         run: |
           UI_BASE_URL="http://web-bucket-akemxdjqkl666-${{ env.NODE_ENV }}.s3-website-us-east-1.amazonaws.com/"
           echo "UI_BASE_URL=$UI_BASE_URL" >> $GITHUB_ENV
           echo "base url is $UI_BASE_URL"
 
-      - name: Cypress e2e tests for front end 🧪 ${{ env.UI_BASE_URL }}
+      - name:
+          Cypress e2e tests for front end 🧪 ${{ env.FrontendUrl }} / ${{
+          env.UI_BASE_URL }}
         uses: cypress-io/github-action@v6
         with:
           browser: chrome
           install: false
-          config: baseUrl=${{ env.UI_BASE_URL }}
+          config: baseUrl=${{ env.FrontendUrl }}
           # record: true
           # group: e2e-tests
           # tag: branch-front-end
