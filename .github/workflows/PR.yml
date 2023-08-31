@@ -81,12 +81,6 @@ jobs:
           cd infrastructure
           yarn export:env
 
-      - name: Echo environment variables
-        run: |
-          echo "FrontendUrl=$FrontendUrl"
-          echo "ApiGatewayUrl=$ApiGatewayUrl"
-          echo "DynamoDBTableName=$DynamoDBTableName"
-
       - name: Cypress e2e tests for backend api 🧪
         uses: cypress-io/github-action@v6
         with:
@@ -97,18 +91,19 @@ jobs:
           # tag: branch-backend
           working-directory: infrastructure
 
+      # in case you cannot export env vars, use this
       - name: Get S3 bucket website URL
         run: |
           UI_BASE_URL=$(aws cloudformation describe-stacks --stack-name ${{ env.STACK_NAME }}-${{ steps.branch-name.outputs.current_branch }} --query "Stacks[0].Outputs[?OutputKey=='FrontendUrl'].OutputValue" --output text)
           echo "UI_BASE_URL=$UI_BASE_URL" >> $GITHUB_ENV
           echo "base url is $UI_BASE_URL"
 
-      - name: Cypress e2e tests for front end 🧪 ${{ env.UI_BASE_URL }}
+      - name: Cypress e2e tests for front end 🧪 ${{ env.FrontendUrl }}
         uses: cypress-io/github-action@v6
         with:
           browser: chrome
           install: false
-          config: baseUrl=${{ env.UI_BASE_URL }}
+          config: baseUrl=${{ env.FrontendUrl }}
           # record: true
           # group: e2e-tests
           # tag: branch-front-end
