@@ -1,4 +1,4 @@
-import {Stack, StackProps} from 'aws-cdk-lib'
+import {Stack, StackProps, CfnOutput} from 'aws-cdk-lib'
 import {Construct} from 'constructs'
 import {S3} from './constructs/S3'
 import {Route53} from './constructs/Route53'
@@ -33,15 +33,27 @@ export class FinalStack extends Stack {
 
     // does not matter whether there is an assignment to a variable or not
     // the instantiation causes the construct to be created
-    this.s3 = new S3(this, 'S3', {
+    new S3(this, 'S3', {
       acm: this.acm,
       route53: this.route53,
     })
 
-    new ApiGateway(this, `Api-Gateway-${process.env.NODE_ENV || ''}`, {
-      route53: this.route53,
-      acm: this.acm,
-      dynamoTable: this.dynamo.table,
+    const apiGateway = new ApiGateway(
+      this,
+      `Api-Gateway-${process.env.NODE_ENV || ''}`,
+      {
+        route53: this.route53,
+        acm: this.acm,
+        dynamoTable: this.dynamo.table,
+      },
+    )
+
+    new CfnOutput(this, 'ApiGatewayUrl', {
+      value: apiGateway.url,
+    })
+
+    new CfnOutput(this, 'DynamoDBTableName', {
+      value: this.dynamo.table.tableName,
     })
   }
 }

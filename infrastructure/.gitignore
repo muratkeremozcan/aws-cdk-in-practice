@@ -18,3 +18,5 @@ cdk.context.json
 config.json
 dist/
 !cypress.d.ts
+!create-env-file.js
+bin/stack-name.txt

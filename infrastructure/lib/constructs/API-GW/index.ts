@@ -36,6 +36,8 @@ interface Props {
  * This construct integrates Lambdas with API tGateway for deployment.
  */
 export class ApiGateway extends Construct {
+  public readonly url: string
+
   constructor(scope: Construct, id: string, props: Props) {
     super(scope, id)
 
@@ -58,6 +60,7 @@ export class ApiGateway extends Construct {
         stageName: deployment,
       },
     })
+    this.url = restApi.url
 
     // Lambdas:
     const healthCheckLambda = new HealthCheckLambda(
