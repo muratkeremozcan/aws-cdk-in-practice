@@ -1,5 +1,5 @@
-// reads the manifest.json and the stack template file from the cdk.out directory,
-// gets the outputs from the template, and writes them to the .env file.
+// uses AWS SDK's cfn.describeStacks, to remotely get the specified stack's data
+// and writes them to the .env file
 // Run this script after you deploy your CDK app.
 const AWS = require('aws-sdk')
 const fs = require('fs')

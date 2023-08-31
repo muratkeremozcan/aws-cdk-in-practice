@@ -211,7 +211,8 @@ On the other hand, in fixed deployments like dev, stage, and prod, we calculate 
 ## Addendum: `export:env` in CDK
 
 There is this neat plugin in Serverless Framework called [export-env](https://www.serverless.com/plugins/serverless-export-env) that can export your stack's env vars to the .env file.
-CDK does not have this utility built in, but we can make it work. It will be slightly different in every cdk setup, but the idea is about using CfnOutputs (in any construct) then using a script to extract them from `manifest.json`.
+CDK does not have this utility built in, but we can make it work. It will be slightly different in every cdk setup, but the idea is about using CfnOutputs (in any construct) then utilzing a script that uses AWS SDK's `cfn.describeStacks` to remotely get the specified stack's data, and write it to the .env file.
+
 
 There are a few constructs we are utilizing `CfnOutput` already, and these can be added anywhere.
 ```ts
@@ -251,13 +252,13 @@ Write the stack name to `stack-name.txt`. For temp branch named `output-env` it 
 FinalStack-output-env
 ```
 
-In the main script `create-env-file.js`, we can use that value and AWS SDK to extract the output from the `manifest.json` file, and write it out to .env
+AWS SDK's `cfn.describeStacks` uses AWS CloudFormation API to get the details of the specified stack remotely from the actual source. In the main script `create-env-file.js`, we can use the stack name  and `cfn.describeStacks`, and write out to the data to .env
 
 ```js
 // ./infrastructure/create-env-file.js
 
-// reads the manifest.json and the stack template file from the cdk.out directory,
-// gets the outputs from the template, and writes them to the .env file.
+// uses AWS SDK's cfn.describeStacks, to remotely get the specified stack's data
+// and writes them to the .env file
 // Run this script after you deploy your CDK app.
 const AWS = require('aws-sdk')
 const fs = require('fs')
