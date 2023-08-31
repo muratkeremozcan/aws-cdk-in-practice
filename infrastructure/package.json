@@ -30,7 +30,7 @@
     "cdk:deploy-branch": "yarn cdk:branch deploy",
     "cdk:destroy-branch": "yarn cdk:branch destroy",
     "cdk:reset": "rm -rf ./cdk.out && rm -rf cdk.context.json",
-    "export:env": "node create-env-file && source export-env-vars.sh",
+    "export:env": "node create-env-file",
     "cy:open": "cypress open --e2e --browser chrome",
     "cy:run": "cypress run --e2e --browser chrome",
     "cy:run-fast": "CYPRESS_NO_COMMAND_LOG=1 cypress run --e2e --browser chrome --config video=false screenshot=false"
