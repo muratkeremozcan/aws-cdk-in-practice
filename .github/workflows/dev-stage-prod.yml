@@ -108,9 +108,7 @@ jobs:
           echo "UI_BASE_URL=$UI_BASE_URL" >> $GITHUB_ENV
           echo "base url is $UI_BASE_URL"
 
-      - name:
-          Cypress e2e tests for front end 🧪 ${{ env.FrontendUrl }} / ${{
-          env.UI_BASE_URL }}
+      - name: Front end e2e 🧪 ${{ env.FrontendUrl }} / ${{ env.UI_BASE_URL }}
         uses: cypress-io/github-action@v6
         with:
           browser: chrome

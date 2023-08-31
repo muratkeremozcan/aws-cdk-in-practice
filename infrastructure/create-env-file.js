@@ -8,7 +8,7 @@ const path = require('path')
 // Set the AWS region
 AWS.config.update({region: 'us-east-1'})
 
-// if process.env is provied (the case in CI), set the AWS credentials from the environment
+// if process.env is provided (the case in CI), set the AWS credentials from the environment
 if (process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY) {
   AWS.config.credentials = new AWS.Credentials(
     process.env.AWS_ACCESS_KEY_ID,

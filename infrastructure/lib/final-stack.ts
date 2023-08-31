@@ -1,4 +1,5 @@
-import {Stack, StackProps, CfnOutput} from 'aws-cdk-lib'
+import {Stack, CfnOutput} from 'aws-cdk-lib'
+import type {StackProps} from 'aws-cdk-lib'
 import {Construct} from 'constructs'
 import {S3} from './constructs/S3'
 import {Route53} from './constructs/Route53'
@@ -33,7 +34,7 @@ export class FinalStack extends Stack {
 
     // does not matter whether there is an assignment to a variable or not
     // the instantiation causes the construct to be created
-    new S3(this, 'S3', {
+    this.s3 = new S3(this, 'S3', {
       acm: this.acm,
       route53: this.route53,
     })
