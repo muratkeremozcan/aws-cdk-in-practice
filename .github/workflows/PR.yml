@@ -74,6 +74,7 @@ jobs:
 
       - name: Export environment variables
         run: |
+          cd infrastructure
           yarn export:env
 
       - name: Echo environment variables
