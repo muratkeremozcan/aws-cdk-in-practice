@@ -7,9 +7,13 @@ on:
   workflow_dispatch:
 
 env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   AWS_REGION: us-east-1
   ACCOUNT_ID: 721520867440
   STACK_NAME: FinalStack
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
 
 concurrency:
   group: ${{ github.head_ref || github.ref }}
@@ -101,9 +105,6 @@ jobs:
           # group: e2e-tests
           # tag: branch-backend
           working-directory: infrastructure
-        env:
-          # CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Get website URL
         run: |
@@ -121,6 +122,3 @@ jobs:
           # group: e2e-tests
           # tag: branch-front-end
           working-directory: web
-        env:
-          # CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

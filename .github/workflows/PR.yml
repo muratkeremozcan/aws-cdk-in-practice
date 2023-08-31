@@ -5,10 +5,14 @@ on:
   workflow_dispatch:
 
 env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   AWS_REGION: us-east-1
   ACCOUNT_ID: 721520867440
-  DOTENV_CONFIG_PATH: ./.env.dev
   STACK_NAME: FinalStack
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
+  DOTENV_CONFIG_PATH: ./.env.dev
 
 concurrency:
   group: ${{ github.head_ref || github.ref }}
@@ -92,20 +96,12 @@ jobs:
           # group: e2e-tests
           # tag: branch-backend
           working-directory: infrastructure
-        env:
-          # CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Get S3 bucket website URL
         run: |
           UI_BASE_URL=$(aws cloudformation describe-stacks --stack-name ${{ env.STACK_NAME }}-${{ steps.branch-name.outputs.current_branch }} --query "Stacks[0].Outputs[?OutputKey=='FrontendUrl'].OutputValue" --output text)
           echo "UI_BASE_URL=$UI_BASE_URL" >> $GITHUB_ENV
           echo "base url is $UI_BASE_URL"
-        env:
-          AWS_REGION: ${{ env.AWS_REGION }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
 
       - name: Cypress e2e tests for front end 🧪 ${{ env.UI_BASE_URL }}
         uses: cypress-io/github-action@v6
@@ -117,6 +113,3 @@ jobs:
           # group: e2e-tests
           # tag: branch-front-end
           working-directory: web
-        env:
-          # CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
