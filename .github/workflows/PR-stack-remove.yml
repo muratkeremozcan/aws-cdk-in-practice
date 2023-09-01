@@ -61,6 +61,5 @@ jobs:
 
       - name: Remove stack ${{ steps.branch-name.outputs.current_branch }}
         run: |
-          cd infrastructure
-          NODE_ENV=${{ steps.branch-name.outputs.current_branch }} DOTENV_CONFIG_PATH=${{ env.DOTENV_CONFIG_PATH }} 
-          echo y | npx cdk destroy --require-approval never
+          cd infrastructure          
+          echo y | NODE_ENV=${{ steps.branch-name.outputs.current_branch }} DOTENV_CONFIG_PATH=${{ env.DOTENV_CONFIG_PATH }} npx cdk destroy --require-approval never
