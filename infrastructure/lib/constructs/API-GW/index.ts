@@ -6,6 +6,7 @@ import {
   SecurityPolicy,
 } from 'aws-cdk-lib/aws-apigateway'
 import * as targets from 'aws-cdk-lib/aws-route53-targets'
+import {CfnOutput} from 'aws-cdk-lib'
 import {ARecord, RecordTarget} from 'aws-cdk-lib/aws-route53'
 import {Table} from 'aws-cdk-lib/aws-dynamodb'
 import {DynamoDelete} from '../../../Lambda/delete'
@@ -135,6 +136,11 @@ export class ApiGateway extends Construct {
       zone: route53.hosted_zone,
       target: RecordTarget.fromAlias(new targets.ApiGateway(restApi)),
       recordName: `${backEndSubDomain}.${config.domain_name}`,
+    })
+
+    // output the environment name (so that it also gets in .env file)
+    new CfnOutput(scope, 'deployment', {
+      value: deployment,
     })
   }
 }

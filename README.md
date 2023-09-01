@@ -1,8 +1,10 @@
 # [AWS CDK in Practice](https://www.amazon.com/AWS-CDK-Practice-Streamline-applications/dp/180181239X/ref=sr_1_3?crid=EOP9UXZSSGRK&keywords=cdk+aws&qid=1692715247&sprefix=cdk+aws%2Caps%2C100&sr=8-3).
 
 The original example is from the book AWS CDK in Practice. I trimmed the parts I
-do not like, and added things I think are necessary; particularly temporary stacks, edit and delete endpoints, and all the enhancements to make things work in CI with Github Actions. You can find the original
-code in the chapters folder.
+do not like, and added things I think are necessary; particularly temporary
+stacks, edit and delete endpoints, and all the enhancements to make things work
+in CI with Github Actions. You can find the original code in the chapters
+folder.
 
 The repo showcases several AWS services working in tandem:
 
@@ -189,7 +191,8 @@ The primary benefits are:
   for your build jobs
 - Even easier to automate with Infrastructure as Code (IaC)
 
-We set it up once, use `aws-actions/configure-aws-credentials` and give the GithubActions user free reign, while being confident that things are secure.
+We set it up once, use `aws-actions/configure-aws-credentials` and give the
+GithubActions user free reign, while being confident that things are secure.
 
 ![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/8rogadu1fwfzjmqiojpj.png)
 
@@ -197,35 +200,63 @@ We set it up once, use `aws-actions/configure-aws-credentials` and give the Gith
 
 Cypress is used for backend API crud tests and UI crud tests.
 
-[`getEnvironmentConfig`](./infrastructure/lib/get-env-config.ts) is used to identify the baseUrl for the backend in `cypress.config` file. The same file is used for all deployments.
+[`getEnvironmentConfig`](./infrastructure/lib/get-env-config.ts) is used to
+identify the baseUrl for the backend in `cypress.config` file. The same file is
+used for all deployments.
 
-When building the frontend, a `pre` script uses the same function to identify the backend url for the React app.
+When building the frontend, a `pre` script uses the same function to identify
+the backend url for the React app.
 
-The same function is also used for the front-end cypress.config. In addition to that, at the frontend we utilize a function [configAWSForLocal](web/cypress/support/config-aws.ts) to configure AWS for local development by initializing the AWS credentials and retrieving the UI base URL (the S3 bucket) from the CloudFormation stack outputs. Mind that in CI that script is not run because the GithubActions user is different than our local user. Therefore in CI we acquire the S3 bucket url in a different manner, check [PR.yml](.github/workflows/PR.yml).
+The same function is also used for the front-end cypress.config. In addition to
+that, at the frontend we utilize a function
+[configAWSForLocal](web/cypress/support/config-aws.ts) to configure AWS for
+local development by initializing the AWS credentials and retrieving the UI base
+URL (the S3 bucket) from the CloudFormation stack outputs. Mind that in CI that
+script is not run because the GithubActions user is different than our local
+user. Therefore in CI we acquire the S3 bucket url in a different manner, check
+[PR.yml](.github/workflows/PR.yml).
 
-Also interesting, in PRs where we use temporary stacks, we identify the environment via the branch name acquisition. 
-On the other hand, in fixed deployments like dev, stage, and prod, we calculate the deployment dynamically, check out [`dev-stage-prod.yml`](.github/workflows/dev-stage-prod.yml). 
+Also interesting, in PRs where we use temporary stacks, we identify the
+environment via the branch name acquisition. On the other hand, in fixed
+deployments like dev, stage, and prod, we calculate the deployment dynamically,
+check out [`dev-stage-prod.yml`](.github/workflows/dev-stage-prod.yml).
 
-> At the time we did not have the ability to `export:env` (which you will see below). If we had that available, we would not need to implement `getBaseUrl` at `web/cypress/support/config-aws.ts`. Albeit, these varied implementations showcase solutions where one or the other is not possible. In my opinion, `export:env` is preferred if available. 
+> At the time we did not have the ability to `export:env` (which you will see
+> below). If we had that available, we would not need to implement `getBaseUrl`
+> at `web/cypress/support/config-aws.ts`. Albeit, these varied implementations
+> showcase solutions where one or the other is not possible. In my opinion,
+> `export:env` is preferred if available.
 
 ## Addendum: `export:env` in CDK
 
-There is this neat plugin in Serverless Framework called [export-env](https://www.serverless.com/plugins/serverless-export-env) that can export your stack's env vars to the .env file.
-CDK does not have this utility built in, but we can make it work. It will be slightly different in every cdk setup, but the idea is about using CfnOutputs (in any construct) then utilzing a script that uses AWS SDK's `cfn.describeStacks` to remotely get the specified stack's data, and write it to the .env file.
+There is this neat plugin in Serverless Framework called
+[export-env](https://www.serverless.com/plugins/serverless-export-env) that can
+export your stack's env vars to the .env file. CDK does not have this utility
+built in, but we can make it work. It will be slightly different in every cdk
+setup, but the idea is about using CfnOutputs (in any construct) then utilzing a
+script that uses AWS SDK's `cfn.describeStacks` to remotely get the specified
+stack's data, and write it to the .env file.
 
+There are a few constructs we are utilizing `CfnOutput` already, and these can
+be added anywhere.
 
-There are a few constructs we are utilizing `CfnOutput` already, and these can be added anywhere.
 ```ts
 new CfnOutput(this, 'ApiGatewayUrl', {
   value: apiGateway.url,
 })
 ```
 
-At the end of a deployment, these values are already being printed out. The idea is a to have a script to extract these values from `manifest.json`.
+At the end of a deployment, these values are already being printed out. The idea
+is a to have a script to extract these values using AWS SDK's
+`cfn.describeStack`.
 
-First, as a convenience so that we do not have to think about stack name (temp stacks will be different each time, right?) we can add a write to a gitignored text file in our app. This way, we will not have to pass in an argument as the stack name (but we still could  if we wanted)
+First, as a convenience so that we do not have to think about stack name (temp
+stacks will be different each time, right?) we can add a write to a gitignored
+text file in our app. This way, we will not have to pass in an argument as the
+stack name (but we still could if we wanted)
 
 ```ts
+// infrastructure/bin/infrastructure.ts
 #!/usr/bin/env node
 import 'source-map-support/register'
 import * as cdk from 'aws-cdk-lib'
@@ -247,12 +278,17 @@ const stackNameFilePath = path.resolve(__dirname, 'stack-name.txt')
 fs.writeFileSync(stackNameFilePath, stackName)
 ```
 
-Write the stack name to `stack-name.txt`. For temp branch named `output-env` it would look like:
+Write the stack name to `stack-name.txt`. For temp branch named `output-env` it
+would look like:
+
 ```txt
 FinalStack-output-env
 ```
 
-AWS SDK's `cfn.describeStacks` uses AWS CloudFormation API to get the details of the specified stack remotely from the actual source. In the main script `create-env-file.js`, we can use the stack name  and `cfn.describeStacks`, and write out to the data to .env
+AWS SDK's `cfn.describeStacks` uses AWS CloudFormation API to get the details of
+the specified stack remotely from the actual source. In the main script
+`create-env-file.js`, we can use the stack name and `cfn.describeStacks`, and
+write out to the data to .env
 
 ```js
 // ./infrastructure/create-env-file.js
@@ -314,7 +350,6 @@ cfn.describeStacks({StackName: stackName}, (err, data) => {
   console.log(`Wrote environment variables to ${envFilePath}`)
   console.log(envFileContent)
 })
-
 ```
 
 Mind that in CI we need write the values out to the CI envrionment:
@@ -326,4 +361,3 @@ Mind that in CI we need write the values out to the CI envrionment:
     yarn export:env
     echo "FrontendUrl=$(cat ./.env | grep FrontendUrl | cut -d '=' -f 2)" >> $GITHUB_ENV
 ```
-

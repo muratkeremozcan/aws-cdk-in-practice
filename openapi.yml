@@ -1,0 +1,292 @@
+openapi: 3.1.0
+info:
+  title: finalstack-rest-api-setup-optic
+  description: serverless api using lambda functions
+  version: 2023-09-01T11:36:17Z
+paths:
+  /healthcheck:
+    get:
+      responses:
+        "204":
+          description: 204 response
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+    options:
+      responses:
+        "204":
+          description: 204 response
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+  /{id}:
+    put:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: 200 response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  todo:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      todo_name:
+                        type: string
+                      todo_description:
+                        type: string
+                      todo_completed:
+                        type: boolean
+                    required:
+                      - id
+                      - todo_name
+                      - todo_description
+                      - todo_completed
+                required:
+                  - todo
+        "204":
+          description: 204 response
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                todo_completed:
+                  type: boolean
+                todo_description:
+                  type: string
+                todo_name:
+                  type: string
+              required:
+                - id
+                - todo_completed
+                - todo_description
+                - todo_name
+    delete:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: 200 response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                  - message
+        "204":
+          description: 204 response
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+    options:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: 204 response
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+    get:
+      responses:
+        "403":
+          description: 403 response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetId403ResponseBody"
+    post:
+      responses:
+        "403":
+          description: 403 response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetId403ResponseBody"
+  /:
+    get:
+      responses:
+        "200":
+          description: 200 response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  todos:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        todo_completed:
+                          type: boolean
+                        id:
+                          type: string
+                        todo_description:
+                          type: string
+                        todo_name:
+                          type: string
+                      required:
+                        - todo_completed
+                        - id
+                        - todo_description
+                        - todo_name
+                required:
+                  - todos
+        "204":
+          description: 204 response
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+    post:
+      responses:
+        "200":
+          description: 200 response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  todo:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      todo_completed:
+                        type: boolean
+                      todo_description:
+                        type: string
+                      todo_name:
+                        type: string
+                    required:
+                      - id
+                      - todo_completed
+                      - todo_description
+                      - todo_name
+                required:
+                  - todo
+        "204":
+          description: 204 response
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                todo:
+                  type: object
+                  properties:
+                    todo_completed:
+                      type: boolean
+                    todo_description:
+                      type: string
+                    todo_name:
+                      type: string
+                  required:
+                    - todo_completed
+                    - todo_description
+                    - todo_name
+              required:
+                - todo
+    options:
+      responses:
+        "204":
+          description: 204 response
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+components:
+  schemas:
+    GetId403ResponseBody:
+      type: object
+      properties:
+        message:
+          type: string
+      required:
+        - message
