@@ -131,7 +131,7 @@ jobs:
           standards_fail: true
           # If you have more than one spec, separate matches with commas
           # (openapi.yml,other.yml)
-          additional_args: --generated --match openapi.yml
+          additional_args: --match openapi.yml
           compare_from_pr: cloud:default
           compare_from_push: cloud:default
         env:
