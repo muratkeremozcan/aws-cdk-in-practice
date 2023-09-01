@@ -34,10 +34,10 @@
     "cy:open": "cypress open --e2e --browser chrome",
     "cy:run": "cypress run --e2e --browser chrome",
     "cy:run-fast": "CYPRESS_NO_COMMAND_LOG=1 cypress run --e2e --browser chrome --config video=false screenshot=false",
-    "optic:lint": "optic lint openapi.yml",
-    "optic:diff": "optic diff openapi.yml --base main --check'",
-    "optic:verify": "dotenv -e .env -- bash -c 'echo $ApiGatewayUrl && optic capture openapi.yml --server-override $ApiGatewayUrl'",
-    "optic:update": "dotenv -e .env -- bash -c 'echo $ApiGatewayUrl && optic capture openapi.yml --server-override $ApiGatewayUrl --update interactive'"
+    "optic:lint": "optic lint ../openapi.yml",
+    "optic:diff": "optic diff ../openapi.yml --base main --check'",
+    "optic:verify": "dotenv -e .env -- bash -c 'echo $ApiGatewayUrl && optic capture ../openapi.yml --server-override $ApiGatewayUrl'",
+    "optic:update": "dotenv -e .env -- bash -c 'echo $ApiGatewayUrl && optic capture ../openapi.yml --server-override $ApiGatewayUrl --update interactive'"
   },
   "devDependencies": {
     "@bahmutov/cy-api": "^2.2.5",

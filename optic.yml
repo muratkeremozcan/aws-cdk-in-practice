@@ -2,7 +2,7 @@ ruleset:
   # Prevent breaking changes
   - breaking-changes
 capture:
-  infrastructure/openapi.yml: # path to openapi.yml file
+  openapi.yml: # path to openapi.yml file
     server:
       # specified in package.json with --server-override
       url: https://api.example.com # need a placeholder
