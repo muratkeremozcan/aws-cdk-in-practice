@@ -113,7 +113,9 @@ jobs:
 
             # Schema verification
       - name: verify the schema with Optic
-        run: yarn optic:verify
+        run: |
+          cd infrastructure
+          yarn optic:verify
 
       # include a preview and changelog in each PR comment
       # sync every OpenAPI spec to Optic Cloud, diff & lint the schema as well
