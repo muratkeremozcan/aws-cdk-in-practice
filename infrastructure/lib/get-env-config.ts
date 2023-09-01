@@ -1,14 +1,36 @@
 import {execSync} from 'child_process'
 import config from '../../config.json'
 
+/**
+ * Sanitizes a branch name by removing any character that is not a letter, number, or hyphen.
+ *
+ * @param {string} branch - The branch name to sanitize.
+ * @return {string} The sanitized branch name.
+ */
 const sanitizeBranchName = (branch: string): string =>
-  branch.replace(/[^a-zA-Z0-9-]/g, '') // Ensure DNS safe
+  branch.replace(/[^a-zA-Z0-9-]/g, '')
 
+/**
+ * Gets the branch name from the GitHub environment variables.
+ *
+ * This function works for every trigger that you can specify under 'on' in the GitHub Actions
+ * workflow file (e.g., push or pull_request).
+ *
+ * The trick is that `GITHUB_HEAD_REF` is only set when the workflow was triggered by a pull_request,
+ * and it contains the value of the source branch of the PR.
+ * `GITHUB_REF_NAME` will then only be used if the workflow was not triggered by a pull_request,
+ * and it also just contains the branch name.
+ * ```yml
+ * env:
+ *   BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
+ *```
+ * @return {string|null} The sanitized branch name, or null if neither `GITHUB_HEAD_REF` nor
+ * `GITHUB_REF_NAME` are set.
+ */
 const getBranchFromGithubRef = (): string | null => {
-  if (process.env.GITHUB_REF_NAME) {
-    // const refArray = process.env.GITHUB_REF.split('/')
-    // Assuming it's a branch, take the last part of the split string
-    return sanitizeBranchName(process.env.GITHUB_REF_NAME)
+  const gitValue = process.env.GITHUB_HEAD_REF || process.env.GITHUB_REF_NAME
+  if (gitValue) {
+    return sanitizeBranchName(gitValue)
   }
   return null
 }
