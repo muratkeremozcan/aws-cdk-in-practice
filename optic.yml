@@ -1,0 +1,31 @@
+ruleset:
+  # Prevent breaking changes
+  - breaking-changes
+capture:
+  infrastructure/openapi.yml: # path to openapi.yml file
+    server:
+      # specified in package.json with --server-override
+      url: https://api.example.com # need a placeholder
+
+      ready_endpoint: /
+      # The interval to check 'ready_endpoint', in ms.
+      # Optional: default: 1000
+      ready_interval: 1000
+      # The length of time in ms to wait for a successful ready check to occur.
+      # Optional: default: 10_000, 10 seconds
+      ready_timeout: 10_000
+    # At least one of 'requests.run' or 'requests.send' is required below.
+    requests:
+      # Run a command to generate traffic. Requests should be sent to the Optic proxy, the address of which is injected
+      # into 'run.command's env as OPTIC_PROXY or the value of 'run.proxy_variable', if set.
+      run:
+        # The command that will generate traffic to the Optic proxy. Globbing with '*' is supported.
+        # Required if specifying 'requests.run'.
+        command: yarn cy:run-fast
+        # The name of the environment variable injected into the env of the command that contains the address of the Optic proxy.
+        # Optional: default: OPTIC_PROXY
+        proxy_variable: ApiGatewayUrl
+    config:
+      # The number of parallel requests to make when using 'requests.send'.
+      # Optional: default: 4
+      request_concurrency: 4
