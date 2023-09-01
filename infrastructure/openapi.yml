@@ -1,0 +1,80 @@
+openapi: '3.0.1'
+info:
+  title: 'finalstack-rest-api-setup-optic'
+  description: 'serverless api using lambda functions'
+  version: '2023-09-01T11:36:17Z'
+servers:
+  - url: 'https://setup-optic-backend-cdk-book.cdkbookmurat.click'
+paths:
+  /healthcheck:
+    get: {}
+    options:
+      responses:
+        '204':
+          description: '204 response'
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: 'string'
+            Access-Control-Allow-Methods:
+              schema:
+                type: 'string'
+            Access-Control-Allow-Headers:
+              schema:
+                type: 'string'
+          content: {}
+  /{id}:
+    put:
+      parameters:
+        - name: 'id'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+    delete:
+      parameters:
+        - name: 'id'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+    options:
+      parameters:
+        - name: 'id'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+      responses:
+        '204':
+          description: '204 response'
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: 'string'
+            Access-Control-Allow-Methods:
+              schema:
+                type: 'string'
+            Access-Control-Allow-Headers:
+              schema:
+                type: 'string'
+          content: {}
+  /:
+    get: {}
+    post: {}
+    options:
+      responses:
+        '204':
+          description: '204 response'
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: 'string'
+            Access-Control-Allow-Methods:
+              schema:
+                type: 'string'
+            Access-Control-Allow-Headers:
+              schema:
+                type: 'string'
+          content: {}
+components: {}

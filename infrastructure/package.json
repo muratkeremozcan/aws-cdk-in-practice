@@ -33,7 +33,11 @@
     "export:env": "AWS_SDK_LOAD_CONFIG=1 node create-env-file.js",
     "cy:open": "cypress open --e2e --browser chrome",
     "cy:run": "cypress run --e2e --browser chrome",
-    "cy:run-fast": "CYPRESS_NO_COMMAND_LOG=1 cypress run --e2e --browser chrome --config video=false screenshot=false"
+    "cy:run-fast": "CYPRESS_NO_COMMAND_LOG=1 cypress run --e2e --browser chrome --config video=false screenshot=false",
+    "optic:lint": "optic lint openapi.yml",
+    "optic:diff": "optic diff openapi.yml --base main --check'",
+    "optic:verify": "dotenv -e .env -- bash -c 'echo $ApiGatewayUrl && optic capture openapi.yml --server-override $ApiGatewayUrl'",
+    "optic:update": "dotenv -e .env -- bash -c 'echo $ApiGatewayUrl && optic capture openapi.yml --server-override $ApiGatewayUrl --update interactive'"
   },
   "devDependencies": {
     "@bahmutov/cy-api": "^2.2.5",
@@ -49,6 +53,7 @@
     "@types/uuid": "9.0.0",
     "@typescript-eslint/eslint-plugin": "5.31.0",
     "@typescript-eslint/parser": "5.31.0",
+    "@useoptic/optic": "^0.49.6",
     "aws-cdk": "2.34.0",
     "cross-env": "7.0.3",
     "cy-spok": "^1.6.2",
