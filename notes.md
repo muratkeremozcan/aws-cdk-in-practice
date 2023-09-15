@@ -27,6 +27,8 @@ configuration settings (like the default region and output format).
 Appending `--profile cdk` will specify to use this profile in the upcoming
 commands.
 
+> This is exactly like the profiles we use at work per deployment; `--profile dev`  `--profile stage` `--profile someSandbox.`
+
 ### Create CDK app
 
 `cdk init app --language typescript`
@@ -104,10 +106,40 @@ of the deployment if you pass in one of the aforementioned flags, like so:
 Goal: Learn about the relationship between stack, construct, and how to
 instantiate the cdk app.
 
-Create some folders; web, infrastructure. Init cdk on infrastructure directory.
+An app can have one or more stacks, and the stacks can have one (usually many) contracts.
 
 Stack > Construct. Stack is your everything (CloudFormation stack). Construct is
 any AWS resource, or a combination of them.
+
+In this example our App will have one stack (FinalStack, or chapterNStack), and the stack will have constructs in it like S3, DDB, apigateway etc.
+
+![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/d35jhympkaug6wumhefg.png)
+
+### Construct Levels
+
+1. **L1 (Level 1) Constructs - "CFN Resources"**:
+   - **Definition**: These are the lowest-level constructs, directly
+     representing AWS CloudFormation resources. They are one-to-one mappings
+     with CloudFormation resources in the AWS services.
+2. **L2 (Level 2) Constructs - "Curated"**:
+   - **Definition**: These constructs provide a higher-level abstraction than L1
+     constructs. L2 constructs offer sensible defaults and reduce the amount of
+     boilerplate code required to set up resources. They still allow for
+     customization, but with a more user-friendly interface.
+   - **Examples**: Instead of defining every property of an Amazon S3 bucket as
+     in L1, you might have an L2 construct that easily allows creating a secured
+     bucket with just a few lines of code.
+3. **L3 (Level 3) Constructs - "Patterns"** (Serverless Framework abstractions
+   would be like L3 constructs):
+   - **Definition**: These are the highest level of abstraction, representing
+     cloud design patterns. L3 constructs typically combine multiple L2 (and
+     potentially L1) constructs to set up a commonly used infrastructure
+     pattern.
+   - **Examples**: Setting up a serverless web application with an API Gateway,
+     AWS Lambda functions, and an Amazon DynamoDB table could be done with a
+     single L3 construct, abstracting away most of the underlying details.
+
+Create the folders; web, infrastructure. Init cdk on infrastructure directory.
 
 > ```bash
 > tree -I node_modules  # full tree
@@ -1406,30 +1438,30 @@ Integrating a lambda with API gateways takes a few steps.
    import {StateMachine} from 'aws-cdk-lib/aws-stepfunctions'
    import {ACM} from '../ACM'
    import {Route53} from '../Route53'
-
+   
    import config from '../../../../config.json'
    import {HealthCheckLambda} from '../Lambda/healthcheck'
    import {DynamoPost} from '../Lambda/post'
    import {DynamoGet} from '../Lambda/get'
-
+   
    interface Props {
      acm: ACM
      route53: Route53
      dynamoTable: Table
      stateMachine: StateMachine
    }
-
+   
    export class ApiGateway extends Construct {
      constructor(scope: Construct, id: string, props: Props) {
        super(scope, id)
-
+   
        const {acm, route53, dynamoTable, stateMachine} = props
-
+   
        const backEndSubDomain =
          process.env.NODE_ENV === 'Production'
            ? config.backend_subdomain
            : config.backend_dev_subdomain
-
+   
        // generates a RESTful API using a construct from API Gateway.
        // we are configuring the API to utilize the certificate and domain name we created earlier
        // and establishing a stage name in alignment with the deployed environment.
@@ -1446,7 +1478,7 @@ Integrating a lambda with API gateways takes a few steps.
            stageName: process.env.NODE_ENV === 'Production' ? 'prod' : 'dev',
          },
        })
-
+   
        // Lambdas:
        // we are creating an instance of the Lambda function within the API Gateway’s index.ts file
        // and using the LambdaIntegration() method to enable our Lambda to be integrated with API Gateway.
@@ -1455,26 +1487,26 @@ Integrating a lambda with API gateways takes a few steps.
          'health-check-lambda-api-endpoint',
          {},
        )
-
+   
        const dynamoPost = new DynamoPost(this, 'dynamo-post-lambda', {
          dynamoTable,
          stateMachine,
        })
-
+   
        const dynamoGet = new DynamoGet(this, 'dynamo-get-lambda', {
          dynamoTable,
          stateMachine,
        })
-
+   
        // Integrations:
        const healthCheckLambdaIntegration = new LambdaIntegration(
          healthCheckLambda.func,
        )
-
+   
        const dynamoPostIntegration = new LambdaIntegration(dynamoPost.func)
-
+   
        const dynamoGetIntegration = new LambdaIntegration(dynamoGet.func)
-
+   
        // creating a health check path in the REST API.
        // The addResource() function creates the path in the API
        // Resources (Path)
@@ -1488,7 +1520,7 @@ Integrating a lambda with API gateways takes a few steps.
          allowMethods: ['*'],
          statusCode: 204,
        })
-
+   
        rootResource.addMethod('POST', dynamoPostIntegration)
        rootResource.addMethod('GET', dynamoGetIntegration)
        rootResource.addCorsPreflight({
@@ -1497,7 +1529,7 @@ Integrating a lambda with API gateways takes a few steps.
          allowMethods: ['*'],
          statusCode: 204,
        })
-
+   
        // this allows us to use a customized backend subdomain as a DNS alias for the API Gateway URL,
        //  as we did with ECS and its load balancer.
        new ARecord(this, 'BackendAliasRecord', {
