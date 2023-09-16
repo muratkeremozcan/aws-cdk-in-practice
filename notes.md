@@ -101,6 +101,14 @@ deploying using cdk deploy, you can see a lot more information about the status
 of the deployment if you pass in one of the aforementioned flags, like so:
 `cdk deploy --profile cdk -vv`
 
+You can diff the new changes in your stack (you already get this prior to confirming the deployment)
+
+`cdk diff --profile cdk`
+
+VScode extension for `AWS Tookit` is useful for exploring your account, and also has a section for CDK under Developer Tools. 
+
+![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/qd28d0mwj0s5uk5eccts.png)
+
 ## [Ch2: A starter project and core concepts](https://www.youtube.com/watch?v=ChUPD-MAjoA&list=PLeLcvrwLe187CchI_3zTtZCAh3TSkXx1I&index=2)
 
 Goal: Learn about the relationship between stack, construct, and how to
@@ -245,7 +253,7 @@ cdk deploy --profile cdk
 cdk destroy --profile cdk
 ```
 
-https://constructs.dev/ package manager for cdk
+https://constructs.dev/ package manager for cdk (Construct Hub).
 
 ## [Ch3: Practical Cloud Development with AWS CDK](https://www.youtube.com/watch?v=9c6lQ-nklrs&list=PLeLcvrwLe187CchI_3zTtZCAh3TSkXx1I&index=3)
 
