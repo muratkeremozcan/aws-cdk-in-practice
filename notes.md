@@ -40,6 +40,31 @@ install step manually specifying the registry
 
 ### Creating a containerized web app
 
+CDK projects must have at least one application file.
+
+Indicated by `new cdk.App()`.
+
+```ts
+// ./bin/chapter-1-getting-started-with-iac-and-aws-cdk.ts
+#!/usr/bin/env node
+import 'source-map-support/register'
+import {App} from 'aws-cdk-lib'
+import {Chapter1GettingStartedWithIacAndAwsCdkStack} from '../lib/chapter-1-getting-started-with-iac-and-aws-cdk-stack'
+
+const app = new App()
+new Chapter1GettingStartedWithIacAndAwsCdkStack(
+  app,
+  'Chapter1GettingStartedWithIacAndAwsCdkStack',
+  {},
+)
+```
+
+App > Stack > Construct. The stack is the CloudFormation stack. 
+
+Indicated by `extends Stack` 
+
+(And later a Construct will be indicated by `extends Construct`)
+
 ```ts
 // ./lib/chapter-1-getting-started-with-iac-and-aws-cdk-stack.ts
 import {Stack, StackProps} from 'aws-cdk-lib'
@@ -59,21 +84,6 @@ export class Chapter1GettingStartedWithIacAndAwsCdkStack extends Stack {
     })
   }
 }
-```
-
-```ts
-// ./bin/chapter-1-getting-started-with-iac-and-aws-cdk.ts
-#!/usr/bin/env node
-import 'source-map-support/register'
-import {App} from 'aws-cdk-lib'
-import {Chapter1GettingStartedWithIacAndAwsCdkStack} from '../lib/chapter-1-getting-started-with-iac-and-aws-cdk-stack'
-
-const app = new App()
-new Chapter1GettingStartedWithIacAndAwsCdkStack(
-  app,
-  'Chapter1GettingStartedWithIacAndAwsCdkStack',
-  {},
-)
 ```
 
 Bootstrap the AWS environment, meaning create all the necessary AWS resources on
@@ -108,6 +118,16 @@ You can diff the new changes in your stack (you already get this prior to confir
 VScode extension for `AWS Tookit` is useful for exploring your account, and also has a section for CDK under Developer Tools. 
 
 ![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/qd28d0mwj0s5uk5eccts.png)
+
+When scaffolding the project, you will also see the `cdk.json` file which defines the entry point of the application.
+
+```json
+{
+  "app": "npx ts-node --prefer-ts-exts bin/infrastructure.ts",
+  ...
+```
+
+
 
 ## [Ch2: A starter project and core concepts](https://www.youtube.com/watch?v=ChUPD-MAjoA&list=PLeLcvrwLe187CchI_3zTtZCAh3TSkXx1I&index=2)
 
@@ -167,6 +187,7 @@ lib # stack & constructs
 ```
 
 The S3 construct:
+Indicated by `extends Construct`.
 
 ```ts
 // ./infrastructure/lib/constructs/S3Bucket/index.ts
