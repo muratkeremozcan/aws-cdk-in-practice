@@ -47,20 +47,6 @@ jobs:
           runTests: false
           working-directory: web
 
-      - name: Build infrastructure and web
-        run: |
-          cd infrastructure
-          yarn build
-          yarn build:frontend
-
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v3
-        with:
-          aws-region: ${{ env.AWS_REGION }}
-          role-to-assume:
-            arn:aws:iam::${{ env.ACCOUNT_ID }}:role/GitHubActionsRole
-          role-session-name: GithubActionsSession
-
       - name: Dynamically Set environment variables (dev, stage, prod)
         run: |
           if [ "${{ github.event_name }}" == "push" ] && [ ! -z "${{ github.event.ref }}" ]; then
@@ -75,6 +61,19 @@ jobs:
               echo "DOTENV_CONFIG_PATH=./.env.prod" >> $GITHUB_ENV
             fi
           fi
+
+      - name: Build infrastructure and web for ${{ env.NODE_ENV }}
+        run: |
+          cd infrastructure
+          yarn build:${{ env.NODE_ENV }}
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume:
+            arn:aws:iam::${{ env.ACCOUNT_ID }}:role/GitHubActionsRole
+          role-session-name: GithubActionsSession
 
       - name: cdk synth
         run: |

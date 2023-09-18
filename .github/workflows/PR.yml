@@ -49,8 +49,7 @@ jobs:
       - name: Build infrastructure and web
         run: |
           cd infrastructure
-          yarn build
-          yarn build:frontend
+          yarn build:branch
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v3

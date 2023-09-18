@@ -4,7 +4,7 @@ const {
 } = require('../infrastructure/dist/infrastructure/lib/get-env-config.js')
 const config = require('../config.json')
 
-const {backend_subdomain} = getEnvironmentConfig(process.env.NODE_ENV || 'dev')
+const {backend_subdomain} = getEnvironmentConfig(process.env.NODE_ENV)
 const backendURL = `https://${backend_subdomain}.${config.domain_name}`
 
 // Write to .env file
