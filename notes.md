@@ -167,6 +167,37 @@ In this example our App will have one stack (FinalStack, or chapterNStack), and 
      AWS Lambda functions, and an Amazon DynamoDB table could be done with a
      single L3 construct, abstracting away most of the underlying details.
 
+> Note about custom L1 constructs
+>
+> When you want to create an L1 (low-level) construct in CDK for resources that might not have direct support in CDK, you're essentially looking to create a construct that maps directly to a CloudFormation resource.
+>
+> The "meta" way to create an L1 construct without getting into the weeds of manual definitions or third-party vendor libraries is to utilize the `cdk-import` tool. This tool automates the process by generating the necessary code from the CloudFormation resource type's schema definition.
+>
+> ### Creating an L1 Construct for a Custom Type:
+>
+> 1. **Determine the CloudFormation Resource Type**:
+>    Before you start, you need to know the exact CloudFormation resource type you want to represent. This could be a type like `"AWS::S3::Bucket"` for standard AWS resources or `"Vendor::Service::ResourceType"` for third-party resources.
+>
+> 2. **Use the `cdk-import` Tool**:
+>    The `cdk-import` tool can automatically generate an L1 construct from a CloudFormation resource type.
+>
+>    - **Command**: 
+>      ```bash
+>      npx cdk-import -o [output-directory] '[Resource-Type]'
+>      ```
+>      Replace `[output-directory]` with where you want the generated code to reside, and `[Resource-Type]` with the specific CloudFormation resource type you're targeting.
+>
+>    - **What it Does**: This tool will look for the specified resource type in the public CloudFormation registry, download its schema definition, and then generate the necessary TypeScript code for an L1 construct.
+>
+> 3. **Include the Generated L1 Construct in Your Project**:
+>    The generated code will reside in the specified output directory (from the command above). You can then use this generated code in your CDK project. If necessary, you can further modify or wrap this generated L1 construct to better suit your specific needs.
+>
+> 4. **Deploy and Use**:
+>    Once integrated into your project, you can deploy and manage the CloudFormation resource using CDK like any other built-in resource.
+>
+
+
+
 Create the folders; web, infrastructure. Init cdk on infrastructure directory.
 
 > ```bash
