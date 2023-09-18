@@ -137,27 +137,7 @@ stage, prod) and the temporary stacks (named after the branch).
 ### `package.json` scripts
 
 `NODE_ENV` is in turn used in the scripts to control what environment we are
-working with.
-
-```json
-"cdk:dev": "cross-env NODE_ENV=dev DOTENV_CONFIG_PATH=./.env.development cdk --profile cdk",
-"cdk:prod": "cross-env NODE_ENV=prod DOTENV_CONFIG_PATH=./.env.production cdk --profile cdk",
-"cdk:stage": "cross-env NODE_ENV=stage DOTENV_CONFIG_PATH=./.env.stage cdk --profile cdk",
-"cdk:synth": "yarn cdk:dev synth",
-"cdk:deploy": "yarn cdk:dev deploy",
-"cdk:destroy": "yarn cdk:dev destroy",
-"cdk:synth-stage": "yarn cdk:stage synth",
-"cdk:deploy-stage": "yarn cdk:stage deploy",
-"cdk:destroy-stage": "yarn cdk:stage destroy",
-"cdk:synth-prod": "yarn cdk:prod synth",
-"cdk:deploy-prod": "yarn cdk:prod deploy",
-"cdk:destroy-prod": "yarn cdk:prod destroy",
-"get:branch": "git rev-parse --abbrev-ref HEAD",
-"cdk:branch": "BRANCH=$(npm run get:branch | awk 'END{print}') && cross-env NODE_ENV=$BRANCH DOTENV_CONFIG_PATH=./.env.development cdk --profile cdk",
-"cdk:synth-branch": "yarn cdk:branch synth",
-"cdk:deploy-branch": "yarn cdk:branch deploy",
-"cdk:destroy-branch": "yarn cdk:branch destroy",
-```
+working with. Check out the `package.json` scripts.
 
 > In comparison to serverless framework, we mostly had to worry about the
 > `package.json` scripts
