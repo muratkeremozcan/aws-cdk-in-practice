@@ -38,12 +38,6 @@ environment:
 cdk init app --language typescript # scaffold cdk
 aws configure --profile cdk # configure the cdk profile
 cdk bootstrap --profile cdk # configure cdk for that region
-
-
-cd infrastructure
-# You need to build with every new branch, and every time back on main
-yarn build
-yarn build:frontend # installs and builds the front-end so it can be deployed
 ```
 
 ## Deployment
@@ -55,6 +49,7 @@ to deploy resources specific to that branch:
 
 ```bash
 cd infrastructure
+yarn build:branch
 yarn cdk:branch deploy
 yarn cdk:branch destroy
 yarn cdk:synth-branch
@@ -64,6 +59,7 @@ yarn cdk:synth-branch
 
 ```bash
 cd infrastructure
+yarn build:dev
 yarn cdk:dev deploy
 yarn cdk:dev destroy
 yarn cdk:synth
@@ -73,6 +69,7 @@ yarn cdk:synth
 
 ```bash
 cd infrastructure
+yarn build:stage
 yarn cdk:stage deploy
 yarn cdk:stage destroy
 yarn cdk:synth-stage
@@ -82,6 +79,7 @@ yarn cdk:synth-stage
 
 ```bash
 cd infrastructure
+yarn build:prod
 yarn cdk:prod deploy
 yarn cdk:prod destroy
 yarn cdk:synth-prod
