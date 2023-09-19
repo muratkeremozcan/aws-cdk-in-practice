@@ -53,6 +53,11 @@ yarn build:branch
 yarn cdk:branch deploy
 yarn cdk:branch destroy
 yarn cdk:synth-branch
+
+# at infrastructure folder
+yarn cy:open
+# at web folder
+yarn cy:open-branch
 ```
 
 ### Dev Environment
@@ -63,6 +68,11 @@ yarn build:dev
 yarn cdk:dev deploy
 yarn cdk:dev destroy
 yarn cdk:synth
+
+# at infrastructure folder
+yarn cy:open
+# at web folder
+yarn cy:open
 ```
 
 ### Stage Environment
@@ -73,6 +83,11 @@ yarn build:stage
 yarn cdk:stage deploy
 yarn cdk:stage destroy
 yarn cdk:synth-stage
+
+# at infrastructure folder
+yarn cy:open
+# at web folder
+yarn cy:open-stage
 ```
 
 ### Production Environment
