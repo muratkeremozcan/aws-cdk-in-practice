@@ -4,6 +4,7 @@ import tasks from './cypress/support/tasks'
 require('dotenv').config()
 
 export default defineConfig({
+  projectId: '98jgjt',
   viewportWidth: 1380,
   viewportHeight: 1080,
   retries: {

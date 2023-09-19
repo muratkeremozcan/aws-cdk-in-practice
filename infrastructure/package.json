@@ -61,7 +61,7 @@
     "aws-cdk": "2.34.0",
     "cross-env": "7.0.3",
     "cy-spok": "^1.6.2",
-    "cypress": "^12.17.4",
+    "cypress": "13.2.0",
     "cypress-map": "^1.21.1",
     "dotenv-cli": "^7.3.0",
     "eslint": "8.20.0",

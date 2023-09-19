@@ -95,10 +95,12 @@ jobs:
         with:
           browser: chrome
           install: false
-          # record: true
-          # group: e2e-tests
-          # tag: branch-backend
+          record: true
+          group: e2e-tests
+          tag: branch-backend
           working-directory: infrastructure
+        env:
+          CYPRESS_RECORD_KEY: ${{ secrets.API_CYPRESS_RECORD_KEY }}
 
       # in case you cannot export env vars, use this
       - name: Get website URL
@@ -113,7 +115,9 @@ jobs:
           browser: chrome
           install: false
           config: baseUrl=${{ env.FrontendUrl }}
-          # record: true
-          # group: e2e-tests
-          # tag: branch-front-end
+          record: true
+          group: e2e-tests
+          tag: branch-front-end
           working-directory: web
+        env:
+          CYPRESS_RECORD_KEY: ${{ secrets.UI_CYPRESS_RECORD_KEY }}
