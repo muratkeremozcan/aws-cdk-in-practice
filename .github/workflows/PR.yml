@@ -87,7 +87,7 @@ jobs:
           browser: chrome
           install: false
           record: true
-          group: e2e-tests
+          group: backend-e2e-tests
           tag: branch-backend
           working-directory: infrastructure
         env:
@@ -107,7 +107,7 @@ jobs:
           install: false
           config: baseUrl=${{ env.FrontendUrl }}
           record: true
-          group: e2e-tests
+          group: front-end-e2e-tests
           tag: branch-front-end
           working-directory: web
         env:
