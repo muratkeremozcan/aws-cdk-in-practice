@@ -86,9 +86,9 @@ jobs:
         with:
           browser: chrome
           install: false
-          # record: true
-          # group: e2e-tests
-          # tag: branch-backend
+          record: true
+          group: e2e-tests
+          tag: branch-backend
           working-directory: infrastructure
 
       # in case you cannot export env vars, use this
@@ -104,9 +104,9 @@ jobs:
           browser: chrome
           install: false
           config: baseUrl=${{ env.FrontendUrl }}
-          # record: true
-          # group: e2e-tests
-          # tag: branch-front-end
+          record: true
+          group: e2e-tests
+          tag: branch-front-end
           working-directory:
             web
 
