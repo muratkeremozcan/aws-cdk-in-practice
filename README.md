@@ -1,8 +1,10 @@
 # [AWS CDK in Practice](https://www.amazon.com/AWS-CDK-Practice-Streamline-applications/dp/180181239X/ref=sr_1_3?crid=EOP9UXZSSGRK&keywords=cdk+aws&qid=1692715247&sprefix=cdk+aws%2Caps%2C100&sr=8-3).
 
-[![AWS in Practice - API](https://img.shields.io/endpoint?url=https://cloud.cypress.io/badge/simple/98jgjt/main&style=flat&logo=cypress)](https://cloud.cypress.io/projects/98jgjt/runs)
+[![AWS in Practice - API](https://img.shields.io/endpoint?url=https://cloud.cypress.io/badge/detailed/98jgjt/main&style=flat&logo=cypress)](https://cloud.cypress.io/projects/98jgjt/runs) -
+API
 
-[![AWS in Practice - UI ](https://img.shields.io/endpoint?url=https://cloud.cypress.io/badge/simple/6pohtd/main&style=flat&logo=cypress)](https://cloud.cypress.io/projects/6pohtd/runs)
+[![AWS in Practice - UI ](https://img.shields.io/endpoint?url=https://cloud.cypress.io/badge/detailed/6pohtd/main&style=flat&logo=cypress)](https://cloud.cypress.io/projects/6pohtd/runs) -
+UI
 
 The original example is from the book AWS CDK in Practice. I trimmed the parts I
 do not like, and added things I think are necessary; particularly temporary
