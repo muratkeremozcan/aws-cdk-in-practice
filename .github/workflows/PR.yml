@@ -91,7 +91,7 @@ jobs:
           tag: branch-backend
           working-directory: infrastructure
         env:
-          CYPRESS_RECORD_KEY: ${{ API_CYPRESS_RECORD_KEY }}
+          CYPRESS_RECORD_KEY: ${{ secrets.API_CYPRESS_RECORD_KEY }}
 
       # in case you cannot export env vars, use this
       - name: Get S3 bucket website URL
@@ -111,7 +111,7 @@ jobs:
           tag: branch-front-end
           working-directory: web
         env:
-          CYPRESS_RECORD_KEY: ${{ UI_CYPRESS_RECORD_KEY }}
+          CYPRESS_RECORD_KEY: ${{ secrets.UI_CYPRESS_RECORD_KEY }}
 
       # Schema verification
       - name: verify the schema with Optic
