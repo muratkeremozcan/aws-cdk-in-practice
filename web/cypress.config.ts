@@ -13,7 +13,7 @@ const apiUrl = `https://${backend_subdomain}.${domain_name}`
 console.log({deployment, apiUrl})
 
 export default defineConfig({
-  projectId: '98jgjt',
+  projectId: '6pohtd',
   viewportWidth: 1380,
   viewportHeight: 1080,
   retries: {

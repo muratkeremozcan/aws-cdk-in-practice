@@ -90,6 +90,8 @@ jobs:
           group: e2e-tests
           tag: branch-backend
           working-directory: infrastructure
+        env:
+          CYPRESS_RECORD_KEY: ${{ API_CYPRESS_RECORD_KEY }}
 
       # in case you cannot export env vars, use this
       - name: Get S3 bucket website URL
@@ -107,10 +109,11 @@ jobs:
           record: true
           group: e2e-tests
           tag: branch-front-end
-          working-directory:
-            web
+          working-directory: web
+        env:
+          CYPRESS_RECORD_KEY: ${{ UI_CYPRESS_RECORD_KEY }}
 
-            # Schema verification
+      # Schema verification
       - name: verify the schema with Optic
         run: |
           cd infrastructure
