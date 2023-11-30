@@ -1,5 +1,6 @@
 import {DynamoDB} from 'aws-sdk'
 import {DeleteEvent} from 'customTypes/index' // Assuming DeleteEvent is exported from here
+import {ResponseBody} from 'api-specs/v1/deleteTodo'
 import {httpResponse} from '../../handlers/httpResponse'
 
 export const handler = async (event: DeleteEvent) => {
@@ -27,10 +28,12 @@ export const handler = async (event: DeleteEvent) => {
       })
       .promise()
 
-    return httpResponse(
-      200,
-      JSON.stringify({message: 'Todo deleted successfully.'}),
-    )
+    // (2) Use the Response Type in the Lambda Handler
+    const response: ResponseBody = {
+      message: 'Todo deleted successfully.',
+    }
+
+    return httpResponse(200, JSON.stringify(response))
   } catch (error: any) {
     console.error(error)
 

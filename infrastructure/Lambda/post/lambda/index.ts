@@ -1,6 +1,7 @@
 import {DynamoDB} from 'aws-sdk'
 import {v4 as uuidv4} from 'uuid'
 import type {PostEvent, Todo} from 'customTypes/index'
+import type {ResponseBody} from 'api-specs/v1/postTodo'
 import {httpResponse} from '../../handlers/httpResponse'
 
 export const handler = async (event: PostEvent) => {
@@ -35,7 +36,10 @@ export const handler = async (event: PostEvent) => {
 
     await dynamoDB.put({TableName: tableName, Item: todo}).promise()
 
-    return httpResponse(200, JSON.stringify({todo}))
+    // (2) Use the Response Type in the Lambda Handler
+    const response: ResponseBody = {todo}
+
+    return httpResponse(200, JSON.stringify(response))
   } catch (error: any) {
     console.error(error)
 

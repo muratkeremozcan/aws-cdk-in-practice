@@ -360,3 +360,4 @@ Mind that in CI we need write the values out to the CI envrionment:
     yarn export:env
     echo "FrontendUrl=$(cat ./.env | grep FrontendUrl | cut -d '=' -f 2)" >> $GITHUB_ENV
 ```
+

@@ -1,4 +1,6 @@
 import {DynamoDB} from 'aws-sdk'
+import type {ResponseBody} from 'api-specs/v1/getTodos'
+import {Todo} from 'customTypes/index'
 import {httpResponse} from '../../handlers/httpResponse'
 
 export const handler = async () => {
@@ -21,14 +23,27 @@ export const handler = async () => {
         `https://dynamodb.${awsRegion}.amazonaws.com`,
     })
 
-    const {Items}: DynamoDB.ScanOutput = await dynamoDB
+    const scanOutput: DynamoDB.ScanOutput = await dynamoDB
       .scan({TableName: tableName})
       .promise()
 
-    return httpResponse(200, JSON.stringify({todos: Items}))
+    // (2) Use the Response Type in the Lambda Handler
+    // Check if Items is not undefined and transform it into Todo[]
+    const todos: Todo[] =
+      scanOutput.Items?.map(item => ({
+        id: item.id?.S || '', // Default to an empty string if undefined
+        todo_name: item.todo_name?.S || '', // Default to an empty string if undefined
+        todo_description: item.todo_description?.S || '', // Default to an empty string if undefined
+        todo_completed: item.todo_completed?.BOOL || false, // Default to false if undefined
+      })) ?? []
+
+    const response: ResponseBody = {
+      todos,
+    }
+
+    return httpResponse(200, JSON.stringify(response))
   } catch (error: any) {
     console.error(error)
-
     return httpResponse(400, JSON.stringify({message: error.message}))
   }
 }

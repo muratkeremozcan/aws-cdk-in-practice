@@ -1,0 +1,178 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "aws cdk in practice specification",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/getTodosV1"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/postTodoRequestV1"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/postTodoResponseV1"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/putTodoRequestV1"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/putTodoResponseV1"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/{id}": {
+      "delete": {
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/deleteTodoV1"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "getTodosV1": {
+        "type": "object",
+        "properties": {
+          "todos": {
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/Todo"
+            }
+          }
+        },
+        "required": [
+          "todos"
+        ],
+        "additionalProperties": false
+      },
+      "deleteTodoV1": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "message"
+        ],
+        "additionalProperties": false
+      },
+      "postTodoRequestV1": {
+        "type": "object",
+        "properties": {
+          "todo": {
+            "$ref": "#/definitions/Todo"
+          }
+        },
+        "required": [
+          "todo"
+        ],
+        "additionalProperties": false
+      },
+      "postTodoResponseV1": {
+        "type": "object",
+        "properties": {
+          "todo": {
+            "$ref": "#/definitions/Todo"
+          }
+        },
+        "required": [
+          "todo"
+        ],
+        "additionalProperties": false
+      },
+      "putTodoRequestV1": {
+        "type": "object",
+        "properties": {
+          "todo": {
+            "$ref": "#/definitions/Todo"
+          }
+        },
+        "required": [
+          "todo"
+        ],
+        "additionalProperties": false
+      },
+      "putTodoResponseV1": {
+        "type": "object",
+        "properties": {
+          "todo": {
+            "$ref": "#/definitions/Todo"
+          }
+        },
+        "required": [
+          "todo"
+        ],
+        "additionalProperties": false
+      }
+    }
+  }
+}

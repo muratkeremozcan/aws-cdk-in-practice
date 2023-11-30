@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$ref": "#/definitions/ResponseBody",
+  "definitions": {
+    "ResponseBody": {
+      "type": "object",
+      "properties": {
+        "todos": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Todo"
+          }
+        }
+      },
+      "required": [
+        "todos"
+      ],
+      "additionalProperties": false
+    },
+    "Todo": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "todo_name": {
+          "type": "string"
+        },
+        "todo_description": {
+          "type": "string"
+        },
+        "todo_completed": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "todo_name",
+        "todo_description",
+        "todo_completed"
+      ],
+      "additionalProperties": false
+    }
+  }
+}
