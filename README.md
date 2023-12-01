@@ -57,6 +57,7 @@ to deploy resources specific to that branch:
 cd infrastructure
 yarn build:branch
 yarn cdk:branch deploy
+yarn export:env
 yarn cdk:branch destroy
 yarn cdk:synth-branch
 
@@ -71,7 +72,8 @@ yarn cy:open-branch
 ```bash
 cd infrastructure
 yarn build:dev
-yarn cdk:dev deploy
+yarn cdk:dev
+yarn export:env
 yarn cdk:dev destroy
 yarn cdk:synth
 
@@ -87,6 +89,7 @@ yarn cy:open
 cd infrastructure
 yarn build:stage
 yarn cdk:stage deploy
+yarn export:env
 yarn cdk:stage destroy
 yarn cdk:synth-stage
 
@@ -102,6 +105,7 @@ yarn cy:open-stage
 cd infrastructure
 yarn build:prod
 yarn cdk:prod deploy
+yarn export:env
 yarn cdk:prod destroy
 yarn cdk:synth-prod
 ```
@@ -360,3 +364,97 @@ Mind that in CI we need write the values out to the CI envrionment:
     yarn export:env
     echo "FrontendUrl=$(cat ./.env | grep FrontendUrl | cut -d '=' -f 2)" >> $GITHUB_ENV
 ```
+
+### Schema governance
+
+We have 2 different openapi files covering the 2 approaches. The first approach
+produces an `openapi.json` file, the second produces an `openapi.yaml` file. The
+file type does not matter; use what fits your needs.
+
+Alongside the 2 openapi spec files, we have 2 sets of diff and lint scripts; in
+the real world you will not have something like this. The approach was necessary
+to showcase both examples distinctively in a single repository.
+
+#### Using types -> JSON schemas -> OpenAPI spec -> schema diffing with Optic (`openapi.json` example)
+
+> For this approach we are using an `openapi.json` file at
+> `./infrastructure/api-specs` folder.
+
+Optic helps in detecting schema changes in your OpenAPI specification
+(`openapi.json`). It categorizes these changes as either breaking or
+non-breaking.
+
+```bash
+# in ./infrastructure folder
+yarn update:api-docs      # Generates JSON schemas and OpenAPI docs.
+yarn optic:lint-json      # Lints the OpenAPI docs with Optic.
+yarn optic:diff-json      # Detects breaking schema changes with Optic.
+```
+
+Use case scenario:
+
+1. A breaking change is made to our types.
+
+2. The OpenAPI docs are auto-generated from these types using `update-api-docs`.
+
+3. `optic:diff-json` identifies any breaking changes.
+
+4. Depending on the situation, we either roll back the change or update our API
+   documentation to reflect it, informing service consumers about the potential
+   impact. For the breaking change, we must update the version of our OpenAPI
+   spec, so that the breaking change is communicated and Optic passes the test.
+
+If no breaking changes are detected, the API documentation is updated, and
+`optic:diff-json` executes successfully.
+
+### Sniffing on e2e tests against localhost -> schema diffing or schema updating with Optic (`openapi.yml` example)
+
+> For this approach we are using an `openapi.yml` file at root folder.
+
+Optic can also validate the accuracy of the OpenAPI spec by capturing traffic
+from E2E tests and comparing it against the OpenAPI spec (`openapi.json` or
+`yml` file).
+
+```bash
+# in ./infrastructure folder
+yarn optic:verify # Captures E2E test traffic, detects breaking schema changes
+```
+
+This method also allows for interactive updates to the OpenAPI spec. It's
+similar to `optic:verify` but includes prompts for additional observed changes
+during E2E test capture.
+
+```bash
+# in ./infrastructure folder
+yarn optic:update
+```
+
+![diagram](https://www.useoptic.com/img/proxy-diagram.png)
+
+After capturing the OpenAPI spec, we can still use the same Optic lint or diff
+features.
+
+```bash
+yarn optic:lint-yml      # Lints the OpenAPI docs with Optic.
+yarn optic:diff-yml      # Detects breaking schema changes with Optic.
+```
+
+Use case scenario:
+
+1. Any black-box breaking change is made in our service code (not necessarily to
+   types).
+2. We find that breaking change with `optic:verify`
+
+   - this time using real e2e tests executing against localhost
+   - while Optic verifies these tests against our OpenAPI spec
+
+3. At this point, if the reality does not match the current OpenAPI docs, we can
+   use `optic:update` to update our OpenAPI docs. `optic:verify` will give us a
+   coverage of our OpenAPI docs, if it passes successfully
+
+4. `optic:diff-yml` identifies any breaking changes.
+
+5. We then decide whether to discard the change or update our API documentation
+   with `optic:update`, and communicate any upcoming breaking changes to service
+   consumers. For the breaking change, we must update the version of our OpenAPI
+   spec, so that the breaking change is communicated and Optic passes the test.

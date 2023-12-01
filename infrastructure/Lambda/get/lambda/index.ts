@@ -1,4 +1,5 @@
 import {DynamoDB} from 'aws-sdk'
+import type {ResponseBody} from 'api-specs/v1/getTodos'
 import {httpResponse} from '../../handlers/httpResponse'
 
 export const handler = async () => {
@@ -25,7 +26,11 @@ export const handler = async () => {
       .scan({TableName: tableName})
       .promise()
 
-    return httpResponse(200, JSON.stringify({todos: Items}))
+    // @ts-expect-error haven't found a no-code or low-code way to make TS happy
+    // and making TS happy with a transformation function breaks the feature
+    const response: ResponseBody = {todos: Items}
+
+    return httpResponse(200, JSON.stringify(response))
   } catch (error: any) {
     console.error(error)
 

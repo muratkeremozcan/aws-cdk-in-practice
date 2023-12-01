@@ -1,0 +1,222 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "aws cdk in practice specification",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/getTodosV1"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/postTodoV1"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/postTodoV1"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/putTodoV1"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/putTodoV1"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/{id}": {
+      "delete": {
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/deleteTodoV1"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "getTodosV1": {
+        "*": {
+          "type": "object",
+          "properties": {
+            "todos": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "todo_name": {
+                    "type": "string"
+                  },
+                  "todo_description": {
+                    "type": "string"
+                  },
+                  "todo_completed": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "todo_name",
+                  "todo_description",
+                  "todo_completed"
+                ],
+                "additionalProperties": false
+              }
+            }
+          },
+          "required": [
+            "todos"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "deleteTodoV1": {
+        "*": {
+          "type": "object",
+          "properties": {
+            "message": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "message"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "postTodoV1": {
+        "*": {
+          "type": "object",
+          "properties": {
+            "todo": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "todo_name": {
+                  "type": "string"
+                },
+                "todo_description": {
+                  "type": "string"
+                },
+                "todo_completed": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "todo_name",
+                "todo_description",
+                "todo_completed"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "todo"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "putTodoV1": {
+        "*": {
+          "type": "object",
+          "properties": {
+            "todo": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "todo_name": {
+                  "type": "string"
+                },
+                "todo_description": {
+                  "type": "string"
+                },
+                "todo_completed": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "todo_name",
+                "todo_description",
+                "todo_completed"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "todo"
+          ],
+          "additionalProperties": false
+        }
+      }
+    }
+  }
+}
