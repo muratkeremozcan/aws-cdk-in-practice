@@ -55,8 +55,10 @@ export const handler = async (event: PutEvent) => {
     const response: ResponseBody = {todo: updatedTodo}
 
     return httpResponse(200, JSON.stringify(response))
-  } catch (error: any) {
-    console.error(error)
-    return httpResponse(400, JSON.stringify({message: error.message}))
+  } catch (error) {
+    const e = error as Error
+    console.error(e)
+
+    return httpResponse(400, JSON.stringify({message: e.message}))
   }
 }

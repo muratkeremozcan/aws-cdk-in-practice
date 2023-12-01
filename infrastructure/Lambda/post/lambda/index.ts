@@ -41,9 +41,10 @@ export const handler = async (event: PostEvent) => {
     console.log(response)
 
     return httpResponse(200, JSON.stringify(response))
-  } catch (error: any) {
-    console.error(error)
+  } catch (error) {
+    const e = error as Error
+    console.error(e)
 
-    return httpResponse(400, JSON.stringify({message: error.message}))
+    return httpResponse(400, JSON.stringify({message: e.message}))
   }
 }
