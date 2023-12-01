@@ -386,9 +386,9 @@ non-breaking.
 
 ```bash
 # in ./infrastructure folder
-yarn update:api-docs # Generates JSON schemas and OpenAPI docs.
+yarn update:api-docs      # Generates JSON schemas and OpenAPI docs.
+yarn optic:lint-json      # Lints the OpenAPI docs with Optic.
 yarn optic:diff-json      # Detects breaking schema changes with Optic.
-yarn schema:diff-json     # Combines the two commands above
 ```
 
 Use case scenario:
@@ -430,6 +430,14 @@ yarn optic:update
 ```
 
 ![diagram](https://www.useoptic.com/img/proxy-diagram.png)
+
+After capturing the OpenAPI spec, we can still use the same Optic lint or diff
+features.
+
+```bash
+yarn optic:lint-yml      # Lints the OpenAPI docs with Optic.
+yarn optic:diff-yml      # Detects breaking schema changes with Optic.
+```
 
 Use case scenario:
 
