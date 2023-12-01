@@ -34,7 +34,7 @@ export const openapi: OpenAPIV3_1.Document = {
           content: {
             'application/json': {
               schema: {
-                $ref: '#/components/schemas/postTodoRequestV1',
+                $ref: '#/components/schemas/postTodoV1',
               },
             },
           },
@@ -45,7 +45,7 @@ export const openapi: OpenAPIV3_1.Document = {
             content: {
               'application/json': {
                 schema: {
-                  $ref: '#/components/schemas/postTodoResponseV1',
+                  $ref: '#/components/schemas/postTodoV1',
                 },
               },
             },
@@ -58,7 +58,7 @@ export const openapi: OpenAPIV3_1.Document = {
           content: {
             'application/json': {
               schema: {
-                $ref: '#/components/schemas/putTodoRequestV1',
+                $ref: '#/components/schemas/putTodoV1',
               },
             },
           },
@@ -69,7 +69,7 @@ export const openapi: OpenAPIV3_1.Document = {
             content: {
               'application/json': {
                 schema: {
-                  $ref: '#/components/schemas/putTodoResponseV1',
+                  $ref: '#/components/schemas/putTodoV1',
                 },
               },
             },
@@ -106,23 +106,13 @@ export const openapi: OpenAPIV3_1.Document = {
   },
   components: {
     schemas: {
-      getTodosV1: getTodosV1.definitions
-        .ResponseBody as OpenAPIV3_1.SchemaObject,
+      getTodosV1: getTodosV1.definitions as OpenAPIV3_1.SchemaObject,
 
-      deleteTodoV1: deleteTodoV1.definitions
-        .ResponseBody as OpenAPIV3_1.SchemaObject,
+      deleteTodoV1: deleteTodoV1.definitions as OpenAPIV3_1.SchemaObject,
 
-      postTodoRequestV1: postTodoV1.definitions
-        .RequestBody as OpenAPIV3_1.SchemaObject,
+      postTodoV1: postTodoV1.definitions as OpenAPIV3_1.SchemaObject,
 
-      postTodoResponseV1: postTodoV1.definitions
-        .ResponseBody as OpenAPIV3_1.SchemaObject,
-
-      putTodoRequestV1: putTodoV1.definitions
-        .RequestBody as OpenAPIV3_1.SchemaObject,
-
-      putTodoResponseV1: putTodoV1.definitions
-        .ResponseBody as OpenAPIV3_1.SchemaObject,
+      putTodoV1: putTodoV1.definitions as OpenAPIV3_1.SchemaObject,
     },
   },
 }

@@ -26,7 +26,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/postTodoRequestV1"
+                "$ref": "#/components/schemas/postTodoV1"
               }
             }
           }
@@ -37,7 +37,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/postTodoResponseV1"
+                  "$ref": "#/components/schemas/postTodoV1"
                 }
               }
             }
@@ -50,7 +50,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/putTodoRequestV1"
+                "$ref": "#/components/schemas/putTodoV1"
               }
             }
           }
@@ -61,7 +61,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/putTodoResponseV1"
+                  "$ref": "#/components/schemas/putTodoV1"
                 }
               }
             }
@@ -99,79 +99,123 @@
   "components": {
     "schemas": {
       "getTodosV1": {
-        "type": "object",
-        "properties": {
-          "todos": {
-            "type": "array",
-            "items": {
-              "$ref": "#/definitions/Todo"
+        "*": {
+          "type": "object",
+          "properties": {
+            "todos": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "todo_name": {
+                    "type": "string"
+                  },
+                  "todo_description": {
+                    "type": "string"
+                  },
+                  "todo_completed": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "todo_name",
+                  "todo_description",
+                  "todo_completed"
+                ],
+                "additionalProperties": false
+              }
             }
-          }
-        },
-        "required": [
-          "todos"
-        ],
-        "additionalProperties": false
+          },
+          "required": [
+            "todos"
+          ],
+          "additionalProperties": false
+        }
       },
       "deleteTodoV1": {
-        "type": "object",
-        "properties": {
-          "message": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "message"
-        ],
-        "additionalProperties": false
+        "*": {
+          "type": "object",
+          "properties": {
+            "message": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "message"
+          ],
+          "additionalProperties": false
+        }
       },
-      "postTodoRequestV1": {
-        "type": "object",
-        "properties": {
-          "todo": {
-            "$ref": "#/definitions/Todo"
-          }
-        },
-        "required": [
-          "todo"
-        ],
-        "additionalProperties": false
+      "postTodoV1": {
+        "*": {
+          "type": "object",
+          "properties": {
+            "todo": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "todo_name": {
+                  "type": "string"
+                },
+                "todo_description": {
+                  "type": "string"
+                },
+                "todo_completed": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "todo_name",
+                "todo_description",
+                "todo_completed"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "todo"
+          ],
+          "additionalProperties": false
+        }
       },
-      "postTodoResponseV1": {
-        "type": "object",
-        "properties": {
-          "todo": {
-            "$ref": "#/definitions/Todo"
-          }
-        },
-        "required": [
-          "todo"
-        ],
-        "additionalProperties": false
-      },
-      "putTodoRequestV1": {
-        "type": "object",
-        "properties": {
-          "todo": {
-            "$ref": "#/definitions/Todo"
-          }
-        },
-        "required": [
-          "todo"
-        ],
-        "additionalProperties": false
-      },
-      "putTodoResponseV1": {
-        "type": "object",
-        "properties": {
-          "todo": {
-            "$ref": "#/definitions/Todo"
-          }
-        },
-        "required": [
-          "todo"
-        ],
-        "additionalProperties": false
+      "putTodoV1": {
+        "*": {
+          "type": "object",
+          "properties": {
+            "todo": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "todo_name": {
+                  "type": "string"
+                },
+                "todo_description": {
+                  "type": "string"
+                },
+                "todo_completed": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "todo_name",
+                "todo_description",
+                "todo_completed"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "todo"
+          ],
+          "additionalProperties": false
+        }
       }
     }
   }

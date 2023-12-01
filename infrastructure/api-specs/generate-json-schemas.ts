@@ -49,8 +49,12 @@ function generateSchema(tsFilePath: string): void {
   const config = {
     path: tsFilePath,
     tsconfig: path.join(__dirname, '../tsconfig.json'),
-    type: '*',
     noTypeCheck: true,
+    // generate schema for all types; RequestBody, ResponseBody and all the imported types they need
+    type: '*',
+    // avoid creating shared $ref definitions (which is not valid in OpenAPI)
+    // this e results in JSON schema files that directly embed the type definitions, instead of referring to them via $ref
+    expose: 'none' as const,
   }
 
   try {
