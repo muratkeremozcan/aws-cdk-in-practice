@@ -27,7 +27,7 @@ export const handler = async () => {
       .promise()
 
     // @ts-expect-error haven't found a no-code or low-code way to make TS happy
-    // and making TS with a transformation function happy breaks the feature
+    // and making TS happy with a transformation function breaks the feature
     const response: ResponseBody = {todos: Items}
 
     return httpResponse(200, JSON.stringify(response))
