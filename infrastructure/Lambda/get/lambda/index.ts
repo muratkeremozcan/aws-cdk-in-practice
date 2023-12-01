@@ -1,6 +1,6 @@
 import {DynamoDB} from 'aws-sdk'
 import type {ResponseBody} from 'api-specs/v1/getTodos'
-import {Todo} from 'customTypes/index'
+import type {Todo} from 'customTypes/index'
 import {httpResponse} from '../../handlers/httpResponse'
 
 export const handler = async () => {
