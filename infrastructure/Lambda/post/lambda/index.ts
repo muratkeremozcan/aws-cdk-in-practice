@@ -38,6 +38,7 @@ export const handler = async (event: PostEvent) => {
 
     // (2) Use the Response Type in the Lambda Handler
     const response: ResponseBody = {todo}
+    console.log(response)
 
     return httpResponse(200, JSON.stringify(response))
   } catch (error: any) {
