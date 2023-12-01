@@ -1,4 +1,4 @@
-export interface Todo {
+export type Todo = {
   id?: string
   todo_name: string
   todo_description: string

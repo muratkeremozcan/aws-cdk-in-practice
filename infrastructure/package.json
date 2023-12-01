@@ -38,13 +38,16 @@
     "cy:open": "cypress open --e2e --browser chrome",
     "cy:run": "cypress run --e2e --browser chrome",
     "cy:run-fast": "CYPRESS_NO_COMMAND_LOG=1 cypress run --e2e --browser chrome --config video=false screenshot=false",
-    "optic:lint": "optic lint ../openapi.yml",
-    "optic:diff": "optic diff ../openapi.yml --base main --check'",
-    "optic:verify": "dotenv -e .env -- bash -c 'echo $ApiGatewayUrl && optic capture ../openapi.yml --server-override $ApiGatewayUrl'",
+    "optic:lint-yml": "optic lint ../openapi.yml",
+    "optic:diff-yml": "optic diff ../openapi.yml --base main --check'",
+    "optic:lint-json": "optic lint ./api-specs/v1/openapi.json",
+    "optic:diff-json": "optic diff ./api-specs/v1/openapi.json --base main --check'",
+    "optic:verify": "dotenv -e .env -- bash -c 'echo $ApiGatewayUrl && optic capture ../openapi.json --server-override $ApiGatewayUrl'",
     "optic:update": "dotenv -e .env -- bash -c 'echo $ApiGatewayUrl && optic capture ../openapi.yml --server-override $ApiGatewayUrl --update interactive'",
     "reset:schemas": "npx ts-node ./api-specs/delete-json-files.ts",
     "build:schemas": "npx ts-node ./api-specs/generate-json-schemas.ts",
-    "build:open-api": "npx ts-node ./api-specs/generate-openapi-docs.ts"
+    "build:open-api": "npx ts-node ./api-specs/generate-openapi-docs.ts",
+    "update:api-docs": "yarn reset:schemas && yarn build:schemas && yarn build:open-api"
   },
   "devDependencies": {
     "@bahmutov/cy-api": "^2.2.5",
