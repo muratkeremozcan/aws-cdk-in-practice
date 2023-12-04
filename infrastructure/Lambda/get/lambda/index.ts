@@ -2,6 +2,7 @@ import {DynamoDB} from 'aws-sdk'
 import {Todo} from 'customTypes/index'
 import {httpResponse} from '../../handlers/httpResponse'
 
+// (1) define & export a type for the response body,
 export type GetResponseBody = {
   todos: Partial<Todo>[] | undefined
 }
@@ -28,8 +29,7 @@ export const handler = async () => {
 
     const {Items} = await dynamoDB.scan({TableName: tableName}).promise()
 
-    // (1) define & export a type for the response body,
-    // and use it in the Lambda Handler
+    // (2) and use it in the Lambda Handler
     const response: GetResponseBody = {todos: Items}
 
     return httpResponse(200, JSON.stringify(response))

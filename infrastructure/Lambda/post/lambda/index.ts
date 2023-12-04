@@ -3,6 +3,7 @@ import {v4 as uuidv4} from 'uuid'
 import type {PostEvent, Todo} from 'customTypes/index'
 import {httpResponse} from '../../handlers/httpResponse'
 
+// (1) define & export a type for the response body,
 export type PostBody = {
   todo: Todo
 }
@@ -39,9 +40,7 @@ export const handler = async (event: PostEvent) => {
 
     await dynamoDB.put({TableName: tableName, Item: todo}).promise()
 
-    // (2) Use the Response Type in the Lambda Handler
-    // (1) define & export  a type for the response body,
-    // and use it in the Lambda Handler
+    // (2) and use it in the Lambda Handler
     const response: PostBody = {todo}
 
     return httpResponse(200, JSON.stringify(response))

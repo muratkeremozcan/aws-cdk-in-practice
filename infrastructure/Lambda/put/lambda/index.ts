@@ -2,6 +2,7 @@ import {DynamoDB} from 'aws-sdk'
 import {PutEvent, Todo} from 'customTypes/index'
 import {httpResponse} from '../../handlers/httpResponse'
 
+// (1) define & export a type for the response body,
 export type PutBody = {
   todo: Todo
 }
@@ -54,8 +55,7 @@ export const handler = async (event: PutEvent) => {
       todo_completed,
     }
 
-    // (1) define & export a type for the response body,
-    // and use it in the Lambda Handler
+    // (2) and use it in the Lambda Handler
     const response: PutBody = {todo: updatedTodo}
 
     return httpResponse(200, JSON.stringify(response))
