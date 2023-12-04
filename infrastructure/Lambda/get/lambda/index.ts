@@ -1,6 +1,11 @@
 import {DynamoDB} from 'aws-sdk'
-import type {ResponseBody} from 'api-specs/v1/getTodos'
+import {Todo} from 'customTypes/index'
 import {httpResponse} from '../../handlers/httpResponse'
+
+// (1) define & export a type for the response body,
+export type GetResponseBody = {
+  todos: Partial<Todo>[] | undefined
+}
 
 export const handler = async () => {
   try {
@@ -22,13 +27,10 @@ export const handler = async () => {
         `https://dynamodb.${awsRegion}.amazonaws.com`,
     })
 
-    const {Items}: DynamoDB.ScanOutput = await dynamoDB
-      .scan({TableName: tableName})
-      .promise()
+    const {Items} = await dynamoDB.scan({TableName: tableName}).promise()
 
-    // @ts-expect-error haven't found a no-code or low-code way to make TS happy
-    // and making TS happy with a transformation function breaks the feature
-    const response: ResponseBody = {todos: Items}
+    // (2) and use it in the Lambda Handler
+    const response: GetResponseBody = {todos: Items}
 
     return httpResponse(200, JSON.stringify(response))
   } catch (error: any) {

@@ -1,6 +1,4 @@
-import type {Todo} from 'customTypes/index'
+// (3) re-use the exported type in api docs
+import type {GetResponseBody} from '../../Lambda/get/lambda/index'
 
-// (1) Define the ResponseBody for the operation
-export type ResponseBody = {
-  todos: Todo[]
-}
+export type ResponseBody = GetResponseBody
