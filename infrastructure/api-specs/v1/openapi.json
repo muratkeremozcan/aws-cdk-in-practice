@@ -120,18 +120,10 @@
                     "type": "boolean"
                   }
                 },
-                "required": [
-                  "todo_name",
-                  "todo_description",
-                  "todo_completed"
-                ],
                 "additionalProperties": false
               }
             }
           },
-          "required": [
-            "todos"
-          ],
           "additionalProperties": false
         }
       },

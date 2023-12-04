@@ -1,9 +1,6 @@
-import type {Todo} from 'customTypes/index'
+// (2) use the exported ResponseBody in api docs
+import type {PutBody} from '../../Lambda/put/lambda/index'
 
-export type ResponseBody = {
-  todo: Todo
-}
+export type ResponseBody = PutBody
 
-export type RequestBody = {
-  todo: Todo
-}
+export type RequestBody = PutBody

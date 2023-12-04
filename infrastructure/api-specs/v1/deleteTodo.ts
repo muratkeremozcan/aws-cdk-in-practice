@@ -1,5 +1,4 @@
-// (1) Define the ResponseBody for the operation
+// (2) use the exported ResponseBody in api docs
+import type {DeleteResponseBody} from '../../Lambda/delete/lambda/index'
 
-export type ResponseBody = {
-  message: string
-}
+export type ResponseBody = DeleteResponseBody
