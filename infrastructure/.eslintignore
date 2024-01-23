@@ -1,4 +1,9 @@
 /*.js
+index.js
+infrastructure.js
+.eslintrc.js
+infrastructure.test.js
+get-env-config.ts
 node_modules
 dist
 cdk.out

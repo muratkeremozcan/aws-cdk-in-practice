@@ -4,8 +4,8 @@ import {Construct} from 'constructs'
 import {NodejsFunction} from 'aws-cdk-lib/aws-lambda-nodejs'
 import {Runtime} from 'aws-cdk-lib/aws-lambda'
 import {Duration, aws_logs as logs} from 'aws-cdk-lib'
-import {Vpc} from 'aws-cdk-lib/aws-ec2'
-import {Table} from 'aws-cdk-lib/aws-dynamodb'
+import type {Vpc} from 'aws-cdk-lib/aws-ec2'
+import type {Table} from 'aws-cdk-lib/aws-dynamodb'
 
 interface IProps {
   vpc?: Vpc

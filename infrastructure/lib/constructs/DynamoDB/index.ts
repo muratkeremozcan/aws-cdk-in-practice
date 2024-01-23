@@ -32,7 +32,7 @@ export class DynamoDB extends Construct {
           {
             id: uuidv4(),
             todo_name: 'First todo',
-            todo_description: "That's a todo for demonstration purposes",
+            todo_description: 'That is a todo for demonstration purposes',
             todo_completed: true,
           },
         ]),

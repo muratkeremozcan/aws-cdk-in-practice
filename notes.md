@@ -134,7 +134,7 @@ When scaffolding the project, you will also see the `cdk.json` file which define
 Goal: Learn about the relationship between stack, construct, and how to
 instantiate the cdk app.
 
-An app can have one or more stacks, and the stacks can have one (usually many) contracts.
+An app can have one or more stacks, and the stacks can have one (usually many) c.
 
 Stack > Construct. Stack is your everything (CloudFormation stack). Construct is
 any AWS resource, or a combination of them.

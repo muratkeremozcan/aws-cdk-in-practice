@@ -1,5 +1,5 @@
 import {DnsValidatedCertificate} from 'aws-cdk-lib/aws-certificatemanager'
-import {IHostedZone} from 'aws-cdk-lib/aws-route53'
+import type {IHostedZone} from 'aws-cdk-lib/aws-route53'
 import {Construct} from 'constructs'
 
 import config from '../../../../config.json'

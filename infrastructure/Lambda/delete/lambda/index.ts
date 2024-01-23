@@ -1,5 +1,5 @@
 import {DynamoDB} from 'aws-sdk'
-import {DeleteEvent} from 'customTypes/index' // Assuming DeleteEvent is exported from here
+import type {DeleteEvent} from 'customTypes/index' // Assuming DeleteEvent is exported from here
 import {httpResponse} from '../../handlers/httpResponse'
 
 // (1) define & export a type for the response body,

@@ -1,5 +1,5 @@
 import {DynamoDB} from 'aws-sdk'
-import {PutEvent, Todo} from 'customTypes/index'
+import type {PutEvent, Todo} from 'customTypes/index'
 import {httpResponse} from '../../handlers/httpResponse'
 
 // (1) define & export a type for the response body,

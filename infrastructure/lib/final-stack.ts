@@ -1,12 +1,12 @@
 import {Stack, CfnOutput} from 'aws-cdk-lib'
 import type {StackProps} from 'aws-cdk-lib'
-import {Construct} from 'constructs'
+import type {Construct} from 'constructs'
 import {S3} from './constructs/S3'
 import {Route53} from './constructs/Route53'
 import {ACM} from './constructs/ACM'
 import {ApiGateway} from './constructs/API-GW'
 import {DynamoDB} from './constructs/DynamoDB'
-import {StepFunction} from './constructs/Step-Function'
+import type {StepFunction} from './constructs/Step-Function'
 
 export class FinalStack extends Stack {
   public readonly acm: ACM
