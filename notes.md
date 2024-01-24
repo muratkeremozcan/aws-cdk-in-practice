@@ -375,9 +375,7 @@ export class Chapter3Stack extends Stack {
 ```
 
 To spin up a DDB table, we just instantiate the `Table` class from
-`aws-cdk-lib/aws-dynamodb`.
-
-Useful if you configure and deploy a DDB table.
+`aws-cdk-lib/aws-dynamodb`. Useful if you configure and deploy a DDB table.
 
 ```ts
 // ./infrastructure/lib/constructs/Dynamodb.ts
@@ -581,7 +579,7 @@ export class ECS extends Construct {
 }
 ```
 
-Check infrastructure with `cdk synth`. I will try to build the UI app, and the
+Check infrastructure with `cdk synth`. It will try to build the UI app, and the
 infrastructure, then check with cdk.
 
 Start docker on your laptop, and deploy them all with
